@@ -63,7 +63,7 @@ restart**. The app starts again from the committed `weather_risk.db` and downloa
 ```
 config/        hubs.toml (hub registry), scoring.toml (thresholds, bounds, weights, alert rules)
 data/          weather_risk.db (committed data snapshot); sessions.db, alerts.db (git-ignored)
-docs/          DESIGN.md, DESIGN_DETAILS.md, PLAN.md (decision + eval log), ASSUMPTIONS.md
+docs/          DESIGN.md, DESIGN_DETAILS.md, PLAN.md (decision + eval log), ASSUMPTIONS.md, OPERATIONS.md
 evals/         cases.toml (25 cases), run_eval.py, results/
 scripts/       verify_gemini.py, explore_fema.py (phase-0 checks)
 static/        index.html (chat page)
