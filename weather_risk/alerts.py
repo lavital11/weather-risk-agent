@@ -27,7 +27,7 @@ from weather_risk.agent.executor import TIE_GAP, competition_rank
 from weather_risk.config import CONFIG_DIR, ROOT, load_hubs
 from weather_risk.db import connect
 from weather_risk.scoring import load_scoring_config, score_all
-from weather_risk.window import resolve_window, shift_window
+from weather_risk.window import catch_up, resolve_window, shift_window, source_gaps
 
 ALERTS_DB = ROOT / "data" / "alerts.db"
 def default_webhook() -> str:
@@ -114,10 +114,17 @@ def deliver(payload: dict) -> str:
 def run(kind: str = "live", refresh_fema: bool = True, cfg_override: dict | None = None,
         baseline_cfg: dict | None = None) -> dict:
     data_conn, db = connect(), _db()
+    n_hubs = len(load_hubs())
+    catch_up_log: list[str] = []
     if refresh_fema:
         from weather_risk.ingest import openfema
         openfema.main()                                         # the only source that changes daily
-    n_hubs = len(load_hubs())
+        # If the last complete year isn't in every source yet, fetch only what's missing,
+        # so the auto window can move forward (otherwise it never would).
+        cfg0 = load_scoring_config()
+        target = datetime.now(timezone.utc).year - 1
+        if cfg0["window"].get("auto") and target > int(cfg0["window"]["end"][:4]) and source_gaps(data_conn, target, n_hubs):
+            catch_up_log = catch_up(data_conn, target, n_hubs)
     cfg, note = (cfg_override, "demo window") if cfg_override else resolve_window(data_conn, load_scoring_config(), n_hubs)
     h = config_hash()
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -132,7 +139,7 @@ def run(kind: str = "live", refresh_fema: bool = True, cfg_override: dict | None
     window = f"{cfg['window']['start'][:4]}-{cfg['window']['end'][:4]}"
     sid = db.execute("INSERT INTO snapshots (created_at, kind, window, window_note, config_hash, data_json) VALUES (?,?,?,?,?,?)",
                      (now, kind, window, note, h, json.dumps(snap))).lastrowid
-    result = {"window": window, "window_note": note, "snapshot_id": sid, "alerts": []}
+    result = {"window": window, "window_note": note, "snapshot_id": sid, "alerts": [], "catch_up": catch_up_log}
     if prev is None:
         result["note"] = "first snapshot: baseline saved, nothing to compare yet"
     else:

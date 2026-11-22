@@ -29,7 +29,7 @@ Running list; feeds the design doc.
   - **Ice day:** precipitation ≥ 2 mm, max temperature ≤ 1 °C, and less than half of the precipitation fell as snow.
   - The units differ: precipitation is mm of liquid water, snowfall is cm of snow. We compare them using Open-Meteo's own ratio, **measured in our data: 0.70 cm of snow per mm of precipitation** on all-snow days (243 days with max ≤ −3 °C; range 0.15–0.88).
   - "Less than half as snow" = `snowfall_cm < 0.5 × 0.7 × precipitation_mm`.
-- **A15.** Hurricane score = FEMA rule-D events only (100% weight), because the weather data has no usable hurricane signal (the tropical proxy also caught Midwest thunderstorms). It's a **small sample** (Miami 1 event, Houston 2), and the agent must say so. HURDAT2 storm tracks are planned as a bonus.
+- **A15. (Replaced by A18: storm tracks + FEMA.)** ~~Hurricane score = FEMA rule-D events only (100% weight), because the weather data has no usable hurricane signal (the tropical proxy also caught Midwest thunderstorms). It's a **small sample** (Miami 1 event, Houston 2), and the agent must say so. HURDAT2 storm tracks are planned as a bonus.~~
 
 - **A14.** Hail and tornadoes don't appear in daily gridded weather data. For the severe-storm hazard, the weather signal is strong-gust days only; hail and tornado impact comes only from FEMA declarations.
 

@@ -5,7 +5,7 @@ weather disruption. **Scores are computed by deterministic code**; the LLM (Goog
 turns the question into a structured plan and explains the computed facts.
 
 Scope: 10 hubs (5 Midwest, 4 South, Denver) × 5 hazards (winter, flood, severe storms,
-hurricanes, extreme heat), 2016–2025. See `docs/DESIGN.md` for the architecture. See `docs/PLAN.md` (decisions) and `docs/ASSUMPTIONS.md` (assumptions, data caveats).
+hurricanes, extreme heat), 2016–2025. See `docs/DESIGN.md` (architecture), `docs/PLAN.md` (decisions) and `docs/ASSUMPTIONS.md` (assumptions, data caveats).
 
 ## Run it (Windows, Python 3.12)
 
@@ -48,7 +48,8 @@ While the API runs: `POST /alerts/demo`, `POST /alerts/check`, `GET /alerts`, `G
 .\.venv\Scripts\python.exe -m pytest -q                        # unit + validation tests (no LLM)
 .\.venv\Scripts\python.exe -m weather_risk.scoring             # print the ranking
 .\.venv\Scripts\python.exe -m weather_risk.agent.cli --debug   # terminal chat, shows plans
-.\.venv\Scripts\python.exe -m evals.run_eval                   # 20-case eval with live Gemini (~2 min)
+.\.venv\Scripts\python.exe -u -m evals.run_eval                # 25 cases, live Gemini (~7-8 min, ~50 LLM calls)
+.\.venv\Scripts\python.exe -u -m evals.run_eval --repeat 3     # 3 runs with per-case pass rates (~25 min)
 ```
 The eval checks, per case: the plan the LLM produced, the deterministic facts, key phrases and
 caveats in the answer, and that every number in the answer appears in the facts.

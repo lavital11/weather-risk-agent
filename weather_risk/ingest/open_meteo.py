@@ -122,7 +122,11 @@ def log_run(conn, hub: Hub, url: str | None, start: date, end: date, row_count: 
 
 
 def main() -> None:
-    start, end = START_DATE, default_end_date()
+    run(START_DATE, default_end_date())
+
+
+def run(start: date, end: date) -> None:
+    """Fetch [start, end] for every hub. Also used by the alert job to fetch only missing days."""
     print(f"Fetching {start} -> {end}")
     conn = connect()
     with httpx.Client(timeout=60) as client:

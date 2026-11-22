@@ -45,6 +45,23 @@ def test_new_fema_event_and_config_change_are_reported():
 
 
 @pytest.mark.skipif(not DB_PATH.exists(), reason="run the ingest first")
+def test_catch_up_fetches_only_what_is_missing(monkeypatch):
+    # No network and no DB writes: the fetchers are replaced with recorders.
+    from weather_risk import window
+    from weather_risk.ingest import open_meteo, spc_hail
+    calls = []
+    monkeypatch.setattr(open_meteo, "default_end_date", lambda: date(2027, 1, 1))   # pretend it's January 2027
+    monkeypatch.setattr(open_meteo, "run", lambda s, e: calls.append(("weather", s, e)))
+    monkeypatch.setattr(spc_hail, "run", lambda years: calls.append(("hail", list(years))))
+    log = window.catch_up(connect(), 2026, 10)
+    last = connect().execute("SELECT MIN(m) FROM (SELECT MAX(date) m FROM weather_daily GROUP BY hub_id)").fetchone()[0]
+    assert calls[0] == ("weather", date.fromisoformat(last) + __import__("datetime").timedelta(days=1), date(2027, 1, 1))
+    assert calls[1] == ("hail", [2026])                    # only the missing year's file
+    assert any("HURDAT2" in line for line in log)          # tracks: logged as a manual step
+    assert "2026 still missing" in log[-1]                 # fetchers were fakes, so still missing
+
+
+@pytest.mark.skipif(not DB_PATH.exists(), reason="run the ingest first")
 def test_auto_window_moves_only_when_every_source_has_the_year():
     conn, cfg = connect(), load_scoring_config()
     eff, note = resolve_window(conn, cfg, 10, today=date(2026, 11, 22))

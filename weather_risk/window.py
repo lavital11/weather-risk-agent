@@ -33,6 +33,35 @@ def source_gaps(conn: sqlite3.Connection, year: int, n_hubs: int) -> list[str]:
     return gaps
 
 
+def catch_up(conn: sqlite3.Connection, year: int, n_hubs: int) -> list[str]:
+    """Try to fetch ONLY what's missing for `year`, so the window can move forward.
+
+    Reuses the normal ingest code (same throttling, retries and upserts). Returns a log of
+    what was attempted and what's still missing afterwards.
+      weather: fetch from the day after the last stored day up to today-2 (all hubs)
+      hail:    fetch that year's SPC file (it appears months after the year ends)
+      tracks:  a newer HURDAT2 file is NOT fetched automatically yet (see PLAN.md)
+    """
+    from datetime import timedelta
+    from weather_risk.ingest import open_meteo, spc_hail
+    log = []
+    gaps = source_gaps(conn, year, n_hubs)
+    if any(g.startswith("weather") for g in gaps):
+        last = conn.execute("SELECT MIN(last) FROM (SELECT MAX(date) AS last FROM weather_daily GROUP BY hub_id)").fetchone()[0]
+        start, end = date.fromisoformat(last) + timedelta(days=1), open_meteo.default_end_date()
+        if start <= end:
+            open_meteo.run(start, end)
+            log.append(f"weather: fetched {start}..{end}")
+    if any(g.startswith("hail") for g in gaps):
+        spc_hail.run([year])
+        log.append(f"hail: tried SPC {year} file")
+    if any(g.startswith("tracks") for g in gaps):
+        log.append("tracks: newer HURDAT2 file not fetched automatically (manual step for now)")
+    still = source_gaps(conn, year, n_hubs)
+    log.append(f"{year} complete in all sources" if not still else f"{year} still missing: {'; '.join(still)}")
+    return log
+
+
 def shift_window(cfg: dict, end_year: int) -> dict:
     """Copy of cfg with the main window ending in end_year (same length) and track windows shifted alike."""
     cfg = copy.deepcopy(cfg)

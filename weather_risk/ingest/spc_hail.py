@@ -47,9 +47,14 @@ def fetch_year(client: httpx.Client, year: int) -> tuple[str, list[tuple]]:
 
 
 def main() -> None:
+    run(YEARS)
+
+
+def run(years) -> None:
+    """Fetch the given years' files. Also used by the alert job to fetch one missing year."""
     conn = connect()
     with httpx.Client(timeout=120, headers=HEADERS) as client:
-        for year in YEARS:
+        for year in years:
             try:
                 url, rows = fetch_year(client, year)
                 conn.executemany(
