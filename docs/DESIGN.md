@@ -106,7 +106,7 @@ naming a single #1. At the saturated top, the gap is noise.
 
 Current result: **Dallas 99.1 and Houston 98.8 (effectively tied for #1)**, Miami 86.4 (#3), Chicago
 76.4, Kansas City 75.7, Minneapolis 73.4, Denver 60.8, Columbus 56.2, Indianapolis 53.4, Atlanta 51.2.
-They differ completely in profile: Dallas = heat (97.7) + hail; Houston = flood (89.5) + hurricane (74.9).
+They differ completely in profile: Dallas = heat (97.7) + hail; Houston = flood (89.5) + hurricane (75.0).
 
 ### Heat as a fifth hazard, and the limits of equal weights
 
@@ -172,6 +172,15 @@ baseline, then 2016–2025. Result: **5 alerts, 5 quiet hubs**:
 - Indianapolis −4.9 and drops to #9; Columbus moves up to #8.
 
 A second live check with no new data raised 0 alerts, as expected.
+
+### Answer presentation (from testing the deployed app)
+- **Layout:** a short direct answer, then one line per hub ("- Hub: score, rank, drivers"). The page keeps
+  line breaks (`white-space: pre-line`) but still inserts the text as plain text, never as HTML.
+- **Rounding:** every signal value is rounded to 1 decimal in one place (`make_signal`), and scores are
+  computed from the unrounded value, so rounding can't change a score.
+- **Follow-ups say what they assumed:** the planner reports `carried_over` (e.g. "winter in the
+  Midwest"), and code (not the LLM) adds "Assuming you still mean …" at the top, only when there is
+  conversation history.
 
 ## 3. Data sources
 
@@ -251,6 +260,9 @@ weather_risk/
   questions → rank"): the holdout caught the shift, which is what it was for.
   After heat was added (25 cases, 1 run): **24/25**. The same holdout failed the same way, and all
   heat-related cases passed.
+- **Final run (final code, 25 cases ×3): 75/75 case-runs passed, every case 3/3.** Earlier runs
+  found real bugs (prompt refusing investment questions, `top_n` cutting through a tie) and grader
+  bugs; every test change made after seeing a result is disclosed in the eval log.
 - **Limits:** 3 runs is a small sample, and the grounding check lets integers 0–10 and the years
   2016–2026 through unchecked. Eval history: [PLAN.md](PLAN.md#eval-log).
 

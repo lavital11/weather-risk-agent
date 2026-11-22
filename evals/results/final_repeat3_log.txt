@@ -1,0 +1,113 @@
+﻿
+=== run 1/3 ===
+[PASS] midwest_winter                 status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] miami_vs_houston               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] denver_snow_last_year          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] dallas_premise                 status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_what_about_chicago    status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_switch_hazard         status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_why_top               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] top3_overall                   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] south_flood_rank               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] compare_three_winter           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] aliases                        status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] dfw_hail_2024                  status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] so_far_this_year               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] houston_top_tie                status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] miami_winter_premise           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] no_investment_decision         status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_flood_budget           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_prioritize_pair        status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_kc_vs_chicago_storms   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] unknown_hub                    status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] uncovered_hazard               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] heat_ranking                   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] wildfire_out_of_scope          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] atlanta_false_premise          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] too_vague                      status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+25/25 passed
+
+=== run 2/3 ===
+[PASS] midwest_winter                 status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] miami_vs_houston               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] denver_snow_last_year          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] dallas_premise                 status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_what_about_chicago    status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_switch_hazard         status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_why_top               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] top3_overall                   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] south_flood_rank               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] compare_three_winter           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] aliases                        status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] dfw_hail_2024                  status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] so_far_this_year               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] houston_top_tie                status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] miami_winter_premise           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] no_investment_decision         status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_flood_budget           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_prioritize_pair        status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_kc_vs_chicago_storms   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] unknown_hub                    status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] uncovered_hazard               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] heat_ranking                   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] wildfire_out_of_scope          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] atlanta_false_premise          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] too_vague                      status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+25/25 passed
+
+=== run 3/3 ===
+[PASS] midwest_winter                 status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] miami_vs_houston               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] denver_snow_last_year          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] dallas_premise                 status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_what_about_chicago    status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_switch_hazard         status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] followup_why_top               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] top3_overall                   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] south_flood_rank               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] compare_three_winter           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] aliases                        status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] dfw_hail_2024                  status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] so_far_this_year               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] houston_top_tie                status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] miami_winter_premise           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] no_investment_decision         status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_flood_budget           status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_prioritize_pair        status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] holdout_kc_vs_chicago_storms   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] unknown_hub                    status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] uncovered_hazard               status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] heat_ranking                   status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] wildfire_out_of_scope          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] atlanta_false_premise          status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+[PASS] too_vague                      status:ok  plan:ok  facts:ok  answer:ok  grounding:ok
+25/25 passed
+
+Per-case pass rate over 3 run(s):
+  3/3  midwest_winter
+  3/3  miami_vs_houston
+  3/3  denver_snow_last_year
+  3/3  dallas_premise
+  3/3  followup_what_about_chicago
+  3/3  followup_switch_hazard
+  3/3  followup_why_top
+  3/3  top3_overall
+  3/3  south_flood_rank
+  3/3  compare_three_winter
+  3/3  aliases
+  3/3  dfw_hail_2024
+  3/3  so_far_this_year
+  3/3  houston_top_tie
+  3/3  miami_winter_premise
+  3/3  no_investment_decision
+  3/3  holdout_flood_budget (holdout)
+  3/3  holdout_prioritize_pair (holdout)
+  3/3  holdout_kc_vs_chicago_storms (holdout)
+  3/3  unknown_hub
+  3/3  uncovered_hazard
+  3/3  heat_ranking
+  3/3  wildfire_out_of_scope
+  3/3  atlanta_false_premise
+  3/3  too_vague
+Overall: 75/75 case-runs passed
+Wrote evals/results/latest.json

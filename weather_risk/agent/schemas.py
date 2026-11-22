@@ -35,6 +35,9 @@ class QueryPlan(BaseModel):
     year: int | None = Field(default=None, description="weather_stat: calendar year. 'last year' = 2025.")
     asserted_level: Literal["high", "low"] | None = Field(
         default=None, description="If the question presumes a hub's risk is high or low (e.g. 'why is X high?').")
+    carried_over: str | None = Field(
+        default=None, description="Follow-ups only: in a few words, what you took from EARLIER turns rather "
+        "than the new question (e.g. 'winter in the Midwest', 'the same comparison'). Null if nothing.")
     out_of_scope_reason: str | None = None
     clarification_question: str | None = None
 

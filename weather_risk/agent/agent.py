@@ -79,6 +79,10 @@ class Agent:
         except LLMOutputError:
             return AgentReply(answer=Answer(answer="I computed the facts but couldn't write the answer. Raw facts attached.",
                                             confidence="low"), plan=plan, facts=facts, status="llm_error")
+        # Follow-up transparency: say what was carried over from earlier turns. Done in code (not left
+        # to the narrator) so it always appears; only when there IS history, so a first question never gets it.
+        if history and plan.carried_over:
+            answer.answer = f"Assuming you still mean {plan.carried_over.strip().rstrip('.')}:\n{answer.answer}"
         return AgentReply(answer=answer, plan=plan, facts=facts, status="ok")
 
 

@@ -18,6 +18,7 @@ question = "Which hubs in the Midwest are most exposed to winter disruption?"
 plan = { intent = "rank", region = "Midwest", hazards = ["winter"] }
 facts = { top_hub = "minneapolis" }
 must_mention = [["Minneapolis"]]
+must_not_mention = ["Assuming you still mean"]               # first question: nothing carried over
 
 [[cases]]
 id = "miami_vs_houston"
@@ -49,13 +50,14 @@ id = "followup_what_about_chicago"
 history = ["Why is the Dallas hub's weather disruption risk high?"]
 question = "What about Chicago?"
 plan = { intent = "explain", hubs = ["chicago"] }
-must_mention = [["Chicago"]]
+must_mention = [["Chicago"], ["Assuming you still mean"]]     # follow-up states what it carried over
 
 [[cases]]
 id = "followup_switch_hazard"
 history = ["Which hubs in the Midwest are most exposed to winter disruption?"]
 question = "And for flooding?"
 plan = { intent = "rank", region = "Midwest", hazards = ["flood"] }
+must_mention = [["Assuming you still mean"], ["Midwest"]]
 facts = { top_hub = "chicago" }
 
 [[cases]]

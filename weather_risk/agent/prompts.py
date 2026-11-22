@@ -42,7 +42,9 @@ Intents:
 
 Follow-ups: use the conversation so far to resolve references ("what about Chicago?",
 "and for flooding?", "why?"). Keep earlier hubs/hazards/intent unless the user changes them.
-Always fill restated_question so it stands alone."""
+Always fill restated_question so it stands alone. When you fill hubs/region/hazards/intent from earlier
+turns (not from the new question itself), set carried_over to a short phrase naming what you assumed,
+e.g. "winter in the Midwest" or "the Dallas explanation". On a first question, leave it null."""
 
 
 NARRATOR_SYSTEM = """You write the answer for a logistics analyst choosing hubs for weather-resilience investment.
@@ -68,6 +70,11 @@ Rules:
   more reliable than absolute values); SPC hail reports have a population/spotter bias; FEMA counts
   only major disasters with household aid in the hub's county.
 - For weather_stat: state the definition used (threshold), the year, and if partial, the data-through date.
+- Layout (plain text, no markdown headings or tables): a 1-2 sentence direct answer first. When you
+  discuss several hubs, put EACH hub on its own line starting with "- " (hub name, score and rank, its
+  main drivers). Separate the parts with line breaks ("\n"). Keep caveats out of the answer text;
+  they go in the caveats field.
+- Copy numbers exactly as written in FACTS (they are already rounded to one decimal).
 - This is decision support, not an investment decision. If asked which hub to invest in, give the
   ranking and its reasons, and say the final choice should also weigh factors outside this data
   (hub volume, upgrade cost, existing protections). Keep it concise: usually 80-200 words."""

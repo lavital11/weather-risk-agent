@@ -119,15 +119,21 @@ DAY_RULES: dict[str, Callable[[dict, dict], bool]] = {
 
 # ------------------------------------------------------------------ components (pure)
 
+def make_signal(id: str, label: str, raw: float, unit: str, bound: float) -> SignalResult:
+    """One rounding rule everywhere: the value shown is rounded to 1 decimal; the score is computed
+    from the unrounded value (so rounding never changes a score). Before this, values had 2 decimals
+    ("40.39") next to 1-decimal scores, which looked inconsistent in answers."""
+    return SignalResult(id=id, label=label, value=round(raw, 1), unit=unit, bound=bound, score=scale(raw, bound))
+
+
 def score_weather_days(comp: dict, ctx: dict) -> ComponentResult:
     days = ctx["weather_days"]
     years = len(days) / DAYS_PER_YEAR
     signals = []
     for s in comp["signals"]:
         rule = DAY_RULES[s["rule"]]
-        per_year = round(sum(1 for d in days if rule(d, s)) / years, 2) if years else 0.0
-        signals.append(SignalResult(id=s["id"], label=s["label"], value=per_year,
-                                    unit="days/yr", bound=s["bound"], score=scale(per_year, s["bound"])))
+        per_year = sum(1 for d in days if rule(d, s)) / years if years else 0.0
+        signals.append(make_signal(s["id"], s["label"], per_year, "days/yr", s["bound"]))
     avg = round(sum(x.score for x in signals) / len(signals), 1)
     return ComponentResult(type="weather_days", weight=comp["weight"], score=avg, signals=signals)
 
@@ -156,9 +162,9 @@ def score_fema_events(comp: dict, ctx: dict) -> ComponentResult:
             events.append(FemaEvent(incident_id=inc_id, incident_type=first["incident_type"], title=first["title"],
                                     begin_date=first["incident_begin_date"],
                                     declarations=sorted(d["declaration_id"] for d in decls)))
-    per_10y = round(len(events) / years * 10, 2) if years else 0.0
-    signal = SignalResult(id="fema_events", label=f"FEMA events (rule {rule}): {', '.join(comp['incident_types'])}",
-                          value=per_10y, unit="events/10yr", bound=comp["bound"], score=scale(per_10y, comp["bound"]))
+    per_10y = len(events) / years * 10 if years else 0.0
+    signal = make_signal("fema_events", f"FEMA events (rule {rule}): {', '.join(comp['incident_types'])}",
+                         per_10y, "events/10yr", comp["bound"])
     return ComponentResult(type="fema_events", weight=comp["weight"], score=signal.score, signals=[signal], events=events)
 
 
@@ -177,9 +183,8 @@ def score_hail_days(comp: dict, ctx: dict) -> ComponentResult:
         days = {r["date"] for r in ctx["hail_reports"]
                 if r["size_in"] >= s["min_size_in"]
                 and distance_km(hub.lat, hub.lon, r["lat"], r["lon"]) <= s["radius_km"]}
-        per_year = round(len(days) / years, 2) if years else 0.0
-        signals.append(SignalResult(id=s["id"], label=s["label"], value=per_year, unit="days/yr",
-                                    bound=s["bound"], score=scale(per_year, s["bound"])))
+        per_year = len(days) / years if years else 0.0
+        signals.append(make_signal(s["id"], s["label"], per_year, "days/yr", s["bound"]))
     avg = round(sum(x.score for x in signals) / len(signals), 1)
     return ComponentResult(type="hail_days", weight=comp["weight"], score=avg, signals=signals)
 
@@ -219,10 +224,10 @@ def score_storm_tracks(comp: dict, ctx: dict) -> ComponentResult:
         d = closest_approach_km(hub, st["pts"], statuses)
         if d is not None and d <= comp["radius_km"]:
             passes.append(StormPass(storm_id=sid, name=st["name"], year=st["year"], closest_km=round(d)))
-    per_10y = round(len(passes) / ((y1 - y0 + 1) / 10), 2)
-    signal = SignalResult(
-        id="storm_passes", value=per_10y, unit="storms/10yr", bound=comp["bound"], score=scale(per_10y, comp["bound"]),
-        label=f"Tropical storms/hurricanes passing within {comp['radius_km']} km ({y0}-{y1}, NOAA HURDAT2)")
+    per_10y = len(passes) / ((y1 - y0 + 1) / 10)
+    signal = make_signal("storm_passes",
+                         f"Tropical storms/hurricanes passing within {comp['radius_km']} km ({y0}-{y1}, NOAA HURDAT2)",
+                         per_10y, "storms/10yr", comp["bound"])
     return ComponentResult(type="storm_tracks", weight=comp["weight"], score=signal.score, signals=[signal],
                            storms=sorted(passes, key=lambda p: (p.year, p.name)))
 

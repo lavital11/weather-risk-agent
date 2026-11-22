@@ -25,7 +25,8 @@
   #log { flex: 1; display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
   .msg { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
   .msg.user { background: var(--user); align-self: flex-end; max-width: 85%; }
-  .msg p { margin: 0 0 8px; } .msg p:last-child { margin-bottom: 0; }
+  .msg p { margin: 0 0 8px; white-space: pre-line; } .msg p:last-child { margin-bottom: 0; }
+  /* pre-line keeps single line breaks from the answer (one hub per line); text is still plain text */
   .meta { color: var(--muted); font-size: 12px; margin-top: 8px; }
   .caveats { color: var(--warn); font-size: 13px; margin: 8px 0 0; padding-left: 18px; }
   details { margin-top: 8px; font-size: 13px; }

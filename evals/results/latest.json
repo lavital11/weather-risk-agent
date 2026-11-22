@@ -1,18 +1,42 @@
 {
-  "run_at": "2026-11-22T17:38:40+00:00",
+  "run_at": "2026-11-22T18:31:24+00:00",
   "model": "gemini-4-hydrogen",
   "repeat": 3,
   "per_case_passes": {
-    "no_investment_decision": 3
+    "midwest_winter": 3,
+    "miami_vs_houston": 3,
+    "denver_snow_last_year": 3,
+    "dallas_premise": 3,
+    "followup_what_about_chicago": 3,
+    "followup_switch_hazard": 3,
+    "followup_why_top": 3,
+    "top3_overall": 3,
+    "south_flood_rank": 3,
+    "compare_three_winter": 3,
+    "aliases": 3,
+    "dfw_hail_2024": 3,
+    "so_far_this_year": 3,
+    "houston_top_tie": 3,
+    "miami_winter_premise": 3,
+    "no_investment_decision": 3,
+    "holdout_flood_budget": 3,
+    "holdout_prioritize_pair": 3,
+    "holdout_kc_vs_chicago_storms": 3,
+    "unknown_hub": 3,
+    "uncovered_hazard": 3,
+    "heat_ranking": 3,
+    "wildfire_out_of_scope": 3,
+    "atlanta_false_premise": 3,
+    "too_vague": 3
   },
-  "case_runs_passed": 3,
-  "case_runs_total": 3,
+  "case_runs_passed": 75,
+  "case_runs_total": 75,
   "runs": [
     [
       {
-        "id": "no_investment_decision",
-        "question": "Which single hub should we invest in this year? Just tell me the answer.",
-        "seconds": 13.6,
+        "id": "midwest_winter",
+        "question": "Which hubs in the Midwest are most exposed to winter disruption?",
+        "seconds": 15.4,
         "status": "ok",
         "checks": {
           "status": [],
@@ -22,27 +46,1176 @@
           "grounding": []
         },
         "plan": {
-          "restated_question": "Which single hub should we prioritize for investment based on overall weather risk?",
+          "restated_question": "Which hubs in the Midwest are most exposed to winter disruption?",
+          "intent": "rank",
+          "hubs": [],
+          "region": "Midwest",
+          "hazards": [
+            "winter"
+          ]
+        },
+        "answer": "Minneapolis and Chicago are the Midwest hubs most exposed to winter disruption over 2016-2025, with Minneapolis leading by a wide margin. Ranked among the five Midwest hubs on a 0-100 winter exposure scale:\n\n- Minneapolis (56.3, #1 of 5): driven by 40.4 measurable snow days/yr (>= 0.25 cm), 23.7 extreme-cold days/yr (<= -18 C / 0 F, #1 of 10), and 5.5 heavy-snow days/yr (>= 5 cm, #1 of 10).\n- Chicago (37.8, #2 of 5): driven by 32.7 measurable snow days/yr, 4.1 heavy-snow days/yr, and 7.2 extreme-cold days/yr.\n- Columbus (25.5, #3 of 5): driven by 25.2 measurable snow days/yr, 0.4 likely freezing-rain/ice days/yr, and 1.9 heavy-snow days/yr.\n- Kansas City (24.5, #4 of 5): leads all 10 hubs in likely freezing-rain/ice days at 0.5 days/yr (#1 of 10), alongside 16.7 measurable snow days/yr and 2.0 heavy-snow days/yr.\n- Indianapolis (18.1, #5 of 5): lowest Midwest winter exposure, with 19.6 measurable snow days/yr, 1.2 heavy-snow days/yr, and 0.2 likely freezing-rain/ice days/yr.",
+        "caveats": [
+          "Winter weather metrics rely on Open-Meteo modeled data; absolute snow totals tend to run low, making relative hub rankings more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "miami_vs_houston",
+        "question": "Compare Miami and Houston in terms of hurricane and flood exposure.",
+        "seconds": 24.3,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Miami and Houston in terms of hurricane and flood exposure.",
+          "intent": "compare",
+          "hubs": [
+            "miami",
+            "houston"
+          ],
+          "hazards": [
+            "hurricane",
+            "flood"
+          ]
+        },
+        "answer": "Miami edges out Houston in hurricane exposure (77.5, #1 of 10 vs. 75.0, #2 of 10), whereas Houston faces substantially higher flood exposure (89.5, #1 of 10 vs. 29.7, #2 of 10).\n\n- Miami (overall 86.4, #3 of 10): Leads in hurricanes (77.5, #1 of 10) due to 7.1 storm passes/10yr within 200 km (89.3, #1 of 10) and 1.0 FEMA hurricane event/10yr (50.0, #2 of 10). Flood risk is much lower (29.7, #2 of 10), with 2.7 heavy-rain days (>= 50 mm)/yr (45.0, #2 of 10), 0.4 extreme-rain days (>= 100 mm)/yr (40.0, #2 of 10), and 0.0 FEMA flood events/10yr.\n- Houston (overall 98.8, #2 of 10, effectively tied with Dallas): Ranks second in hurricanes (75.0, #2 of 10), with 5.1 storm passes/10yr (64.3, #2 of 10) but 2.0 FEMA hurricane events/10yr (100.0, #1 of 10). Leads all hubs in flooding (89.5, #1 of 10), driven by 5.4 heavy-rain days/yr (90.0, #1 of 10), 0.8 extreme-rain days/yr (80.0, #1 of 10), and 4.0 FEMA flood events/10yr (100.0, #1 of 10).",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas rainfall and FEMA event counts use 2016-2025.",
+          "The FEMA hurricane component is a small sample (0-2 events per hub).",
+          "FEMA counts include only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "denver_snow_last_year",
+        "question": "What percentage of days in Denver last year had snowfall?",
+        "seconds": 10.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What percentage of days in Denver in 2025 had snowfall?",
+          "intent": "weather_stat",
+          "hubs": [
+            "denver"
+          ],
+          "hazards": [],
+          "metric": "snow_days",
+          "year": 2025
+        },
+        "answer": "In 2025, 10.4% of days in Denver had snowfall, or 38 out of 365 days. This is based on days at DEN (39.8561, -104.6737) with measurable snow (>= 0.25 cm, ~0.1 in), with a full-year total of 51.5 cm.",
+        "caveats": [
+          "Data comes from the Open-Meteo archive (modeled reanalysis), where absolute snow totals run low and relative rankings are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "dallas_premise",
+        "question": "Why is the Dallas hub's weather disruption risk high?",
+        "seconds": 17.3,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is the Dallas hub's weather disruption risk high?",
+          "intent": "explain",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Dallas's weather disruption risk is indeed high, with an overall score of 99.1 (#1 of 10, effectively tied with Houston since scores are less than 1 point apart, so neither should be called the single riskiest hub). Because the overall score uses a noisy-OR model, risk reflects whichever hazards hit, meaning lower exposure in some hazards cannot offset extreme exposure elsewhere. Dallas's score is overwhelmingly driven by heat (97.7, #1 of 10), where it leads all hubs with 48.6 hot days/yr (max >= 35 C / 95 F; score 97.2, #1 of 10) and 15.7 very hot days/yr (max >= 37.8 C / 100 F; score 98.1, #1 of 10). Severe storms also contribute (42.6, #3 of 10), led by hail within 50 km: 12.5 days/yr with hail >= 1 in (score 100.0, #1 of 10) and 3.6 days/yr with hail >= 2 in (score 90.0, #1 of 10). Although overall winter (23.1, #6 of 10), flood (13.4, #7 of 10), and hurricane (2.5, #4 of 10) scores are lower, Dallas still sees notable freezing-rain/ice exposure (0.4 days/yr, #2 of 10 tied) and 1.0 FEMA winter/ice event per 10yr (#1 of 10 tied).",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity.",
+          "SPC hail reports have a population/spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_what_about_chicago",
+        "question": "What about Chicago?",
+        "seconds": 22.9,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What drives the Chicago hub's overall weather disruption risk?",
+          "intent": "explain",
+          "hubs": [
+            "chicago"
+          ],
+          "hazards": [],
+          "carried_over": "overall weather disruption risk explanation"
+        },
+        "answer": "Assuming you still mean overall weather disruption risk explanation:\nChicago's overall weather disruption risk score is 76.4 (#4 of 10, effectively tied with Kansas City at less than 1 point apart), driven primarily by severe storms, winter weather, and flooding. Because the overall score combines hazards so that exposure to any hazard raises risk and zero exposure elsewhere does not offset it, Chicago's minimal heat (0.9, #7 of 10) and zero hurricane exposure (0.0) do not lower its score. Severe storm is the top hazard (50.2, #2 of 10), led by strong-gust days >= 80 km/h (2.0 days/yr; score 66.7, tied #3 of 10), 1.0 FEMA severe storm/tornado/straight-line wind event per 10 years (score 50.0, tied #1 of 10), and hail >= 1 in within 50 km (6.0 days/yr; score 50.0, #5 of 10). Winter is the second-largest driver (37.8, #2 of 10), reflecting 32.7 measurable snow days/yr >= 0.25 cm (score 81.7, #3 of 10), 4.1 heavy-snow days/yr >= 5 cm (score 68.3, tied #2 of 10), and 7.2 extreme-cold days/yr <= -18 C / 0 F (score 36.0, #2 of 10). Flood (23.2, #3 of 10) is driven mainly by 2.0 FEMA flood events per 10 years (score 50.0, #2 of 10).",
+        "caveats": [
+          "Weather metrics use Open-Meteo modeled data; absolute snow totals tend to run low, so hub rankings are more reliable than absolute values.",
+          "SPC hail reports reflect a population and spotter bias.",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_switch_hazard",
+        "question": "And for flooding?",
+        "seconds": 17.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs in the Midwest are most exposed to flooding?",
+          "intent": "rank",
+          "hubs": [],
+          "region": "Midwest",
+          "hazards": [
+            "flood"
+          ],
+          "carried_over": "Midwest hub ranking"
+        },
+        "answer": "Assuming you still mean Midwest hub ranking:\nChicago and Kansas City are the Midwest hubs most exposed to flooding over 2016-2025, though flood scores across the region remain modest on the 0-100 scale (higher means greater exposure).\n\n- Chicago (23.2, #1 of 5 in the Midwest): driven by 2.0 FEMA flood events/10yr (#2 of 10 hubs), along with 0.8 heavy-rain days/yr (>= 50 mm) and 0.1 extreme-rain days/yr (>= 100 mm).\n- Kansas City (19.9, #2 of 5): driven by heavy rainfall rather than federal declarations, with 2.2 heavy-rain days/yr (#4 of 10), 0.2 extreme-rain days/yr (#3 of 10), and 0.0 FEMA flood events/10yr.\n- Minneapolis (14.5, #3 of 5): reflects 1.0 FEMA flood events/10yr (#3 of 10) and 1.2 heavy-rain days/yr, with 0.0 extreme-rain days/yr.\n- Indianapolis (7.6, #4 of 5): 0.7 heavy-rain days/yr, 0.1 extreme-rain days/yr, and 0.0 FEMA flood events/10yr.\n- Columbus (2.4, #5 of 5): minimal exposure, with 0.4 heavy-rain days/yr and 0.0 for both extreme-rain days/yr and FEMA flood events/10yr.",
+        "caveats": [
+          "FEMA disaster counts include only major disasters with household aid in the hub's county, so localized or smaller flood events are excluded.",
+          "Heavy- and extreme-rain day metrics come from Open-Meteo modeled data, where hub rankings are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_why_top",
+        "question": "Why is the first one on top?",
+        "seconds": 26.3,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Dallas at the top of the overall exposure ranking?",
+          "intent": "explain",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "asserted_level": "high",
+          "carried_over": "Dallas as the top overall hub"
+        },
+        "answer": "Assuming you still mean Dallas as the top overall hub:\nYes, Dallas is at the top of the overall exposure ranking (99.1 on a 0-100 scale, #1 of 10), though it is effectively tied with Houston (scores less than 1 point apart) rather than standing alone as the riskiest hub. Under the noisy-OR combination, risk comes from whichever hazards hit hardest, so low exposure elsewhere does not offset a severe hazard. Dallas's score is driven overwhelmingly by heat (97.7, #1 of 10), which contributes 36.4 points via 48.6 hot days/yr >= 35 C / 95 F (97.2, #1 of 10) and 15.7 very hot days/yr >= 37.8 C / 100 F (98.1, #1 of 10). Severe storm exposure adds pressure (42.6, #3 of 10), led by 12.5 days/yr of hail >= 1 in within 50 km (100.0, #1 of 10) and 3.6 days/yr of hail >= 2 in (90.0, #1 of 10). Winter ranks lower (23.1, #6 of 10) despite 0.4 likely freezing-rain/ice days/yr (40.0, tied #2 of 10) and 1.0 FEMA ice storm event/10yr (50.0, tied #1 of 10), while flood (13.4, #7 of 10) and hurricane (2.5, #4 of 10) contribute little.",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; treating it equally with ice or hurricanes does not capture that difference in severity.",
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "top3_overall",
+        "question": "What are the top 3 hubs overall?",
+        "seconds": 14.8,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What are the top 3 hubs overall?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [],
+          "top_n": 3
+        },
+        "answer": "Dallas and Houston are effectively tied at the top (scores less than 1.0 point apart, so neither is a single #1), followed by Miami at #3 of 10 hubs. Because the 0-100 overall score uses a noisy-OR combination, risk comes from whichever hazards hit and low exposure in one hazard does not offset high exposure in another.\n\n- Dallas (99.1, #1 of 10): Driven by extreme heat and hail, ranking #1 in very hot days >= 37.8 C / 100 F (15.7 days/yr), hot days >= 35 C / 95 F (48.6 days/yr), and days with hail >= 1 in within 50 km (12.5 days/yr).\n- Houston (98.8, #2 of 10): Driven by flood risk rather than heat or hail, ranking #1 in heavy-rain days >= 50 mm (5.4 days/yr), FEMA flood events (4.0 events/10yr), and extreme-rain days >= 100 mm (0.8 days/yr).\n- Miami (86.4, #3 of 10): Driven by hurricanes and heavy rain, with tropical storms/hurricanes within 200 km (7.1 storms/10yr, #1), FEMA hurricane, tropical storm, or coastal storm events (1.0 events/10yr, #2), and heavy-rain days >= 50 mm (2.7 days/yr, #2).",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal weighting with other hazards does not capture that difference in severity.",
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas the other hazards use 2016-2025.",
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county, and hurricane FEMA counts are a small sample (0-2 events per hub)."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "south_flood_rank",
+        "question": "Rank the southern hubs by flood exposure.",
+        "seconds": 16.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Rank the southern hubs by flood exposure.",
+          "intent": "rank",
+          "hubs": [],
+          "region": "South",
+          "hazards": [
+            "flood"
+          ]
+        },
+        "answer": "Houston leads the four southern hubs in flood exposure by a wide margin (89.5 on a 0-100 scale, #1 of 4), followed by Miami, Atlanta, and Dallas.\n\n- Houston: 89.5 (#1 of 4 southern hubs; #2 of 10 overall). It ranks #1 across all flood signals, with 5.4 heavy-rain days (>= 50 mm) per year, 0.8 extreme-rain days (>= 100 mm) per year, and 4.0 FEMA flood events/10yr.\n- Miami: 29.7 (#2 of 4 southern hubs; #3 of 10 overall). Exposure is driven by 2.7 heavy-rain days/yr (#2) and 0.4 extreme-rain days/yr (#2), with 0.0 FEMA flood events/10yr.\n- Atlanta: 14.6 (#3 of 4 southern hubs; #10 of 10 overall). It averages 1.9 heavy-rain days/yr (#5) and 0.1 extreme-rain days/yr (tied #4), with 0.0 FEMA flood events/10yr.\n- Dallas: 13.4 (#4 of 4 southern hubs; #1 of 10 overall). Exposure comes solely from 2.3 heavy-rain days/yr (#3), with 0.0 extreme-rain days/yr and 0.0 FEMA flood events/10yr.",
+        "caveats": [
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Rainfall metrics are based on modeled Open-Meteo data, where relative ranks are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "compare_three_winter",
+        "question": "Compare Chicago, Minneapolis and Denver on winter risk.",
+        "seconds": 17.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Chicago, Minneapolis, and Denver on winter risk.",
+          "intent": "compare",
+          "hubs": [
+            "chicago",
+            "minneapolis",
+            "denver"
+          ],
+          "hazards": [
+            "winter"
+          ]
+        },
+        "answer": "Minneapolis has the highest winter risk of the three hubs (56.3 on a 0-100 scale, #1 of 10), followed by Chicago (37.8, #2 of 10) and Denver (33.1, #3 of 10). While Denver sees slightly more measurable snow days, Minneapolis stands out for far more extreme cold and heavier snowfall.\n\n- Minneapolis (56.3, #1 of 10): Leads all hubs in extreme-cold days (23.7 days/yr, #1 of 10) and heavy-snow days (5.5 days/yr, #1 of 10), alongside 40.4 measurable snow days/yr (#2 of 10) and 0.3 likely freezing-rain/ice days/yr (#4 of 10, tied).\n- Chicago (37.8, #2 of 10): Ranks second in extreme-cold days (7.2 days/yr, #2 of 10) and matches Minneapolis on likely freezing-rain/ice days (0.3 days/yr, #4 of 10, tied), with 4.1 heavy-snow days/yr (#2 of 10, tied) and 32.7 measurable snow days/yr (#3 of 10).\n- Denver (33.1, #3 of 10): Has the most measurable snow days (40.5 days/yr, #1 of 10) and ties Chicago on heavy-snow days (4.1 days/yr, #2 of 10, tied), but experiences fewer extreme-cold days (4.2 days/yr, #3 of 10) and 0.0 likely freezing-rain/ice days/yr.\n\nAll three hubs recorded 0.0 FEMA-declared winter events per 10 years.",
+        "caveats": [
+          "Snow and temperature metrics come from Open-Meteo modeled data, where absolute snow totals tend to run low; hub rankings are more reliable than absolute values.",
+          "FEMA counts include only major disasters with household aid in the hub's county, which excludes smaller or non-household winter disruptions."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "aliases",
+        "question": "Compare KC and the Twin Cities for severe storms.",
+        "seconds": 15.7,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Kansas City and Minneapolis for severe storms.",
+          "intent": "compare",
+          "hubs": [
+            "kansas_city",
+            "minneapolis"
+          ],
+          "hazards": [
+            "severe_storm"
+          ]
+        },
+        "answer": "Kansas City has substantially higher severe storm exposure than Minneapolis over 2016-2025, ranking #1 of 10 hubs while Minneapolis ranks #7 of 10. More frequent severe hail, strong wind gusts, and a qualifying FEMA severe storm disaster drive Kansas City's lead, though Minneapolis records slightly more giant hail days.\n\n- Kansas City: severe storm score 56.4, #1 of 10 (0-100 scale against fixed bounds). Exposure is driven by 8.5 days/yr with hail >= 1 in (score 70.8, #3 of 10), 2.0 strong-gust days/yr >= 80 km/h (score 66.7, tied #3 of 10), 1.0 FEMA severe storm event/10yr (score 50.0, tied #1 of 10), and 1.3 days/yr with hail >= 2 in (score 32.5, #4 of 10).\n- Minneapolis: severe storm score 28.1, #7 of 10. It averages 6.2 days/yr with hail >= 1 in (score 51.7, #4 of 10), 1.0 strong-gust day/yr >= 80 km/h (score 33.3, #7 of 10), and 0.0 qualifying FEMA severe storm events/10yr (score 0.0), though its 1.7 days/yr with hail >= 2 in (score 42.5, #3 of 10) is higher than Kansas City.",
+        "caveats": [
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "dfw_hail_2024",
+        "question": "How many hail days did DFW have in 2024?",
+        "seconds": 13.8,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How many hail days did Dallas (DFW) have in 2024?",
+          "intent": "weather_stat",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "metric": "hail_days",
+          "year": 2024
+        },
+        "answer": "Dallas (DFW) had 12 hail days in 2024, accounting for 3.3% of the 366 days in the year. This metric measures days with hail >= 1 in reported within 50 km of DFW (32.8998, -97.0403) using full-year NOAA SPC hail reports through 2024-12-31.",
+        "caveats": [
+          "NOAA SPC hail reports carry a population and spotter bias, meaning counts reflect reported observations rather than uniform physical detection."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "so_far_this_year",
+        "question": "How many days with snow has Minneapolis had so far this year?",
+        "seconds": 9.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How many days with measurable snow has Minneapolis had so far in 2026?",
+          "intent": "weather_stat",
+          "hubs": [
+            "minneapolis"
+          ],
+          "hazards": [],
+          "metric": "snow_days",
+          "year": 2026
+        },
+        "answer": "Minneapolis (MSP) has recorded 24 days with measurable snow in 2026 through 2026-11-20, accounting for 7.4% of the 324 days in the period. Measurable snow is defined as at least 0.25 cm (~0.1 in) per day, with a period total of 52.5 cm.",
+        "caveats": [
+          "Source is Open-Meteo modeled reanalysis archive, where absolute snow totals run low and relative ranks are more reliable than absolute values.",
+          "2026 is a partial year covering 324 days through 2026-11-20."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "houston_top_tie",
+        "question": "Why is Houston ranked first?",
+        "seconds": 17.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Houston ranked first?",
+          "intent": "explain",
+          "hubs": [
+            "houston"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Houston is actually ranked #2 of 10 with an overall score of 98.8, and it is effectively tied with Dallas (scores less than 1 point apart), so neither hub is the single riskiest. Because the overall score uses a noisy-OR combination, risk comes from whichever hazards hit hardest, meaning low exposure to winter weather (15.6, #8 of 10) and severe storms (15.4, #9 of 10) does not offset major hazards. Houston's profile is driven primarily by flood risk (89.5, #1 of 10) and hurricane risk (75.0, #2 of 10). For flooding, Houston ranks #1 of 10 on every signal: 5.4 heavy-rain days/yr (>= 50 mm, score 90.0), 0.8 extreme-rain days/yr (>= 100 mm, score 80.0), and 4.0 FEMA flood events/10yr (score 100.0). For hurricanes, it sees 5.1 tropical storms or hurricanes within 200 km per 10 years (score 64.3, #2 of 10) and 2.0 FEMA storm events/10yr (score 100.0, #1 of 10). Heat makes a smaller contribution (38.1, #2 of 10), with 22.8 hot days/yr (>= 35 C / 95 F) and 4.9 very hot days/yr (>= 37.8 C / 100 F).",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, while other hazards use 2016-2025; the FEMA hurricane component is based on a small sample (0-2 events per hub).",
+          "FEMA event counts include only major disaster declarations with household aid in the hub's county.",
+          "Heat typically slows hub capacity over many days rather than shutting operations down, which equal weighting with acute hazards does not capture."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "miami_winter_premise",
+        "question": "Why is Miami's winter risk so high?",
+        "seconds": 18.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Miami's winter risk so high?",
+          "intent": "explain",
+          "hubs": [
+            "miami"
+          ],
+          "hazards": [
+            "winter"
+          ],
+          "asserted_level": "high"
+        },
+        "answer": "Miami's winter risk is actually not high\u2014it has a winter hazard score of 0.0 (#10 of 10), recording 0.0 days/yr of measurable snow (>= 0.25 cm), heavy snow (>= 5 cm), extreme cold (<= -18 C / 0 F), or likely freezing rain/ice, and 0.0 FEMA winter events/10yr during 2016-2025. Its high overall score of 86.4 (#3 of 10) comes from other hazards, because the noisy-OR overall score is driven by whichever hazards hit and zero winter exposure does not lower it. Instead, Miami's risk is driven primarily by hurricanes (46.7 contribution) and flooding (5.7 contribution). Among the 10 hubs, Miami ranks #1 of 10 for tropical storms/hurricanes passing within 200 km at 7.1 storms/10yr (1991-2025), and #2 of 10 for FEMA hurricane, tropical storm, and coastal storm events (1.0 events/10yr), heavy-rain days >= 50 mm (2.7 days/yr), and extreme-rain days >= 100 mm (0.4 days/yr).",
+        "caveats": [
+          "Open-Meteo weather metrics use modeled data, where absolute snow totals tend to run low and ranks are more reliable than absolute values.",
+          "FEMA counts include only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "seconds": 25.7,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which single hub should we invest in?",
           "intent": "rank",
           "hubs": [],
           "hazards": [],
           "top_n": 1
         },
-        "answer": "No single hub stands out as the top priority: Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied because their overall scores on the 0-100 scale are less than 1.0 point apart. Under the noisy-OR scoring method, overall risk reflects whichever hazards hit hardest, so low exposure in other hazards does not offset a severe one. Their risk profiles differ sharply: Dallas is driven by extreme heat and hail, ranking #1 in hot days (48.59 days/yr >= 35 C / 95 F, score 97.2), very hot days (15.7 days/yr >= 37.8 C / 100 F, score 98.1), and severe hail (12.5 hail days/yr >= 1 in within 50 km, score 100.0). Houston is driven by flooding, ranking #1 in heavy-rain days (5.4 days/yr >= 50 mm, score 90.0), extreme-rain days (0.8 days/yr >= 100 mm, score 80.0), and FEMA flood events (4.0 events/10yr, score 100.0). Note that heat usually slows a hub rather than shutting it down. Your final investment choice should also weigh factors outside this data, such as hub volume, upgrade cost, and existing protections.",
+        "answer": "Dallas and Houston are effectively tied at the top of the 0-100 exposure scale (less than 1 point apart), so there is no single riskiest hub to choose. Because the overall score reflects whichever hazards hit (low exposure elsewhere does not lower it), their scores come from very different risks:\n- Dallas (99.1, #1 of 10, effectively tied with Houston): driven by heat, with 15.7 very hot days/yr (>= 37.8 C / 100 F, #1 of 10) and 48.6 hot days/yr (>= 35 C / 95 F, #1 of 10), plus severe storms with 12.5 days/yr of hail >= 1 in within 50 km (#1 of 10).\n- Houston (98.8, #2 of 10, effectively tied with Dallas): driven by flooding, with 5.4 heavy-rain days/yr (>= 50 mm, #1 of 10), 4.0 FEMA flood events/10yr (#1 of 10), and 0.8 extreme-rain days/yr (>= 100 mm, #1 of 10).\nThe final investment decision should also weigh factors outside this data, such as hub volume, upgrade cost, and existing protections.",
         "caveats": [
-          "Heat typically slows hub capacity over many days rather than causing a full shutdown, which equal weighting with other hazards does not capture.",
-          "SPC hail reports carry population and spotter reporting bias.",
-          "FEMA counts only major disasters with household aid in the hub's county and reflect a small sample."
+          "Heat usually slows a hub over many days rather than shutting it down, which equal weighting with acute hazards does not capture.",
+          "SPC hail reports carry population and spotter bias.",
+          "FEMA counts reflect a small sample and include only major disaster declarations with household aid in the hub's county."
         ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "holdout_flood_budget",
+        "question": "If our resilience budget only covers flood protection, where should it go first?",
+        "seconds": 14.7,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs should be prioritized first for flood protection?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [
+            "flood"
+          ]
+        },
+        "answer": "Houston is the clear top priority for flood protection, scoring 89.5 (#1 of 10) on the 0-100 scale, well ahead of Miami (29.7, #2 of 10) and Chicago (23.2, #3 of 10).\n\n- Houston (89.5, #1 of 10): Leads all hubs across every flood signal, averaging 5.4 heavy-rain days/yr (>= 50 mm), 0.8 extreme-rain days/yr (>= 100 mm), and 4.0 FEMA flood events/10yr.\n- Miami (29.7, #2 of 10): Driven by rainfall intensity with 2.7 heavy-rain days/yr (#2) and 0.4 extreme-rain days/yr (#2), despite 0.0 FEMA flood events/10yr.\n- Chicago (23.2, #3 of 10): Driven primarily by 2.0 FEMA flood events/10yr (#2), alongside 0.8 heavy-rain days/yr (#7) and 0.1 extreme-rain days/yr (#4, tied).\n- Kansas City (19.9, #4 of 10): Driven by 2.2 heavy-rain days/yr (#4) and 0.2 extreme-rain days/yr (#3), with 0.0 FEMA flood events/10yr.\n\nThe remaining hubs score 14.6 or lower (down to Denver at 0.6, #10 of 10). Your final investment choice should also weigh factors outside this data, including hub volume, upgrade cost, and existing flood protections.",
+        "caveats": [
+          "FEMA counts include only major disaster declarations with household aid in the hub's county.",
+          "Heavy-rain and extreme-rain frequencies are derived from modeled Open-Meteo data over the 2016-2025 window."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "holdout_prioritize_pair",
+        "question": "Between Atlanta and Denver, which one deserves resilience upgrades more, weather-wise?",
+        "seconds": 22.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Between Atlanta and Denver, which hub ranks higher in overall weather risk for resilience upgrades?",
+          "intent": "rank",
+          "hubs": [
+            "atlanta",
+            "denver"
+          ],
+          "hazards": []
+        },
+        "answer": "Denver (60.8, #7 of 10) ranks higher than Atlanta (51.2, #10 of 10) in overall weather risk on the 0-100 exposure scale, though both sit in the lower half of the 10-hub network.\n\n- Denver (60.8, #7 of 10): Driven by frequent winter snow at 40.5 days/yr with measurable snow (>= 0.25 cm; signal score 100.0, #1 of 10), plus severe storms with 10.5 days/yr of hail >= 1 in within 50 km (signal score 87.5, #2 of 10) and 1.1 strong-gust days/yr (>= 80 km/h; signal score 36.7, #6 of 10).\n- Atlanta (51.2, #10 of 10): Driven by tropical storms or hurricanes within 200 km at 2.3 storms/10yr (signal score 28.6, #3 of 10), 1.3 strong-gust days/yr (>= 80 km/h; signal score 43.3, #5 of 10), and 1.9 heavy-rain days/yr (>= 50 mm; signal score 31.7, #5 of 10).\n\nBecause the overall score reflects whichever hazards hit (low exposure in one hazard does not offset high exposure in another), Denver's snow and hail exposure puts it ahead. The final investment choice should also weigh factors outside this data, such as hub volume, upgrade costs, and existing protections.",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) due to small sample sizes for rare storms, whereas other hazards use 2016-2025.",
+          "Snow, wind-gust, and rainfall metrics come from modeled Open-Meteo data, where absolute snow totals run low and hub ranks are more reliable than absolute values.",
+          "SPC hail reports carry a population and spotter bias."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "holdout_kc_vs_chicago_storms",
+        "question": "Is Kansas City's severe storm risk lower than Chicago's?",
+        "seconds": 19.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Is Kansas City's severe storm risk lower than Chicago's?",
+          "intent": "compare",
+          "hubs": [
+            "kansas_city",
+            "chicago"
+          ],
+          "hazards": [
+            "severe_storm"
+          ]
+        },
+        "answer": "No, Kansas City's severe storm risk is higher than Chicago's (56.4, #1 of 10 vs. 50.2, #2 of 10). Across all hazards combined, their overall scores are effectively tied (less than 1 point apart: Chicago 76.4, #4 of 10; Kansas City 75.7, #5 of 10), but more frequent hail puts Kansas City higher on severe storms.\n\n- Kansas City (severe storm 56.4, #1 of 10; overall 75.7, #5 of 10): Higher severe storm exposure is driven by hail, averaging 8.5 days/yr with hail >= 1 in within 50 km (#3 of 10) and 1.3 days/yr with hail >= 2 in (#4 of 10), plus 2.0 strong-gust days/yr >= 80 km/h (#3 of 10, tied) and 1.0 FEMA severe storm event over 10 years (#1 of 10, tied).\n- Chicago (severe storm 50.2, #2 of 10; overall 76.4, #4 of 10): Matches Kansas City on strong-gust days >= 80 km/h (2.0 days/yr, #3 of 10, tied) and FEMA severe storm events (1.0 events/10yr, #1 of 10, tied), but has fewer hail days at 6.0 days/yr >= 1 in (#5 of 10) and 0.7 days/yr >= 2 in (#5 of 10).",
+        "caveats": [
+          "SPC hail reports have a population and spotter bias.",
+          "Open-Meteo wind gust figures are modeled data, where relative ranks are more reliable than absolute values.",
+          "FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "unknown_hub",
+        "question": "How exposed is our Seattle hub to winter storms?",
+        "seconds": 5.2,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How exposed is our Seattle hub to winter storms?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [
+            "winter"
+          ],
+          "out_of_scope_reason": "Seattle is not one of the supported hubs."
+        },
+        "answer": "That's outside what I cover: Seattle is not one of the supported hubs.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "uncovered_hazard",
+        "question": "Which hub has the highest earthquake risk?",
+        "seconds": 2.7,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hub has the highest earthquake risk?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [],
+          "out_of_scope_reason": "Earthquake risk is not covered; this tool only scores weather hazards (winter, flood, severe storms, hurricanes, and extreme heat)."
+        },
+        "answer": "That's outside what I cover: Earthquake risk is not covered; this tool only scores weather hazards (winter, flood, severe storms, hurricanes, and extreme heat).. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "heat_ranking",
+        "question": "Which hubs are most exposed to extreme heat?",
+        "seconds": 18.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs are most exposed to extreme heat?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [
+            "heat"
+          ]
+        },
+        "answer": "Dallas is by far the most exposed hub to extreme heat, followed by Houston, while the remaining hubs have low heat scores (8.0 or below on the 0-100 scale).\n\n- Dallas (97.7, #1 of 10): driven by 15.7 very hot days/yr (max >= 37.8 C / 100 F, #1) and 48.6 hot days/yr (max >= 35 C / 95 F, #1).\n- Houston (38.1, #2 of 10): driven by 22.8 hot days/yr (#2) and 4.9 very hot days/yr (#2).\n- Kansas City (8.0, #3 of 10): effectively tied with Denver, with 7.0 hot days/yr (#4) and 0.3 very hot days/yr (#3).\n- Denver (7.1, #4 of 10): effectively tied with Kansas City, with 7.1 hot days/yr (#3) and 0.0 very hot days/yr.\n- Atlanta (4.1, #5 of 10): averages 3.5 hot days/yr (#5) and 0.2 very hot days/yr (#4).\n\nThe remaining five hubs\u2014Minneapolis (1.0, #6 of 10), Chicago (0.9, #7 of 10), Miami (0.6, #8 of 10), Indianapolis (0.1, #9 of 10), and Columbus (0.0, #10 of 10)\u2014each average 1.0 or fewer hot days/yr and 0.0 very hot days/yr.",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "wildfire_out_of_scope",
+        "question": "Which hub is most at risk from wildfire smoke?",
+        "seconds": 7.8,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hub is most at risk from wildfire smoke?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [],
+          "out_of_scope_reason": "Wildfire and wildfire smoke are not covered hazards; only winter, flood, severe_storm, hurricane, and heat are scored."
+        },
+        "answer": "That's outside what I cover: Wildfire and wildfire smoke are not covered hazards; only winter, flood, severe_storm, hurricane, and heat are scored.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "atlanta_false_premise",
+        "question": "Why is Atlanta one of our riskiest hubs?",
+        "seconds": 19.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Atlanta one of our riskiest hubs?",
+          "intent": "explain",
+          "hubs": [
+            "atlanta"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Actually, Atlanta is not one of our riskiest hubs overall: it ranks #10 of 10 with an overall score of 51.2 on the 0-100 exposure scale. Rather than extreme risk in one area, its score reflects combined exposure from the hazards that do hit, because low scores in one hazard do not offset higher ones. Atlanta ranks highest on hurricanes at 20.0 (#3 of 10), driven by 2.3 storms/10yr passing within 200 km (score 28.6, #3 of 10). The other main contributors are severe storms at 22.0 (#8 of 10), from 1.3 strong-gust days/yr (score 43.3, #5 of 10) and 4.7 hail days/yr >= 1 in (score 39.2, #6 of 10), and flooding at 14.6 (#5 of 10), from 1.9 heavy-rain days/yr (score 31.7, #5 of 10) and 0.1 extreme-rain days/yr (score 10.0, tied #4 of 10). Winter (4.6, #9 of 10) and heat (4.1, #5 of 10) contribute little.",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas other hazards use 2016-2025; FEMA hurricane counts are a small sample (0-2 events per hub).",
+          "SPC hail reports have a population/spotter bias, and FEMA counts only major disasters with household aid in the hub's county (0.0 events/10yr for Atlanta across all hazards)."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "too_vague",
+        "question": "Is it bad?",
+        "seconds": 6.4,
+        "status": "clarify",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Is it bad?",
+          "intent": "clarify",
+          "hubs": [],
+          "hazards": [],
+          "clarification_question": "Which hub and weather hazard (or overall risk) are you asking about?"
+        },
+        "answer": "Which hub and weather hazard (or overall risk) are you asking about?",
+        "caveats": [],
         "passed": true,
         "holdout": false
       }
     ],
     [
       {
+        "id": "midwest_winter",
+        "question": "Which hubs in the Midwest are most exposed to winter disruption?",
+        "seconds": 16.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs in the Midwest are most exposed to winter disruption?",
+          "intent": "rank",
+          "hubs": [],
+          "region": "Midwest",
+          "hazards": [
+            "winter"
+          ]
+        },
+        "answer": "Minneapolis and Chicago are the Midwest hubs most exposed to winter disruption on the 0-100 winter scale (2016-2025), with Minneapolis leading by a wide margin.\n\n- Minneapolis (56.3, #1 of 5 Midwest hubs): driven by 23.7 extreme-cold days/yr (<= -18 C / 0 F, #1 of 10), 5.5 heavy-snow days/yr (>= 5 cm, #1 of 10), and 40.4 measurable-snow days/yr (>= 0.25 cm, #2 of 10).\n- Chicago (37.8, #2 of 5 Midwest hubs): driven by 32.7 measurable-snow days/yr (#3 of 10), 4.1 heavy-snow days/yr (tied #2 of 10), and 7.2 extreme-cold days/yr (#2 of 10).\n- Columbus (25.5, #3 of 5 Midwest hubs): driven by 25.2 measurable-snow days/yr (#4 of 10), 0.4 likely freezing-rain/ice days/yr (tied #2 of 10), and 1.9 heavy-snow days/yr (#5 of 10).\n- Kansas City (24.5, #4 of 5 Midwest hubs): ranks #1 of 10 hubs for likely freezing-rain/ice days at 0.5 days/yr, alongside 16.7 measurable-snow days/yr (#6 of 10) and 2.0 heavy-snow days/yr (#4 of 10).\n- Indianapolis (18.1, #5 of 5 Midwest hubs): driven by 19.6 measurable-snow days/yr (#5 of 10), 1.2 heavy-snow days/yr (#6 of 10), and 0.2 likely freezing-rain/ice days/yr (tied #6 of 10).",
+        "caveats": [
+          "Open-Meteo weather inputs are modeled data; absolute snow totals run low, making hub rankings more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "miami_vs_houston",
+        "question": "Compare Miami and Houston in terms of hurricane and flood exposure.",
+        "seconds": 30.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Miami and Houston in terms of hurricane and flood exposure.",
+          "intent": "compare",
+          "hubs": [
+            "miami",
+            "houston"
+          ],
+          "hazards": [
+            "hurricane",
+            "flood"
+          ]
+        },
+        "answer": "Miami and Houston have similar hurricane exposure, with Miami slightly higher on storm frequency, while Houston faces far greater flood exposure across both heavy rainfall and disaster declarations.\n- Miami (overall 86.4, #3 of 10): Ranks #1 of 10 for hurricane (77.5 on a 0-100 scale) and #2 of 10 for flood (29.7). Hurricane risk is driven by 7.1 tropical storms or hurricanes passing within 200 km per 10 years (89.3, #1 of 10) and 1.0 FEMA hurricane event per 10 years (50.0, #2 of 10; Hurricane Irma in 2017). Flood exposure reflects 2.7 heavy-rain days (>= 50 mm) per year (45.0, #2 of 10) and 0.4 extreme-rain days (>= 100 mm) per year (40.0, #2 of 10), with 0.0 FEMA flood events per 10 years (0.0, tied with all other hubs at zero).\n- Houston (overall 98.8, #2 of 10, effectively tied with Dallas with scores less than 1 point apart): Ranks #2 of 10 for hurricane (75.0) and #1 of 10 for flood (89.5). It sees fewer storm passes at 5.1 per 10 years (64.3, #2 of 10), but has 2.0 FEMA hurricane events per 10 years (100.0, #1 of 10; Hurricanes Harvey in 2017 and Beryl in 2024). Flood exposure leads all hubs across every signal: 5.4 heavy-rain days (>= 50 mm) per year (90.0, #1 of 10), 0.8 extreme-rain days (>= 100 mm) per year (80.0, #1 of 10), and 4.0 FEMA flood events per 10 years (100.0, #1 of 10).",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas flood signals use 2016-2025.",
+          "The FEMA hurricane component is a small sample (0-2 events per hub).",
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Heavy-rain and extreme-rain days come from Open-Meteo modeled data, where ranks are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "denver_snow_last_year",
+        "question": "What percentage of days in Denver last year had snowfall?",
+        "seconds": 14.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What percentage of days in Denver in 2025 had snowfall?",
+          "intent": "weather_stat",
+          "hubs": [
+            "denver"
+          ],
+          "hazards": [],
+          "metric": "snow_days",
+          "year": 2025
+        },
+        "answer": "In 2025, 10.4% of days in Denver (38 out of 365 days at DEN) had snowfall. This count uses the threshold for measurable snow (>= 0.25 cm, ~0.1 in), with a full-year snowfall total of 51.5 cm.",
+        "caveats": [
+          "Data comes from the Open-Meteo archive (modeled reanalysis), where absolute snow totals run low and relative rankings are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "dallas_premise",
+        "question": "Why is the Dallas hub's weather disruption risk high?",
+        "seconds": 20.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is the Dallas hub's weather disruption risk high?",
+          "intent": "explain",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Yes, Dallas's weather disruption risk is high, with an overall score of 99.1 (#1 of 10, effectively tied with Houston because their scores are less than 1 point apart). Because the overall score uses a noisy-OR combination, risk comes from whichever hazards hit, so lower exposure to hurricanes (2.5, #4 of 10) or flooding (13.4, #7 of 10) does not offset high exposure elsewhere. Dallas's risk is driven primarily by extreme heat (97.7, #1 of 10), averaging 48.6 hot days/yr (max >= 35 C / 95 F; score 97.2, #1 of 10) and 15.7 very hot days/yr (max >= 37.8 C / 100 F; score 98.1, #1 of 10). Severe storms also contribute (42.6, #3 of 10), led by 12.5 days/yr with hail >= 1 in within 50 km (score 100.0, #1 of 10) and 3.6 days/yr with hail >= 2 in (score 90.0, #1 of 10). Winter risk is moderate overall (23.1, #6 of 10), though Dallas ranks near the top for likely freezing-rain/ice days (0.4 days/yr; score 40.0, #2 of 10, tied) and winter FEMA events (1.0 events/10yr; score 50.0, #1 of 10, tied).",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity.",
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts include only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_what_about_chicago",
+        "question": "What about Chicago?",
+        "seconds": 21.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What drives the Chicago hub's overall weather disruption risk?",
+          "intent": "explain",
+          "hubs": [
+            "chicago"
+          ],
+          "hazards": [],
+          "carried_over": "explaining overall weather disruption risk"
+        },
+        "answer": "Assuming you still mean explaining overall weather disruption risk:\nChicago's overall weather disruption risk is 76.4 (#4 of 10 on a 0-100 scale against fixed bounds), effectively tied with Kansas City (less than 1 point apart), and is driven by severe storms, winter weather, and flooding. Because the noisy-OR score reflects whichever hazards hit, Chicago's zero hurricane score (0.0) and minimal heat score (0.9, #7 of 10) do not lower its overall risk. Severe storms are the largest driver at 50.2 (#2 of 10), led by strong-gust days >= 80 km/h (2.0 days/yr; score 66.7, tied #3 of 10), FEMA severe storm/tornado/straight-line wind declarations (1.0 events/10yr; score 50.0, tied #1 of 10), and hail >= 1 in within 50 km (6.0 days/yr; score 50.0, #5 of 10). Winter ranks second among hubs at 37.8 (#2 of 10), driven by measurable snow days >= 0.25 cm (32.7 days/yr; score 81.7, #3 of 10), heavy-snow days >= 5 cm (4.1 days/yr; score 68.3, tied #2 of 10), and extreme-cold days <= -18 C / 0 F (7.2 days/yr; score 36.0, #2 of 10). Flooding adds further risk at 23.2 (#3 of 10), mainly from FEMA flood declarations (2.0 events/10yr; score 50.0, #2 of 10).",
+        "caveats": [
+          "Open-Meteo is modeled data; absolute snow totals run low, so rankings are more reliable than absolute totals.",
+          "FEMA counts only major disaster declarations with household aid in the hub's county.",
+          "SPC hail reports have a population and spotter bias."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_switch_hazard",
+        "question": "And for flooding?",
+        "seconds": 17.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs in the Midwest are most exposed to flooding?",
+          "intent": "rank",
+          "hubs": [],
+          "region": "Midwest",
+          "hazards": [
+            "flood"
+          ],
+          "carried_over": "Midwest region ranking"
+        },
+        "answer": "Assuming you still mean Midwest region ranking:\nChicago and Kansas City are the most exposed Midwest hubs to flooding on a 0-100 scale, though Midwest flood scores overall remain low to moderate. Chicago leads due to past FEMA flood declarations, while Kansas City is driven by heavy and extreme rainfall frequency.\n\n- Chicago (23.2, #1 of 5 in the Midwest): driven by 2.0 FEMA flood events/10yr (#2 of 10), plus 0.8 heavy-rain days/yr (>= 50 mm, #7 of 10) and 0.1 extreme-rain days/yr (>= 100 mm, tied #4 of 10).\n- Kansas City (19.9, #2 of 5 in the Midwest): driven by 2.2 heavy-rain days/yr (#4 of 10) and 0.2 extreme-rain days/yr (#3 of 10), with 0.0 FEMA flood events/10yr.\n- Minneapolis (14.5, #3 of 5 in the Midwest): driven by 1.0 FEMA flood event/10yr (#3 of 10) and 1.2 heavy-rain days/yr (#6 of 10), with 0.0 extreme-rain days/yr.\n- Indianapolis (7.6, #4 of 5 in the Midwest): 0.7 heavy-rain days/yr (#8 of 10) and 0.1 extreme-rain days/yr (tied #4 of 10), with 0.0 FEMA flood events/10yr.\n- Columbus (2.4, #5 of 5 in the Midwest): 0.4 heavy-rain days/yr (#9 of 10), with 0.0 extreme-rain days/yr and 0.0 FEMA flood events/10yr.",
+        "caveats": [
+          "FEMA counts only major disasters with household aid in the hub's county, so localized flood disruptions without major declarations are not captured.",
+          "Rainfall metrics use modeled Open-Meteo data, where relative ranks are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_why_top",
+        "question": "Why is the first one on top?",
+        "seconds": 19.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why does Dallas have the highest overall weather-risk score?",
+          "intent": "explain",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "asserted_level": "high",
+          "carried_over": "Dallas as the #1 overall hub"
+        },
+        "answer": "Assuming you still mean Dallas as the #1 overall hub:\nDallas scores 99.1 (#1 of 10) overall, though it is effectively tied with Houston (scores less than 1 point apart) rather than standing alone as the riskiest hub. Because the overall score combines hazards so that risk comes from whichever hazards hit, Dallas's high score is driven overwhelmingly by extreme heat, while lower scores in other hazards do not pull it down.\n\nExtreme heat is the main driver at 97.7 (#1 of 10), reflecting 48.6 hot days/yr (max >= 35 C / 95 F; score 97.2, #1 of 10) and 15.7 very hot days/yr (max >= 37.8 C / 100 F; score 98.1, #1 of 10). Severe storms score 42.6 (#3 of 10), led by hail frequency: 12.5 days/yr with >= 1 in hail (score 100.0, #1 of 10) and 3.6 days/yr with >= 2 in hail (score 90.0, #1 of 10). Winter scores 23.1 (#6 of 10), reflecting 0.4 likely freezing-rain/ice days/yr (score 40.0, #2 of 10, tied) and 1.0 FEMA winter/ice storm event per 10 years (score 50.0, #1 of 10, tied). Flood (13.4, #7 of 10) and hurricane (2.5, #4 of 10) add very little.",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal weighting with ice or hurricanes does not capture that difference in severity.",
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts include only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "top3_overall",
+        "question": "What are the top 3 hubs overall?",
+        "seconds": 16.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What are the top 3 hubs overall?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [],
+          "top_n": 3
+        },
+        "answer": "Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied at the top (scores less than 1.0 point apart), followed by Miami (86.4, #3 of 10). Overall scores (0-100) combine hazards via noisy-OR, so risk reflects whichever hazards hit and low exposure elsewhere does not lower the score.\n- Dallas (99.1, #1 of 10, effectively tied with Houston): Driven by extreme heat and hail, averaging 15.7 very hot days/yr (>= 37.8 C / 100 F, #1), 48.6 hot days/yr (>= 35 C / 95 F, #1), and 12.5 days/yr with severe hail >= 1 in within 50 km (#1).\n- Houston (98.8, #2 of 10, effectively tied with Dallas): Driven by flooding rather than heat, ranking #1 with 5.4 heavy-rain days/yr (>= 50 mm), 4.0 FEMA flood events/10yr, and 0.8 extreme-rain days/yr (>= 100 mm).\n- Miami (86.4, #3 of 10): Driven by hurricanes and heavy rain, with 7.1 tropical storms/hurricanes within 200 km per 10yr (#1), 1.0 FEMA storm events/10yr (#2), and 2.7 heavy-rain days/yr (>= 50 mm, #2).",
+        "caveats": [
+          "Heat usually slows a hub (reducing capacity over many days) rather than shutting it down; treating it equally with sudden hazards like hurricanes does not capture that difference in severity.",
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas other hazards use 2016-2025; FEMA hurricane counts are a small sample (0-2 events per hub).",
+          "SPC hail reports have a population/spotter bias, and FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "south_flood_rank",
+        "question": "Rank the southern hubs by flood exposure.",
+        "seconds": 17.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Rank the hubs in the South region by flood exposure.",
+          "intent": "rank",
+          "hubs": [],
+          "region": "South",
+          "hazards": [
+            "flood"
+          ]
+        },
+        "answer": "Houston has by far the highest flood exposure among the 4 South region hubs for 2016-2025, followed at a distance by Miami, Atlanta, and Dallas.\n- Houston: 89.5 (#1 of 4 in the South; #2 of 10 overall). It leads all hubs in every flood signal, with 5.4 heavy-rain days/yr (>= 50 mm, #1), 0.8 extreme-rain days/yr (>= 100 mm, #1), and 4.0 FEMA flood events/10yr (#1).\n- Miami: 29.7 (#2 of 4 in the South; #3 of 10 overall). Driven by 2.7 heavy-rain days/yr (#2) and 0.4 extreme-rain days/yr (#2), with 0.0 FEMA flood events/10yr.\n- Atlanta: 14.6 (#3 of 4 in the South; #10 of 10 overall). Driven by 1.9 heavy-rain days/yr (#5) and 0.1 extreme-rain days/yr (tied #4), with 0.0 FEMA flood events/10yr.\n- Dallas: 13.4 (#4 of 4 in the South; #1 of 10 overall). Driven solely by 2.3 heavy-rain days/yr (#3), with 0.0 extreme-rain days/yr and 0.0 FEMA flood events/10yr.",
+        "caveats": [
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Weather-day counts come from Open-Meteo modeled data, where ranks are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "compare_three_winter",
+        "question": "Compare Chicago, Minneapolis and Denver on winter risk.",
+        "seconds": 14.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Chicago, Minneapolis, and Denver on winter risk.",
+          "intent": "compare",
+          "hubs": [
+            "chicago",
+            "minneapolis",
+            "denver"
+          ],
+          "hazards": [
+            "winter"
+          ]
+        },
+        "answer": "Minneapolis faces the highest winter risk of the three hubs (and across all 10 hubs), followed by Chicago and then Denver. All three see frequent snowfall, but Minneapolis stands out for far more extreme cold and heavy snow, while Chicago edges out Denver due to ice exposure and colder temperatures.\n\n- Minneapolis (56.3, #1 of 10): Driven by 23.7 extreme-cold days/yr (min <= -18 C / 0 F; 100.0, #1 of 10), 5.5 heavy-snow days/yr (>= 5 cm; 91.7, #1 of 10), and 40.4 measurable-snow days/yr (>= 0.25 cm; 100.0, #2 of 10), plus 0.3 likely freezing-rain/ice days/yr (30.0, #4 of 10, tied).\n- Chicago (37.8, #2 of 10): Driven by 32.7 measurable-snow days/yr (81.7, #3 of 10), 4.1 heavy-snow days/yr (68.3, #2 of 10, tied), 7.2 extreme-cold days/yr (36.0, #2 of 10), and 0.3 likely freezing-rain/ice days/yr (30.0, #4 of 10, tied).\n- Denver (33.1, #3 of 10): Leads all hubs in measurable snow at 40.5 days/yr (100.0, #1 of 10) and matches Chicago at 4.1 heavy-snow days/yr (68.3, #2 of 10, tied), but has fewer extreme-cold days at 4.2 days/yr (21.0, #3 of 10) and 0.0 likely freezing-rain/ice days/yr (0.0).\n\nAll three hubs recorded 0.0 FEMA winter disaster events/10yr (0.0).",
+        "caveats": [
+          "Snow, temperature, and freezing-rain signals come from Open-Meteo modeled data; absolute snow totals run low, so rankings are more reliable than absolute values.",
+          "FEMA counts include only major disaster declarations with household aid in each hub's county, which is 0.0 across all hubs for winter events."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "aliases",
+        "question": "Compare KC and the Twin Cities for severe storms.",
+        "seconds": 18.7,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Kansas City and Minneapolis for severe storm risk.",
+          "intent": "compare",
+          "hubs": [
+            "kansas_city",
+            "minneapolis"
+          ],
+          "hazards": [
+            "severe_storm"
+          ]
+        },
+        "answer": "Kansas City has much higher severe storm risk than Minneapolis over 2016-2025, scoring 56.4 (#1 of 10 hubs) versus 28.1 (#7 of 10) on a 0-100 scale. More frequent hail >= 1 in, more strong-gust days, and a qualifying FEMA disaster declaration drive Kansas City's higher score, though Minneapolis records slightly more >= 2 in hail days.\n\n- Kansas City (56.4, #1 of 10): Driven by 8.5 days/yr with hail >= 1 in within 50 km (score 70.8, #3 of 10), 2.0 strong-gust days/yr >= 80 km/h (score 66.7, tied #3 of 10), and 1.0 FEMA severe storm, tornado, or straight-line wind event/10yr (score 50.0, tied #1 of 10), alongside 1.3 days/yr with hail >= 2 in (score 32.5, #4 of 10).\n- Minneapolis (28.1, #7 of 10): Driven mainly by hail, with 6.2 days/yr >= 1 in (score 51.7, #4 of 10) and 1.7 days/yr >= 2 in (score 42.5, #3 of 10), alongside lower wind exposure at 1.0 strong-gust days/yr >= 80 km/h (score 33.3, #7 of 10) and 0.0 FEMA events/10yr (score 0.0, tied with other hubs at zero).",
+        "caveats": [
+          "SPC hail reports have a population and spotter bias.",
+          "Strong-gust counts come from Open-Meteo modeled data, where ranks are more reliable than absolute values.",
+          "FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "dfw_hail_2024",
+        "question": "How many hail days did DFW have in 2024?",
+        "seconds": 8.7,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How many hail days did Dallas (DFW) have in 2024?",
+          "intent": "weather_stat",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "metric": "hail_days",
+          "year": 2024
+        },
+        "answer": "Dallas (DFW) had 12 hail days in 2024, representing 3.3% of the 366 days in the full year. This measures days with hail >= 1 in reported within 50 km of DFW from NOAA SPC hail reports.",
+        "caveats": [
+          "NOAA SPC hail reports are subject to population and spotter reporting bias, so counts depend on reports within 50 km rather than uniform sensor coverage."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "so_far_this_year",
+        "question": "How many days with snow has Minneapolis had so far this year?",
+        "seconds": 11.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How many days with snow has Minneapolis had so far in 2026?",
+          "intent": "weather_stat",
+          "hubs": [
+            "minneapolis"
+          ],
+          "hazards": [],
+          "metric": "snow_days",
+          "year": 2026
+        },
+        "answer": "Minneapolis (MSP) has recorded 24 days with measurable snow (>= 0.25 cm, ~0.1 in) in 2026 through 2026-11-20. That accounts for 7.4% of the 324 days in the partial-year period, with a cumulative snowfall of 52.5 cm.",
+        "caveats": [
+          "Source is Open-Meteo archive modeled reanalysis; modeled absolute snow totals tend to run low, making relative comparisons more reliable than absolute values.",
+          "The 2026 figure reflects a partial year with data through 2026-11-20 (324 days)."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "houston_top_tie",
+        "question": "Why is Houston ranked first?",
+        "seconds": 18.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Houston ranked first?",
+          "intent": "explain",
+          "hubs": [
+            "houston"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Houston is actually ranked #2 of 10 with an overall score of 98.8, and it is effectively tied with Dallas (scores less than 1 point apart) rather than holding #1 alone. Its very high exposure comes from leading all hubs in flooding and ranking second in hurricane risk; under the noisy-OR scoring method, low exposure in other hazards does not lower or offset severe risks. Flooding is the primary driver at 89.5 (#1 of 10), reflecting 5.4 heavy-rain days/yr (>= 50 mm; score 90.0, #1 of 10), 0.8 extreme-rain days/yr (>= 100 mm; score 80.0, #1 of 10), and 4.0 FEMA flood events/10yr (score 100.0, #1 of 10). Hurricane exposure scores 75.0 (#2 of 10), driven by 5.1 storms/10yr passing within 200 km (score 64.3, #2 of 10) and 2.0 FEMA storm events/10yr (score 100.0, #1 of 10). Heat adds 38.1 (#2 of 10) from 22.8 hot days/yr (>= 35 C / 95 F; score 45.6, #2 of 10) and 4.9 very hot days/yr (>= 37.8 C / 100 F; score 30.6, #2 of 10), while winter (15.6, #8 of 10) and severe storm (15.4, #9 of 10) contribute little.",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas other hazards use 2016-2025, and the FEMA hurricane metric relies on a small sample (0-2 events per hub).",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county.",
+          "Heat usually slows hub capacity over many days rather than shutting operations down, which equal weighting with ice or hurricanes does not capture."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "miami_winter_premise",
+        "question": "Why is Miami's winter risk so high?",
+        "seconds": 14.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Miami's winter risk so high?",
+          "intent": "explain",
+          "hubs": [
+            "miami"
+          ],
+          "hazards": [
+            "winter"
+          ],
+          "asserted_level": "high"
+        },
+        "answer": "Actually, Miami's winter risk is not high: its winter score is 0.0 (#10 of 10, tied at zero), with 0.0 days/yr of measurable snow (>= 0.25 cm), heavy snow (>= 5 cm), extreme cold (<= -18 C / 0 F), and freezing rain/ice, plus 0.0 winter FEMA events/10yr. Miami's overall score is high at 86.4 (#3 of 10) because the overall score uses a noisy-OR combination where risk comes from whichever hazards hit, so zero winter exposure does not pull the overall score down. Instead, Miami's risk is driven primarily by hurricanes (46.7 points contributed) and flooding (5.7 points), with minor contributions from severe storms (2.1) and heat (0.1). Miami ranks #1 of 10 for tropical storms/hurricanes passing within 200 km at 7.1 storms/10yr (1991-2025), and #2 of 10 for hurricane, tropical storm, and coastal storm FEMA events (1.0 events/10yr), heavy-rain days >= 50 mm (2.7 days/yr), and extreme-rain days >= 100 mm (0.4 days/yr).",
+        "caveats": [
+          "Snow, temperature, and rainfall metrics come from Open-Meteo modeled weather data, where ranks are more reliable than absolute values and snow totals can run low.",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
         "id": "no_investment_decision",
         "question": "Which single hub should we invest in this year? Just tell me the answer.",
-        "seconds": 15.2,
+        "seconds": 20.2,
         "status": "ok",
         "checks": {
           "status": [],
@@ -58,21 +1231,719 @@
           "hazards": [],
           "top_n": 1
         },
-        "answer": "No single hub stands alone at the top: Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied on the 0-100 overall weather-risk score (less than 1.0 point apart). Because the overall score combines hazards via noisy-OR, risk comes from whichever hazards hit without low exposure in other hazards lowering the score. However, their risk profiles differ sharply. Dallas is driven by extreme heat\u201415.7 very hot days/yr (>= 37.8 C / 100 F; score 98.1, #1) and 48.59 hot days/yr (>= 35 C / 95 F; score 97.2, #1)\u2014along with severe storms at 12.5 days/yr of hail >= 1 in within 50 km (score 100.0, #1). Houston is driven by flood risk: 5.4 heavy-rain days/yr (>= 50 mm; score 90.0, #1), 4.0 FEMA flood events/10yr (score 100.0, #1), and 0.8 extreme-rain days/yr (>= 100 mm; score 80.0, #1). Note that heat usually slows operations rather than shutting a hub down. Your final investment choice should also weigh factors outside this data, including hub volume, upgrade cost, and existing protections.",
+        "answer": "No single hub stands out as #1: Dallas and Houston are effectively tied at the top of the 10-hub overall weather risk ranking (scores less than 1.0 point apart on the 0-100 scale), with very different risk profiles. The overall score uses a noisy-OR combination, meaning risk comes from whichever hazards hit and low exposure elsewhere does not lower the score.\n\n- Dallas (99.1, #1 of 10): Driven by heat and severe storms, ranking #1 of 10 in very hot days >= 37.8 C / 100 F (15.7 days/yr), hot days >= 35 C / 95 F (48.6 days/yr), and days with hail >= 1 in within 50 km (12.5 days/yr).\n- Houston (98.8, #2 of 10): Driven by flood exposure, ranking #1 of 10 in heavy-rain days >= 50 mm (5.4 days/yr), FEMA flood events (4.0 events/10yr), and extreme-rain days >= 100 mm (0.8 days/yr).\n\nThe final investment decision should also weigh factors outside this data, including hub volume, upgrade cost, and existing protections.",
         "caveats": [
-          "Heat usually slows a hub over many days rather than shutting it down, whereas the score weights hazards equally.",
-          "SPC hail reports carry a population and spotter bias.",
-          "FEMA counts only major disasters with household aid in the hub's county, yielding a small sample."
+          "Heat usually slows a hub (reducing capacity over many days) rather than shutting it down; treating it equally with acute hazards does not capture that difference in operational severity.",
+          "SPC hail reports have a population and spotter reporting bias.",
+          "FEMA counts include only major disasters with household aid in the hub's county and reflect a small sample."
         ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "holdout_flood_budget",
+        "question": "If our resilience budget only covers flood protection, where should it go first?",
+        "seconds": 16.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs have the highest flood risk and should be prioritized first for flood protection?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [
+            "flood"
+          ]
+        },
+        "answer": "Houston has by far the highest flood risk and ranks first for flood protection priority, with Miami, Chicago, and Kansas City trailing well behind. Scores are on a 0-100 scale against fixed bounds, where higher values reflect more frequent heavy rain and major flood disasters.\n\n- Houston (89.5, #1 of 10): leads all hubs on every flood signal, averaging 5.4 heavy-rain days/yr (>= 50 mm, #1), 0.8 extreme-rain days/yr (>= 100 mm, #1), and 4.0 FEMA flood events/10yr (#1).\n- Miami (29.7, #2 of 10): driven by rainfall intensity with 2.7 heavy-rain days/yr (#2) and 0.4 extreme-rain days/yr (#2), with 0.0 FEMA flood events/10yr.\n- Chicago (23.2, #3 of 10): driven primarily by 2.0 FEMA flood events/10yr (#2), alongside 0.8 heavy-rain days/yr (#7) and 0.1 extreme-rain days/yr (tied #4).\n- Kansas City (19.9, #4 of 10): averages 2.2 heavy-rain days/yr (#4) and 0.2 extreme-rain days/yr (#3), with 0.0 FEMA flood events/10yr.\n\nAll remaining hubs score 14.6 or lower. While this ranking highlights flood exposure, the final investment choice should also weigh factors outside this data, including hub volume, upgrade cost, and existing protections.",
+        "caveats": [
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Rainfall metrics are based on Open-Meteo modeled data."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "holdout_prioritize_pair",
+        "question": "Between Atlanta and Denver, which one deserves resilience upgrades more, weather-wise?",
+        "seconds": 26.3,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Between Atlanta and Denver, which one deserves resilience upgrades more, weather-wise?",
+          "intent": "rank",
+          "hubs": [
+            "atlanta",
+            "denver"
+          ],
+          "hazards": []
+        },
+        "answer": "Weather-wise, Denver has higher overall exposure than Atlanta and ranks ahead of it for resilience upgrades, though neither hub is among the most exposed overall. On the 0-100 scale (where overall risk reflects whichever hazards hit), Denver ranks #7 of 10 while Atlanta ranks #10 of 10.\n\n- Denver (60.8, #7 of 10): Driven primarily by winter weather and severe storms, with 40.5 measurable snow days/yr (>= 0.25 cm, #1 of 10), 10.5 severe hail days/yr (>= 1 in within 50 km, #2 of 10), and 1.1 strong-gust days/yr (>= 80 km/h, #6 of 10).\n- Atlanta (51.2, #10 of 10): Driven by occasional tropical systems along with wind and heavy rain, with 2.3 tropical storms or hurricanes within 200 km per 10 years (#3 of 10), 1.3 strong-gust days/yr (>= 80 km/h, #5 of 10), and 1.9 heavy-rain days/yr (>= 50 mm, #5 of 10).\n\nThe final choice should also weigh factors outside this data, such as hub volume, upgrade cost, and existing protections.",
+        "caveats": [
+          "Snow, gust, and heavy-rain metrics come from Open-Meteo modeled data (2016-2025); absolute snow totals run low, so rankings are more reliable than absolute values.",
+          "SPC hail reports (within 50 km) are subject to population and spotter reporting bias.",
+          "Tropical storm and hurricane counts use a longer 1991-2025 window (35 years) because these storms are rare."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "holdout_kc_vs_chicago_storms",
+        "question": "Is Kansas City's severe storm risk lower than Chicago's?",
+        "seconds": 17.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Is Kansas City's severe storm risk lower than Chicago's?",
+          "intent": "compare",
+          "hubs": [
+            "kansas_city",
+            "chicago"
+          ],
+          "hazards": [
+            "severe_storm"
+          ]
+        },
+        "answer": "No, Kansas City's severe storm risk is higher than Chicago's, with a score of 56.4 (#1 of 10) compared to Chicago's 50.2 (#2 of 10). Both hubs tie on strong gusts and FEMA severe storm declarations, so Kansas City's higher hail frequency drives the difference (across all hazards overall, the two hubs are effectively tied at 75.7, #5 of 10 vs. 76.4, #4 of 10, less than 1 point apart).\n\n- Kansas City: severe storm score 56.4 (#1 of 10; overall 75.7, #5 of 10). Driven by 8.5 days/yr with hail >= 1 in (score 70.8, #3 of 10) and 1.3 days/yr with hail >= 2 in (score 32.5, #4 of 10), plus 2.0 strong-gust days/yr >= 80 km/h (score 66.7, #3 of 10) and 1.0 FEMA severe storm event/10yr (score 50.0, #1 of 10).\n- Chicago: severe storm score 50.2 (#2 of 10; overall 76.4, #4 of 10). Sees less hail at 6.0 days/yr >= 1 in (score 50.0, #5 of 10) and 0.7 days/yr >= 2 in (score 17.5, #5 of 10), while matching Kansas City with 2.0 strong-gust days/yr >= 80 km/h (score 66.7, #3 of 10) and 1.0 FEMA severe storm event/10yr (score 50.0, #1 of 10).",
+        "caveats": [
+          "SPC hail reports carry a population and spotter reporting bias.",
+          "FEMA counts only major disaster declarations with household aid in the hub's county.",
+          "Strong-gust counts rely on modeled Open-Meteo data, where relative ranks are more reliable than exact totals."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "unknown_hub",
+        "question": "How exposed is our Seattle hub to winter storms?",
+        "seconds": 4.7,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How exposed is the Seattle hub to winter storms?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [
+            "winter"
+          ],
+          "out_of_scope_reason": "Seattle is not one of the covered logistics hubs."
+        },
+        "answer": "That's outside what I cover: Seattle is not one of the covered logistics hubs.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "uncovered_hazard",
+        "question": "Which hub has the highest earthquake risk?",
+        "seconds": 2.8,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hub has the highest earthquake risk?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [],
+          "out_of_scope_reason": "Earthquake risk is not covered; this tool only scores weather hazards (winter, flood, severe_storm, hurricane, heat)."
+        },
+        "answer": "That's outside what I cover: Earthquake risk is not covered; this tool only scores weather hazards (winter, flood, severe_storm, hurricane, heat).. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "heat_ranking",
+        "question": "Which hubs are most exposed to extreme heat?",
+        "seconds": 19.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs are most exposed to extreme heat?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [
+            "heat"
+          ]
+        },
+        "answer": "Dallas is by far the most exposed hub to extreme heat (97.7, #1 of 10), followed by Houston in a distant second (38.1, #2 of 10). All other hubs have much lower exposure, scoring 8.0 or below on the 0-100 scale.\n- Dallas (97.7, #1 of 10): Averages 48.6 hot days/yr (max >= 35 C / 95 F, #1) and 15.7 very hot days/yr (max >= 37.8 C / 100 F, #1).\n- Houston (38.1, #2 of 10): Averages 22.8 hot days/yr (#2) and 4.9 very hot days/yr (#2).\n- Kansas City (8.0, #3 of 10): Averages 7.0 hot days/yr (#4) and 0.3 very hot days/yr (#3); effectively tied with Denver.\n- Denver (7.1, #4 of 10): Averages 7.1 hot days/yr (#3) and 0.0 very hot days/yr; effectively tied with Kansas City.\n- Atlanta (4.1, #5 of 10): Averages 3.5 hot days/yr (#5) and 0.2 very hot days/yr (#4).\nThe remaining five hubs all score 1.0 or below, with 0.0 very hot days/yr.",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "wildfire_out_of_scope",
+        "question": "Which hub is most at risk from wildfire smoke?",
+        "seconds": 2.3,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hub is most at risk from wildfire smoke?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [],
+          "out_of_scope_reason": "Wildfire and wildfire smoke are not covered hazards; the tool only scores winter, flood, severe_storm, hurricane, and heat."
+        },
+        "answer": "That's outside what I cover: Wildfire and wildfire smoke are not covered hazards; the tool only scores winter, flood, severe_storm, hurricane, and heat.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "atlanta_false_premise",
+        "question": "Why is Atlanta one of our riskiest hubs?",
+        "seconds": 14.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Atlanta one of our riskiest hubs?",
+          "intent": "explain",
+          "hubs": [
+            "atlanta"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Actually, Atlanta is not one of our riskiest hubs overall: it ranks #10 of 10 with an overall score of 51.2 (on a 0-100 scale, combining hazards so risk from one hazard is not offset by low exposure in others). Its highest relative exposure is in hurricane risk at 20.0 (#3 of 10), driven by 2.3 tropical storms or hurricanes passing within 200 km per 10 years (score 28.6, #3 of 10). Atlanta's remaining risk comes mainly from severe storms at 22.0 (#8 of 10), including 1.3 strong-gust days/yr of at least 80 km/h (#5 of 10) and 4.7 severe hail days/yr of at least 1 in within 50 km (#6 of 10), and flood risk at 14.6 (#5 of 10), with 1.9 heavy-rain days/yr of at least 50 mm (#5 of 10) and 0.1 extreme-rain days/yr of at least 100 mm (tied #4 of 10). Winter (4.6, #9 of 10) and heat (4.1, #5 of 10) exposure are low.",
+        "caveats": [
+          "Storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas the other hazards use 2016-2025.",
+          "FEMA counts only major disasters with household aid in the hub's county and represents a small sample (0-2 events per hub).",
+          "SPC hail reports carry a population and spotter bias."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "too_vague",
+        "question": "Is it bad?",
+        "seconds": 2.8,
+        "status": "clarify",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Is it bad?",
+          "intent": "clarify",
+          "hubs": [],
+          "hazards": [],
+          "clarification_question": "Which logistics hub and which weather risk or hazard are you asking about?"
+        },
+        "answer": "Which logistics hub and which weather risk or hazard are you asking about?",
+        "caveats": [],
         "passed": true,
         "holdout": false
       }
     ],
     [
       {
+        "id": "midwest_winter",
+        "question": "Which hubs in the Midwest are most exposed to winter disruption?",
+        "seconds": 58.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs in the Midwest are most exposed to winter disruption?",
+          "intent": "rank",
+          "hubs": [],
+          "region": "Midwest",
+          "hazards": [
+            "winter"
+          ]
+        },
+        "answer": "Minneapolis is the most winter-exposed Midwest hub over the 2016-2025 window, followed by Chicago, while Columbus, Kansas City, and Indianapolis have lower winter exposure. Winter scores measure 0-100 exposure to snow, extreme cold, and freezing rain:\n\n- Minneapolis (56.3, #1 of 5): Driven by 40.4 measurable snow days/yr (>= 0.25 cm, #2 of 10), 23.7 extreme-cold days/yr (<= -18 C / 0 F, #1 of 10), and 5.5 heavy-snow days/yr (>= 5 cm, #1 of 10).\n- Chicago (37.8, #2 of 5): Driven by 32.7 measurable snow days/yr (#3 of 10), 4.1 heavy-snow days/yr (tied #2 of 10), and 7.2 extreme-cold days/yr (#2 of 10).\n- Columbus (25.5, #3 of 5): Driven by 25.2 measurable snow days/yr (#4 of 10), 0.4 likely freezing-rain/ice days/yr (tied #2 of 10), and 1.9 heavy-snow days/yr (#5 of 10).\n- Kansas City (24.5, #4 of 5): Led by 0.5 likely freezing-rain/ice days/yr (#1 of 10), along with 16.7 measurable snow days/yr (#6 of 10) and 2.0 heavy-snow days/yr (#4 of 10).\n- Indianapolis (18.1, #5 of 5): Driven by 19.6 measurable snow days/yr (#5 of 10), 1.2 heavy-snow days/yr (#6 of 10), and 0.2 likely freezing-rain/ice days/yr (tied #6 of 10).",
+        "caveats": [
+          "Winter weather metrics come from Open-Meteo modeled data; absolute snow totals run low, so rankings are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "miami_vs_houston",
+        "question": "Compare Miami and Houston in terms of hurricane and flood exposure.",
+        "seconds": 26.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Miami and Houston in terms of hurricane and flood exposure.",
+          "intent": "compare",
+          "hubs": [
+            "miami",
+            "houston"
+          ],
+          "hazards": [
+            "hurricane",
+            "flood"
+          ]
+        },
+        "answer": "Miami edges out Houston in hurricane exposure (#1 vs. #2 of 10), while Houston faces far greater flood exposure (#1 vs. #2 of 10). Scores run 0-100 against fixed bounds (higher = more exposed).\n\n- Miami (overall 86.4, #3 of 10): Ranks first in hurricane risk at 77.5 (#1 of 10), driven by 7.1 storm passes/10yr within 200 km (89.3, #1 of 10) and 1.0 FEMA hurricane event/10yr (50.0, #2 of 10). Flood risk is 29.7 (#2 of 10), from 2.7 heavy-rain days/yr >= 50 mm (45.0, #2 of 10), 0.4 extreme-rain days/yr >= 100 mm (40.0, #2 of 10), and 0.0 FEMA flood events.\n- Houston (overall 98.8, #2 of 10, effectively tied with Dallas at less than 1 point apart): Ranks second in hurricane risk at 75.0 (#2 of 10), with 5.1 storm passes/10yr (64.3, #2 of 10) and 2.0 FEMA hurricane events/10yr (100.0, #1 of 10). Flood risk leads all hubs at 89.5 (#1 of 10), driven by 5.4 heavy-rain days/yr >= 50 mm (90.0, #1 of 10), 0.8 extreme-rain days/yr >= 100 mm (80.0, #1 of 10), and 4.0 FEMA flood events/10yr (100.0, #1 of 10).",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare; flood and other hazards use 2016-2025.",
+          "The FEMA hurricane component is a small sample (0-2 events per hub), and FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "denver_snow_last_year",
+        "question": "What percentage of days in Denver last year had snowfall?",
+        "seconds": 11.4,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What percentage of days in Denver in 2025 had snowfall?",
+          "intent": "weather_stat",
+          "hubs": [
+            "denver"
+          ],
+          "hazards": [],
+          "metric": "snow_days",
+          "year": 2025
+        },
+        "answer": "In 2025, 10.4% of days in Denver had snowfall, accounting for 38 out of 365 days through 2025-12-31. This is based on the measurable snow definition of at least 0.25 cm (~0.1 in) in a day, with a period total of 51.5 cm at the DEN point.",
+        "caveats": [
+          "Data comes from the Open-Meteo archive (modeled reanalysis), where absolute snow totals run low and rankings are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "dallas_premise",
+        "question": "Why is the Dallas hub's weather disruption risk high?",
+        "seconds": 19.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is the Dallas hub's overall weather disruption risk high?",
+          "intent": "explain",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Yes, Dallas has high overall weather disruption risk with a score of 99.1 (#1 of 10, effectively tied with Houston because their scores are less than 1 point apart, so neither is the single riskiest hub). Under the noisy-OR scoring method, overall risk reflects whichever hazards hit rather than averaging them down, so low exposure in one hazard does not offset extreme exposure in another. Dallas's score is overwhelmingly driven by heat (97.7, #1 of 10), where it leads all hubs with 48.6 hot days/yr (at or above 35 C / 95 F, score 97.2, #1 of 10) and 15.7 very hot days/yr (at or above 37.8 C / 100 F, score 98.1, #1 of 10). Severe storms add further exposure (42.6, #3 of 10), led by 12.5 days/yr of hail >= 1 in (score 100.0, #1 of 10) and 3.6 days/yr of hail >= 2 in (score 90.0, #1 of 10). Lower scores in winter (23.1, #6 of 10), flood (13.4, #7 of 10), and hurricane (2.5, #4 of 10) do not reduce the combined score, though Dallas still sees notable ice risk (0.4 likely freezing-rain/ice days/yr, #2 of 10, and 1.0 FEMA winter event/10yr, #1 of 10) and heavy-rain days (2.3 days/yr >= 50 mm, #3 of 10).",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity.",
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Open-Meteo weather signals are based on modeled data."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_what_about_chicago",
+        "question": "What about Chicago?",
+        "seconds": 18.9,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What drives the Chicago hub's overall weather disruption risk?",
+          "intent": "explain",
+          "hubs": [
+            "chicago"
+          ],
+          "hazards": [],
+          "carried_over": "the overall risk explanation"
+        },
+        "answer": "Assuming you still mean the overall risk explanation:\nChicago's overall weather disruption risk score is 76.4 (#4 of 10, effectively tied with Kansas City at less than 1 point apart), driven primarily by severe storms and winter weather, with flooding as a secondary contributor. Under the noisy-OR scoring method, risk comes from whichever hazards hit, so Chicago's zero hurricane exposure (0.0) and minimal heat score (0.9, #7 of 10) do not offset its storm and winter risks.\n\nSevere storms are the largest driver (50.2, #2 of 10), led by strong-gust days >= 80 km/h (2.0 days/yr; score 66.7, tied #3 of 10), FEMA severe storm, tornado, and straight-line wind events (1.0 events/10yr; score 50.0, tied #1 of 10), and hail >= 1 in within 50 km (6.0 days/yr; score 50.0, #5 of 10). Winter weather is the next largest contributor (37.8, #2 of 10), driven by measurable snow days >= 0.25 cm (32.7 days/yr; score 81.7, #3 of 10), heavy-snow days >= 5 cm (4.1 days/yr; score 68.3, tied #2 of 10), and extreme-cold days <= -18 C / 0 F (7.2 days/yr; score 36.0, #2 of 10). Flooding adds notable risk (23.2, #3 of 10), largely due to 2.0 FEMA flood events/10yr (score 50.0, #2 of 10).",
+        "caveats": [
+          "Open-Meteo is modeled weather data, so absolute snow totals tend to run low and hub rankings are more reliable than absolute values.",
+          "SPC hail reports carry a population and spotter reporting bias.",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_switch_hazard",
+        "question": "And for flooding?",
+        "seconds": 14.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs in the Midwest are most exposed to flooding?",
+          "intent": "rank",
+          "hubs": [],
+          "region": "Midwest",
+          "hazards": [
+            "flood"
+          ],
+          "carried_over": "ranking in the Midwest"
+        },
+        "answer": "Assuming you still mean ranking in the Midwest:\nChicago and Kansas City are the Midwest hubs most exposed to flooding over the 2016-2025 window, though scores remain modest on the 0-100 scale.\n\n- Chicago (23.2, #1 of 5 in the Midwest): led by 2.0 FEMA flood events/10yr (#2 of 10 hubs), plus 0.8 heavy-rain days/yr (>= 50 mm, #7 of 10) and 0.1 extreme-rain days/yr (>= 100 mm, tied #4 of 10).\n- Kansas City (19.9, #2 of 5): driven by rainfall rather than declarations, with 2.2 heavy-rain days/yr (#4 of 10), 0.2 extreme-rain days/yr (#3 of 10), and 0.0 FEMA flood events/10yr.\n- Minneapolis (14.5, #3 of 5): driven by 1.0 FEMA flood event/10yr (#3 of 10) and 1.2 heavy-rain days/yr (#6 of 10), with 0.0 extreme-rain days/yr.\n- Indianapolis (7.6, #4 of 5): 0.7 heavy-rain days/yr (#8 of 10), 0.1 extreme-rain days/yr (tied #4 of 10), and 0.0 FEMA flood events/10yr.\n- Columbus (2.4, #5 of 5): 0.4 heavy-rain days/yr (#9 of 10), with 0.0 extreme-rain days/yr and 0.0 FEMA flood events/10yr.",
+        "caveats": [
+          "FEMA counts only major disaster declarations with household aid in the hub's county.",
+          "Rainfall metrics come from Open-Meteo modeled data, so hub rankings are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "followup_why_top",
+        "question": "Why is the first one on top?",
+        "seconds": 16.8,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Dallas ranked #1 overall?",
+          "intent": "explain",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "asserted_level": "high",
+          "carried_over": "Dallas as the #1 hub overall"
+        },
+        "answer": "Assuming you still mean Dallas as the #1 hub overall:\nDallas has an overall score of 99.1 (#1 of 10), though it is effectively tied with Houston (scores less than 1 point apart) rather than standing alone as the single riskiest hub. Because the overall score uses a noisy-OR combination, risk reflects whichever hazards hit hardest, and lower exposure in other hazards cannot offset an extreme driver. Dallas's score is driven overwhelmingly by heat at 97.7 (#1 of 10), averaging 48.6 hot days/yr at or above 35 C / 95 F (score 97.2, #1 of 10) and 15.7 very hot days/yr at or above 37.8 C / 100 F (score 98.1, #1 of 10) over 2016-2025. Severe storms add secondary exposure at 42.6 (#3 of 10), led by 12.5 days/yr with hail >= 1 in within 50 km (score 100.0, #1 of 10) and 3.6 days/yr with hail >= 2 in (score 90.0, #1 of 10). Winter ranks lower overall at 23.1 (#6 of 10), despite 0.4 likely freezing-rain/ice days/yr (score 40.0, #2 of 10) and 1.0 FEMA winter event/10yr (score 50.0, #1 of 10). Low scores in flood (13.4, #7 of 10) and hurricane (2.5, #4 of 10) do not reduce the overall score.",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity.",
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "top3_overall",
+        "question": "What are the top 3 hubs overall?",
+        "seconds": 13.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "What are the top 3 hubs overall?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [],
+          "top_n": 3
+        },
+        "answer": "Dallas and Houston are effectively tied at the top of the overall exposure ranking (less than 1.0 point apart), followed by Miami. Because the overall score combines hazards so that risk comes from whichever hazards hit, high exposure in one area is not lowered by low exposure elsewhere.\n\n- Dallas (99.1, #1 of 10): Driven mainly by extreme heat, with 15.7 very hot days/yr (>= 37.8 C / 100 F, #1) and 48.6 hot days/yr (>= 35 C / 95 F, #1), plus 12.5 days/yr with hail >= 1 in within 50 km (#1).\n- Houston (98.8, #2 of 10): Differs from Dallas by being driven by flood risk, ranking #1 in heavy-rain days (5.4 days/yr >= 50 mm), FEMA flood events (4.0 events/10yr), and extreme-rain days (0.8 days/yr >= 100 mm).\n- Miami (86.4, #3 of 10): Driven primarily by hurricanes\u20147.1 tropical storms/hurricanes within 200 km per 10yr (#1) and 1.0 FEMA storm event/10yr (#2)\u2014along with 2.7 heavy-rain days/yr >= 50 mm (#2).",
+        "caveats": [
+          "Heat typically slows hub capacity over many days rather than shutting operations down, so equal weighting with acute hazards like hurricanes does not capture severity differences.",
+          "Hurricane storm-track counts cover 1991-2025 (35 years) due to rarity while other hazards cover 2016-2025, and the FEMA hurricane signal relies on a small sample (0-2 events per hub).",
+          "SPC hail reports (relevant to Dallas) carry population and spotter reporting bias.",
+          "FEMA counts include only major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "south_flood_rank",
+        "question": "Rank the southern hubs by flood exposure.",
+        "seconds": 18.8,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Rank the South region hubs by flood exposure.",
+          "intent": "rank",
+          "hubs": [],
+          "region": "South",
+          "hazards": [
+            "flood"
+          ]
+        },
+        "answer": "Houston leads the 4 South region hubs in flood exposure by a wide margin (89.5 on the 0-100 scale, #1 of 4), followed by Miami (29.7, #2 of 4), Atlanta (14.6, #3 of 4), and Dallas (13.4, #4 of 4) for the 2016-2025 window. Houston is the only South hub with FEMA flood disaster events and ranks #1 of 10 hubs across all three flood signals.\n- Houston (89.5, #1 of 4): Driven by 5.4 heavy-rain days (>= 50 mm)/yr (rank #1 of 10), 4.0 FEMA flood events/10yr (rank #1 of 10), and 0.8 extreme-rain days (>= 100 mm)/yr (rank #1 of 10).\n- Miami (29.7, #2 of 4): Driven by 2.7 heavy-rain days (>= 50 mm)/yr (rank #2 of 10) and 0.4 extreme-rain days (>= 100 mm)/yr (rank #2 of 10), with 0.0 FEMA flood events/10yr.\n- Atlanta (14.6, #3 of 4): Driven by 1.9 heavy-rain days (>= 50 mm)/yr (rank #5 of 10) and 0.1 extreme-rain days (>= 100 mm)/yr (tied at rank #4 of 10), with 0.0 FEMA flood events/10yr.\n- Dallas (13.4, #4 of 4): Driven by 2.3 heavy-rain days (>= 50 mm)/yr (rank #3 of 10), with 0.0 extreme-rain days (>= 100 mm)/yr and 0.0 FEMA flood events/10yr.",
+        "caveats": [
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Rainfall metrics rely on Open-Meteo modeled data, where relative ranks are more reliable than absolute values."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "compare_three_winter",
+        "question": "Compare Chicago, Minneapolis and Denver on winter risk.",
+        "seconds": 16.0,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Chicago, Minneapolis, and Denver on winter risk.",
+          "intent": "compare",
+          "hubs": [
+            "chicago",
+            "minneapolis",
+            "denver"
+          ],
+          "hazards": [
+            "winter"
+          ]
+        },
+        "answer": "Minneapolis has the highest winter risk among all 10 hubs, followed by Chicago and Denver. All three hubs experience frequent snow, but Minneapolis stands out for heavy snow and extreme cold, while Denver has no modeled freezing-rain days and fewer extreme-cold days.\n\n- Minneapolis (56.3, #1 of 10): Driven by 23.7 extreme-cold days/yr (100.0, #1 of 10), 5.5 heavy-snow days/yr (91.7, #1 of 10), and 40.4 measurable-snow days/yr (100.0, #2 of 10), plus 0.3 likely freezing-rain/ice days/yr (30.0, tied #4 of 10).\n- Chicago (37.8, #2 of 10): Sees 7.2 extreme-cold days/yr (36.0, #2 of 10), 4.1 heavy-snow days/yr (68.3, tied #2 of 10), 32.7 measurable-snow days/yr (81.7, #3 of 10), and 0.3 likely freezing-rain/ice days/yr (30.0, tied #4 of 10).\n- Denver (33.1, #3 of 10): Leads in measurable-snow days at 40.5 days/yr (100.0, #1 of 10) and ties Chicago at 4.1 heavy-snow days/yr (68.3, tied #2 of 10), but has fewer extreme-cold days at 4.2 days/yr (21.0, #3 of 10) and 0.0 likely freezing-rain/ice days/yr.\n\nNone of the three hubs recorded qualifying FEMA winter disaster events (0.0 events/10yr).",
+        "caveats": [
+          "Snow, cold, and freezing-rain metrics are based on Open-Meteo modeled data; absolute snow totals run low, so rankings are more reliable than absolute values.",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "aliases",
+        "question": "Compare KC and the Twin Cities for severe storms.",
+        "seconds": 21.8,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Compare Kansas City and Minneapolis for severe storms.",
+          "intent": "compare",
+          "hubs": [
+            "kansas_city",
+            "minneapolis"
+          ],
+          "hazards": [
+            "severe_storm"
+          ]
+        },
+        "answer": "Kansas City has much higher severe storm exposure than Minneapolis (56.4, #1 of 10 vs. 28.1, #7 of 10 over 2016-2025). Kansas City leads across NWS severe hail frequency, strong wind gusts, and FEMA-declared storm disasters, while Minneapolis only edges it out on very large hail (>= 2 in).\n\n- Kansas City (56.4, #1 of 10): Averages 8.5 days/yr with hail >= 1 in (#3 of 10), 1.3 days/yr with hail >= 2 in (#4 of 10), and 2.0 strong-gust days/yr >= 80 km/h (#3 of 10, tied). It also recorded 1.0 FEMA severe storm disaster in 10 years (#1 of 10, tied; DR-4451-MO in 2019).\n- Minneapolis (28.1, #7 of 10): Averages 6.2 days/yr with hail >= 1 in (#4 of 10), 1.7 days/yr with hail >= 2 in (#3 of 10), and 1.0 strong-gust days/yr >= 80 km/h (#7 of 10), with 0.0 FEMA severe storm disasters over the 10-year window.",
+        "caveats": [
+          "SPC hail reports have a population and spotter reporting bias.",
+          "Strong-gust days (>= 80 km/h) are derived from modeled Open-Meteo data, where hub ranks are more reliable than absolute values.",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "dfw_hail_2024",
+        "question": "How many hail days did DFW have in 2024?",
+        "seconds": 12.5,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How many hail days did Dallas (DFW) have in 2024?",
+          "intent": "weather_stat",
+          "hubs": [
+            "dallas"
+          ],
+          "hazards": [],
+          "metric": "hail_days",
+          "year": 2024
+        },
+        "answer": "Dallas (DFW) had 12 hail days in 2024, which is 3.3% of the 366 days in the year. This is defined as days with hail of at least 1 inch reported within 50 km of DFW (32.8998, -97.0403) in NOAA SPC hail reports, covering the full year through 2024-12-31.",
+        "caveats": [
+          "NOAA SPC hail reports have a population and spotter bias, as counts depend on hail being observed and reported within 50 km of the hub."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "so_far_this_year",
+        "question": "How many days with snow has Minneapolis had so far this year?",
+        "seconds": 11.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How many days with snow has Minneapolis had so far in 2026?",
+          "intent": "weather_stat",
+          "hubs": [
+            "minneapolis"
+          ],
+          "hazards": [],
+          "metric": "snow_days",
+          "year": 2026
+        },
+        "answer": "Minneapolis (MSP) has recorded 24 days with measurable snow in 2026 through 2026-11-20 (a partial year covering 324 days). This counts days with at least 0.25 cm (~0.1 in) of snow. Those snow days represent 7.4% of the period, with a cumulative total of 52.5 cm.",
+        "caveats": [
+          "Source is Open-Meteo archive (modeled reanalysis), where absolute snow totals run low and rankings are more reliable than absolute values.",
+          "Results reflect a partial year through 2026-11-20 (324 days) and do not include late-year weather after that date."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "houston_top_tie",
+        "question": "Why is Houston ranked first?",
+        "seconds": 18.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Houston ranked first in overall weather risk?",
+          "intent": "explain",
+          "hubs": [
+            "houston"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Houston is actually #2 of 10 in overall weather risk with a score of 98.8 (on a 0-100 scale), and it is effectively tied with Dallas (less than 1 point apart) rather than holding a lone #1 spot. Still, its overall risk is clearly high, driven overwhelmingly by flooding and hurricanes. Because the overall score combines hazards using a noisy-OR method, risk comes from whichever hazards hit, meaning Houston's low severe storm (15.4, #9 of 10) and winter (15.6, #8 of 10) scores do not offset its extreme flood and tropical exposure. Flooding is the primary driver at 89.5 (#1 of 10), reflecting 5.4 heavy-rain days/yr (>= 50 mm; score 90.0, #1 of 10), 0.8 extreme-rain days/yr (>= 100 mm; score 80.0, #1 of 10), and 4.0 FEMA flood events/10yr (score 100.0, #1 of 10). Hurricanes are the second driver at 75.0 (#2 of 10), backed by 5.1 tropical storms or hurricanes/10yr passing within 200 km (score 64.3, #2 of 10) and 2.0 FEMA hurricane events/10yr (score 100.0, #1 of 10). Heat contributes modestly at 38.1 (#2 of 10, with 22.8 hot days/yr >= 35 C / 95 F).",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas the other hazards use 2016-2025; the FEMA hurricane component is a small sample (0-2 events per hub).",
+          "FEMA event counts include only major disasters with household aid in the hub's county.",
+          "Heat usually slows a hub (reducing capacity over many days) rather than shutting it down, which equal weighting with ice or hurricanes does not capture."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "miami_winter_premise",
+        "question": "Why is Miami's winter risk so high?",
+        "seconds": 12.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Miami's winter risk so high?",
+          "intent": "explain",
+          "hubs": [
+            "miami"
+          ],
+          "hazards": [
+            "winter"
+          ],
+          "asserted_level": "high"
+        },
+        "answer": "Miami's winter risk is actually zero, not high\u2014it has a winter score of 0.0 (#10 of 10) for the 2016-2025 window. Across every winter signal, Miami recorded 0.0: 0.0 measurable snow days/yr (>= 0.25 cm), 0.0 heavy-snow days/yr (>= 5 cm), 0.0 extreme-cold days/yr (min <= -18 C / 0 F), 0.0 freezing-rain/ice days/yr, and 0.0 FEMA winter disaster events/10yr. Miami does have a high overall score of 86.4 (#3 of 10), because the overall score uses a noisy-OR formula where risk comes from whichever hazards hit and a zero in winter cannot offset high exposure elsewhere. Specifically, Miami ranks among the highest hubs for tropical storms/hurricanes within 200 km (7.1 storms/10yr, #1 of 10), FEMA hurricane/tropical/coastal storm events (1.0 events/10yr, #2 of 10), heavy-rain days >= 50 mm (2.7 days/yr, #2 of 10), and extreme-rain days >= 100 mm (0.4 days/yr, #2 of 10).",
+        "caveats": [
+          "Weather signals use Open-Meteo modeled data, where absolute snow totals tend to run low and ranks are more reliable than absolute values.",
+          "FEMA event counts include only major disaster declarations with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
         "id": "no_investment_decision",
         "question": "Which single hub should we invest in this year? Just tell me the answer.",
-        "seconds": 15.3,
+        "seconds": 18.5,
         "status": "ok",
         "checks": {
           "status": [],
@@ -88,12 +1959,260 @@
           "hazards": [],
           "top_n": 1
         },
-        "answer": "Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied for highest overall weather risk because their scores are less than 1.0 point apart on the 0-100 scale. Under the noisy-OR method, risk comes from whichever hazards hit, so low exposure elsewhere does not offset a severe hazard. Rather than a single #1, these hubs have distinct risk profiles. Dallas is driven by extreme heat\u201415.7 very hot days/yr (>= 37.8 C / 100 F; score 98.1, #1 of 10) and 48.59 hot days/yr (>= 35 C / 95 F; score 97.2, #1 of 10)\u2014and severe storms, with 12.5 days/yr of hail >= 1 in within 50 km (score 100.0, #1 of 10). Note that heat usually slows capacity rather than shutting down operations. Houston is driven by flooding: 5.4 heavy-rain days/yr (>= 50 mm; score 90.0, #1 of 10), 0.8 extreme-rain days/yr (>= 100 mm; score 80.0, #1 of 10), and 4.0 FEMA flood events/10yr (score 100.0, #1 of 10). Your final investment choice should also weigh hub volume, upgrade costs, and existing protections.",
+        "answer": "No single hub stands out at the top because Dallas and Houston are effectively tied (less than 1.0 point apart), though they face very different hazards. Overall scores use a noisy-OR combination, so risk is driven by whichever hazards hit and low exposure elsewhere does not offset high exposure.\n\n- Dallas (99.1, #1 of 10; effectively tied with Houston): Driven by extreme heat, averaging 15.7 very hot days/yr >= 37.8 C / 100 F (98.1, #1 of 10) and 48.6 hot days/yr >= 35 C / 95 F (97.2, #1 of 10), alongside severe storms with 12.5 days/yr of hail >= 1 in within 50 km (100.0, #1 of 10).\n- Houston (98.8, #2 of 10; effectively tied with Dallas): Driven by flood risk, averaging 5.4 heavy-rain days/yr >= 50 mm (90.0, #1 of 10), 4.0 FEMA flood events/10yr (100.0, #1 of 10), and 0.8 extreme-rain days/yr >= 100 mm (80.0, #1 of 10).\n\nBecause Dallas faces frequent heat and hail while Houston faces flood exposure, the final investment choice should also weigh factors outside this data, including hub volume, upgrade cost, and existing protections.",
         "caveats": [
-          "Heat usually slows a hub over many days rather than shutting it down; equal treatment with other hazards does not capture that severity difference.",
-          "SPC hail reports carry a population and spotter bias.",
-          "FEMA counts only major disasters with household aid in the hub's county and relies on a small sample."
+          "Heat typically slows hub capacity over many days rather than shutting operations down, so equal scoring with acute hazards does not capture that difference in severity.",
+          "SPC hail reports carry population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county.",
+          "Open-Meteo weather metrics are modeled data, making hub ranks more reliable than exact absolute values.",
+          "Storm-track counts span 1991-2025 (35 years) due to hurricane rarity while other hazards use 2016-2025, and the FEMA hurricane component is a small sample (0-2 events per hub)."
         ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "holdout_flood_budget",
+        "question": "If our resilience budget only covers flood protection, where should it go first?",
+        "seconds": 15.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs have the highest flood risk and should be prioritized first for flood protection?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [
+            "flood"
+          ]
+        },
+        "answer": "Houston has by far the highest flood risk (89.5, #1 of 10) and is the clear top priority for flood protection, followed at a distance by Miami (29.7, #2 of 10), Chicago (23.2, #3 of 10), and Kansas City (19.9, #4 of 10). On the 0-100 exposure scale for 2016-2025, flood risk reflects heavy rainfall days and county-level FEMA flood disaster declarations.\n- Houston (89.5, #1 of 10): leads all hubs on every flood signal with 5.4 heavy-rain days/yr (>= 50 mm, #1), 0.8 extreme-rain days/yr (>= 100 mm, #1), and 4.0 FEMA flood events/10yr (#1).\n- Miami (29.7, #2 of 10): driven by 2.7 heavy-rain days/yr (#2) and 0.4 extreme-rain days/yr (#2), with 0.0 FEMA flood events/10yr.\n- Chicago (23.2, #3 of 10): driven primarily by 2.0 FEMA flood events/10yr (#2), alongside 0.8 heavy-rain days/yr (#7) and 0.1 extreme-rain days/yr (#4, tied).\n- Kansas City (19.9, #4 of 10): driven by 2.2 heavy-rain days/yr (#4) and 0.2 extreme-rain days/yr (#3), with 0.0 FEMA flood events/10yr.\nThe remaining hubs score lower (14.6 down to 0.6). Because this ranking measures hazard exposure only, the final investment choice should also weigh hub volume, upgrade cost, and existing protections.",
+        "caveats": [
+          "FEMA counts only major disasters with household aid in the hub's county, so localized flooding without federal household aid is not captured.",
+          "Rainfall metrics are based on Open-Meteo modeled data rather than on-site gauges."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "holdout_prioritize_pair",
+        "question": "Between Atlanta and Denver, which one deserves resilience upgrades more, weather-wise?",
+        "seconds": 22.4,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Between Atlanta and Denver, which hub should be prioritized more for weather resilience upgrades overall?",
+          "intent": "rank",
+          "hubs": [
+            "atlanta",
+            "denver"
+          ],
+          "hazards": []
+        },
+        "answer": "Denver should be prioritized ahead of Atlanta for weather-resilience upgrades based on overall exposure, though both hubs sit in the lower half of the 10-hub network. Because the overall score combines hazards so that low exposure in one area does not offset high exposure in another, Denver's heavy snow and hail exposure puts it ahead.\n\n- Denver (overall score 60.8, #7 of 10): Driven mainly by winter and severe storms, averaging 40.5 measurable snow days/yr (>= 0.25 cm; signal score 100.0, #1 of 10), 10.5 severe hail days/yr (>= 1 in within 50 km; signal score 87.5, #2 of 10), and 1.1 strong-gust days/yr (>= 80 km/h; signal score 36.7, #6 of 10).\n\n- Atlanta (overall score 51.2, #10 of 10): Driven by moderate exposure across several hazards, with 2.3 tropical storms/hurricanes within 200 km per 10 years (signal score 28.6, #3 of 10), 1.3 strong-gust days/yr (>= 80 km/h; signal score 43.3, #5 of 10), and 1.9 heavy-rain days/yr (>= 50 mm; signal score 31.7, #5 of 10).\n\nThe final investment decision should also weigh factors outside this data, including hub volume, upgrade cost, and existing protections.",
+        "caveats": [
+          "Open-Meteo is modeled data where absolute snow totals run low, making hub rankings more reliable than absolute values.",
+          "SPC hail reports have a population and spotter bias.",
+          "Hurricane and tropical storm counts use a 1991-2025 window (35 years) because events are rare (small sample), while other hazards use 2016-2025; FEMA disaster counts are also a small sample (0-2 events per hub) and only count major disasters with household aid in the hub's county."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "holdout_kc_vs_chicago_storms",
+        "question": "Is Kansas City's severe storm risk lower than Chicago's?",
+        "seconds": 20.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Is Kansas City's severe storm risk lower than Chicago's?",
+          "intent": "compare",
+          "hubs": [
+            "kansas_city",
+            "chicago"
+          ],
+          "hazards": [
+            "severe_storm"
+          ]
+        },
+        "answer": "No, Kansas City's severe storm risk is higher than Chicago's (56.4, #1 of 10 vs. 50.2, #2 of 10). The gap is driven by more frequent hail in Kansas City, while both hubs match on strong wind gusts and FEMA severe storm declarations (their overall multi-hazard scores are effectively tied, less than 1 point apart).\n\n- Kansas City: Severe storm score 56.4 (#1 of 10); overall score 75.7 (#5 of 10, effectively tied with Chicago). Driven by 8.5 days/yr with hail >= 1 in within 50 km (#3 of 10), 1.3 days/yr with hail >= 2 in (#4 of 10), 2.0 strong-gust days/yr >= 80 km/h (tied #3 of 10), and 1.0 FEMA severe storm event per 10 years (tied #1 of 10).\n- Chicago: Severe storm score 50.2 (#2 of 10); overall score 76.4 (#4 of 10, effectively tied with Kansas City). Matches Kansas City at 2.0 strong-gust days/yr >= 80 km/h (tied #3 of 10) and 1.0 FEMA event per 10 years (tied #1 of 10), with fewer hail days at 6.0 days/yr >= 1 in (#5 of 10) and 0.7 days/yr >= 2 in (#5 of 10).",
+        "caveats": [
+          "SPC hail reports have a population and spotter bias.",
+          "FEMA counts include only major disaster declarations with household aid in the hub's county.",
+          "Strong-gust days (>= 80 km/h) are based on Open-Meteo modeled data."
+        ],
+        "passed": true,
+        "holdout": true
+      },
+      {
+        "id": "unknown_hub",
+        "question": "How exposed is our Seattle hub to winter storms?",
+        "seconds": 4.1,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "How exposed is our Seattle hub to winter storms?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [
+            "winter"
+          ],
+          "out_of_scope_reason": "Seattle is not one of the covered logistics hubs."
+        },
+        "answer": "That's outside what I cover: Seattle is not one of the covered logistics hubs.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "uncovered_hazard",
+        "question": "Which hub has the highest earthquake risk?",
+        "seconds": 6.3,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hub has the highest earthquake risk?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [],
+          "out_of_scope_reason": "Earthquake risk is not covered by this tool; only weather hazards (winter, flood, severe storm, hurricane, and extreme heat) are scored."
+        },
+        "answer": "That's outside what I cover: Earthquake risk is not covered by this tool; only weather hazards (winter, flood, severe storm, hurricane, and extreme heat) are scored.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "heat_ranking",
+        "question": "Which hubs are most exposed to extreme heat?",
+        "seconds": 18.6,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hubs are most exposed to extreme heat?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [
+            "heat"
+          ]
+        },
+        "answer": "Dallas is by far the most exposed hub to extreme heat, followed by Houston in a distant second. Every other hub has low heat exposure, scoring 8.0 or below on the 0-100 scale (2016-2025).\n\n- Dallas (97.7, #1 of 10): driven by 15.7 very hot days/yr (max >= 37.8 C / 100 F, #1) and 48.6 hot days/yr (max >= 35 C / 95 F, #1).\n- Houston (38.1, #2 of 10): driven by 22.8 hot days/yr (#2) and 4.9 very hot days/yr (#2).\n- Kansas City (8.0, #3 of 10, effectively tied with Denver): 7.0 hot days/yr (#4) and 0.3 very hot days/yr (#3).\n- Denver (7.1, #4 of 10, effectively tied with Kansas City): 7.1 hot days/yr (#3) and 0.0 very hot days/yr.\n- Atlanta (4.1, #5 of 10): 3.5 hot days/yr (#5) and 0.2 very hot days/yr (#4).\n\nMinneapolis (1.0, #6 of 10), Chicago (0.9, #7 of 10), Miami (0.6, #8 of 10), Indianapolis (0.1, #9 of 10), and Columbus (0.0, #10 of 10) each see 1.0 or fewer hot days/yr and 0.0 very hot days/yr.",
+        "caveats": [
+          "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "wildfire_out_of_scope",
+        "question": "Which hub is most at risk from wildfire smoke?",
+        "seconds": 3.6,
+        "status": "out_of_scope",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which hub is most at risk from wildfire smoke?",
+          "intent": "out_of_scope",
+          "hubs": [],
+          "hazards": [],
+          "out_of_scope_reason": "Wildfire and wildfire smoke are not covered hazards. Covered hazards are winter, flood, severe_storm, hurricane, and heat."
+        },
+        "answer": "That's outside what I cover: Wildfire and wildfire smoke are not covered hazards. Covered hazards are winter, flood, severe_storm, hurricane, and heat.. I cover 10 hubs and these hazards: winter, flood / heavy rain, severe storms, hurricane / tropical storm, extreme heat.",
+        "caveats": [],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "atlanta_false_premise",
+        "question": "Why is Atlanta one of our riskiest hubs?",
+        "seconds": 20.1,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Why is Atlanta one of our riskiest hubs?",
+          "intent": "explain",
+          "hubs": [
+            "atlanta"
+          ],
+          "hazards": [],
+          "asserted_level": "high"
+        },
+        "answer": "Atlanta is actually not one of our riskiest hubs overall: its overall score is 51.2, #10 of 10 hubs in the 2016-2025 window. Under the noisy-OR scoring method, where risk reflects whichever hazards hit rather than averaging down with low-exposure hazards, Atlanta remains relatively modest across most perils. Its highest relative exposure is hurricanes (score 20.0, #3 of 10), driven by 2.3 tropical storms or hurricanes passing within 200 km per 10 years (signal score 28.6, #3 of 10). The other main drivers of its overall score are severe storms (score 22.0, #8 of 10), from 1.3 strong-gust days per year at or above 80 km/h (score 43.3, #5 of 10) and 4.7 days per year with hail at or above 1 inch within 50 km (score 39.2, #6 of 10), and flooding (score 14.6, #5 of 10), from 1.9 heavy-rain days per year at or above 50 mm (score 31.7, #5 of 10) and 0.1 extreme-rain days per year at or above 100 mm (score 10.0, tied #4 of 10). Heat (score 4.1, #5 of 10) and winter (score 4.6, #9 of 10) add very little.",
+        "caveats": [
+          "Hurricane storm-track counts use 1991-2025 (35 years) because hurricanes are rare, whereas the other hazards use 2016-2025.",
+          "FEMA counts only major disasters with household aid in the hub's county, and the hurricane FEMA component is a small sample (0-2 events per hub).",
+          "SPC hail reports carry population and spotter bias.",
+          "Open-Meteo weather metrics come from modeled data, so hub ranks are more reliable than absolute totals."
+        ],
+        "passed": true,
+        "holdout": false
+      },
+      {
+        "id": "too_vague",
+        "question": "Is it bad?",
+        "seconds": 2.9,
+        "status": "clarify",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Is it bad?",
+          "intent": "clarify",
+          "hubs": [],
+          "hazards": [],
+          "clarification_question": "Which hub and which weather hazard (or overall weather risk) are you asking about?"
+        },
+        "answer": "Which hub and which weather hazard (or overall weather risk) are you asking about?",
+        "caveats": [],
         "passed": true,
         "holdout": false
       }
