@@ -28,7 +28,17 @@
   .msg p { margin: 0 0 8px; white-space: pre-line; } .msg p:last-child { margin-bottom: 0; }
   /* pre-line keeps single line breaks from the answer (one hub per line); text is still plain text */
   .meta { color: var(--muted); font-size: 12px; margin-top: 8px; }
-  .caveats { color: var(--warn); font-size: 13px; margin: 8px 0 0; padding-left: 18px; }
+  /* Answer layout (display only: the answer text from the API is unchanged) */
+  .msg.answer { padding: 14px 16px; line-height: 1.55; }
+  .assumed { color: var(--muted); font-size: 13px; font-style: italic; margin: 0 0 6px; }
+  .summary { font-weight: 600; font-size: 15.5px; margin: 0 0 8px; }
+  .hubrows { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+  .hubrow { background: var(--code); border-left: 3px solid var(--accent); border-radius: 4px; padding: 7px 10px; }
+  .hubrow b { margin-right: 2px; }
+  .caveats-box { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .caveats-title { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .caveats { color: var(--muted); font-size: 12.5px; margin: 4px 0 0; padding-left: 18px; }
+  .caveats li { margin: 2px 0; }
   details { margin-top: 8px; font-size: 13px; }
   summary { cursor: pointer; color: var(--accent); }
   pre { background: var(--code); border: 1px solid var(--border); border-radius: 6px; padding: 8px;
@@ -86,28 +96,56 @@ function setSession(id) { sessionId = id; try { id ? sessionStorage.setItem("ses
 
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
-// Minimal, safe formatting: text is inserted with textContent; only **bold** and paragraphs are rendered.
-function renderText(container, text) {
-  for (const para of text.split(/\n{2,}/)) {
-    const p = el("p");
-    para.split(/(\*\*[^*]+\*\*)/).forEach(part => {
-      if (/^\*\*[^*]+\*\*$/.test(part)) p.appendChild(el("b", null, part.slice(2, -2)));
-      else p.appendChild(document.createTextNode(part));
-    });
-    container.appendChild(p);
-  }
-}
-
 function addUser(text) { log.appendChild(el("div", "msg user", text)); scroll(); }
 function scroll() { window.scrollTo(0, document.body.scrollHeight); }
 
+// Text with **bold** spans, built with text nodes only (never innerHTML).
+function appendInline(parent, text) {
+  text.split(/(\*\*[^*]+\*\*)/).forEach(part => {
+    if (/^\*\*[^*]+\*\*$/.test(part)) parent.appendChild(el("b", null, part.slice(2, -2)));
+    else if (part) parent.appendChild(document.createTextNode(part));
+  });
+}
+
+// Lay out the answer for reading. Display only: the text from the API is not changed.
+//   "Assuming you still mean ..." -> small italic note
+//   first sentence before the list -> bold summary; the rest -> normal paragraph
+//   "- Hub (score, rank): drivers" -> one row per hub, hub name in bold
+//   anything else -> plain paragraphs
+function renderAnswer(box, text) {
+  const lines = (text || "").split("\n").map(l => l.trim()).filter(Boolean);
+  if (lines.length && lines[0].startsWith("Assuming you still mean")) box.appendChild(el("p", "assumed", lines.shift()));
+  const before = [];
+  while (lines.length && !lines[0].startsWith("- ")) before.push(lines.shift());
+  const sentences = before.join(" ").split(/(?<=[.!?])\s+(?=[A-Z])/);
+  if (sentences[0]) { const s = el("p", "summary"); appendInline(s, sentences[0]); box.appendChild(s); }
+  if (sentences.length > 1) { const p = el("p"); appendInline(p, sentences.slice(1).join(" ")); box.appendChild(p); }
+  let rows = null;
+  for (const line of lines) {
+    if (line.startsWith("- ")) {
+      if (!rows) { rows = el("div", "hubrows"); box.appendChild(rows); }
+      const row = el("div", "hubrow"), item = line.slice(2);
+      const m = item.match(/^([^(:]{1,40}?)\s*(?=[(:])/);      // hub name = text before "(" or ":"
+      if (m) { row.appendChild(el("b", null, m[1])); appendInline(row, item.slice(m[1].length)); }
+      else appendInline(row, item);
+      rows.appendChild(row);
+    } else {
+      rows = null;                                            // text after a list: back to paragraphs
+      const p = el("p"); appendInline(p, line); box.appendChild(p);
+    }
+  }
+}
+
 function addAgent(r) {
-  const box = el("div", "msg");
-  renderText(box, r.answer);
+  const box = el("div", "msg answer");
+  renderAnswer(box, r.answer);
   if (r.caveats && r.caveats.length) {
+    const cb = el("div", "caveats-box");
+    cb.appendChild(el("div", "caveats-title", "Caveats"));
     const ul = el("ul", "caveats");
     r.caveats.forEach(c => ul.appendChild(el("li", null, c)));
-    box.appendChild(ul);
+    cb.appendChild(ul);
+    box.appendChild(cb);
   }
   box.appendChild(el("div", "meta", `confidence: ${r.confidence} · status: ${r.status}`));
   const d = el("details");
@@ -152,10 +190,23 @@ document.getElementById("new").addEventListener("click", () => { setSession(null
 const mic = document.getElementById("mic");
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// The whole spoken sentence so far. Chrome splits one utterance into several results, so we join
-// ALL of them (an earlier version showed only the last result, i.e. the last word or phrase).
-function transcriptOf(results) {
-  return Array.from(results).map(r => r[0].transcript).join("").replace(/\s+/g, " ").trim();
+// Live transcript = all FINAL words so far + the CURRENT (interim) words.
+// Chrome reports only the results that changed, starting at e.resultIndex, and earlier results can be
+// missing from later events. So the final words are kept in our own variable instead of being read back
+// from e.results each time. (Two earlier versions showed only the last result, or flashed it.)
+function makeTranscriber() {
+  let finalText = "";
+  return {
+    reset() { finalText = ""; },
+    update(e) {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += t; else interim += t;
+      }
+      return (finalText + " " + interim).replace(/\s+/g, " ").trim();
+    },
+  };
 }
 
 if (!Recognition) {
@@ -167,7 +218,8 @@ if (!Recognition) {
   rec.interimResults = true;          // update the box while speaking
   rec.continuous = false;             // the browser ends the session when you stop speaking
   let listening = false, heard = "";
-  rec.onresult = e => { heard = transcriptOf(e.results); input.value = heard; };
+  const transcriber = makeTranscriber();
+  rec.onresult = e => { heard = transcriber.update(e); input.value = heard; };
   rec.onend = () => {                 // fired after a pause in speech (or a click on the mic)
     listening = false; mic.classList.remove("listening");
     const q = heard.trim(); heard = "";
@@ -179,7 +231,7 @@ if (!Recognition) {
   mic.addEventListener("click", () => {
     if (listening) { rec.stop(); return; }          // stopping early still sends what was heard
     if ("speechSynthesis" in window) speechSynthesis.cancel();   // don't listen to ourselves
-    heard = ""; input.value = "";
+    heard = ""; input.value = ""; transcriber.reset();
     try { rec.start(); listening = true; mic.classList.add("listening"); } catch (e) { /* already started */ }
   });
 }
