@@ -98,6 +98,36 @@ Caveats on the eval:
 
 **Deadline:** assignment received ~10:50 Israel time 2026-11-22 → due **~10:50 on 2026-11-23**.
 
+## Remaining for tomorrow morning (written 2026-11-22 23:30)
+
+State tonight: all code and docs committed and pushed (`main` = `e302747`, working tree clean).
+Core requirements and all 5 bonuses (heat, HURDAT2, alerts, deploy, voice) are done.
+Final eval 75/75 on `9125781`. 49 unit/validation tests pass.
+
+**Must do (mandatory deliverable):**
+1. **Export the full AI session transcript** (the plan and the whole conversation). Suggested
+   location: `docs/session/` in the repo, plus a line in the README pointing to it. Commit and push.
+   This is the user's step.
+
+**Should do (about 20 min):**
+2. **Check the Gemini credit balance** in AI Studio before the interview: credits ran out once
+   (402), and the live demo and any eval need them.
+3. **Wake and smoke-test Render:** open `/health` (no password, ~1 min to wake), then sign in as
+   `demo` and check that:
+   - the deployed version includes `e302747` (new answer layout);
+   - one typed question, one follow-up (with the "Assuming you still mean…" line), and one voice
+     question (mic → auto-send → spoken answer in English) all work;
+   - `POST /alerts/demo` returns 5 alerts.
+4. **Optional confirmation eval:** one run, `python -u -m evals.run_eval` (~8 min, ~50 Gemini calls).
+   - Commits since `9125781` didn't change the planner or narrator prompts, the schemas, or the scores.
+   - The storm-track table was re-ingested and the scores were checked unchanged; the other changes
+     were the alert catch-up, the UI and voice.
+   - So the 75/75 result should still hold. This run would confirm it on the final code.
+
+**Not planned (documented as limitations or next steps):** severity weights from customer cost
+data, a feels-like (humidity) heat signal, Postgres and an always-on instance for persistent
+alerts and sessions, station data to correct the snow bias.
+
 ## Phases: status (2026-11-22 16:15 local, ~5.5h in)
 | # | Phase | Original | Status | Remaining est. |
 |---|---|---|---|---|
