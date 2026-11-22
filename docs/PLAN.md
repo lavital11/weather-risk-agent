@@ -62,6 +62,7 @@ Notes for the design doc:
 | 1 | 18/20 | `dallas_premise`: **grader bug**; the grounding check read "top-3" as −3, so the number regex was fixed. `no_investment_decision`: **agent bug**; the planner refused "which hub should we invest in?" as out of scope, so the planner prompt now treats prioritization questions as `rank`, and the narrator frames them as decision support (plus factors outside the data) |
 | 2 | 20/20 | — |
 | 3 (×3 repeats, 23 cases incl. 3 holdouts) | 68/69 case-runs | `holdout_prioritize_pair` 2/3: once planned as `rank` of the 2 hubs instead of `compare`. The answer was correct and grounded; only the plan check failed. This is a side effect of the run-2 prompt fix, caught by the holdout. Test left unchanged (decision pending: accept `rank` or `compare` for this case?) |
+| — | test change | **`holdout_prioritize_pair` relaxed after seeing the results** (user decision): the plan may be `rank` or `compare`, but must include both Atlanta and Denver. Why: the question is a two-hub ranking, so `rank` limited to those hubs is a valid plan, and the answer was correct and grounded in every failing run. Disclosed because loosening a test after it fails can hide real problems |
 | 4 (heat added, 25 cases, ×1) | 24/25 | Only `holdout_prioritize_pair` failed again (plan `rank` vs `compare`; answer correct). All heat-related cases passed: `dallas_premise` (now holds, #2), `heat_ranking`, `atlanta_false_premise`, `wildfire_out_of_scope` |
 
 Caveats on the eval:

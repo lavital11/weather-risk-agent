@@ -35,6 +35,11 @@ def check_plan(expected: dict, reply: AgentReply) -> list[str]:
         return ["no plan"]
     got, errors = reply.plan.model_dump(), []
     for field, want in expected.items():
+        if field.endswith("_one_of"):                  # e.g. intent_one_of = ["rank", "compare"]
+            name = field.removesuffix("_one_of")
+            if got.get(name) not in want:
+                errors.append(f"plan.{name}: expected one of {want!r}, got {got.get(name)!r}")
+            continue
         have = got.get(field)
         if isinstance(want, list):
             ok = set(want) == set(have or [])
