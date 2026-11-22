@@ -40,7 +40,8 @@ def test_dallas_premise_now_holds_with_heat(ex):
     # Before heat was added, Dallas was #6 and the premise did not hold (see PLAN.md).
     f = ex.run(plan(intent="explain", hubs=["dallas"], asserted_level="high"))
     assert f["premise_check"]["premise_holds"] is True
-    assert f["premise_check"]["rank"] == 2
+    assert f["premise_check"]["rank"] <= 2
+    assert "Houston" in f["overall_effectively_tied_with"]             # 99.1 vs 98.8: effectively tied
     notable = {(n["signal"], n["rank_among_hubs"]) for n in f["notable_signals"]}
     assert any("hail >= 1 in" in s and r == 1 for s, r in notable)      # #1 for hail
     assert any("ice" in s.lower() and r == 2 for s, r in notable)       # #2 for ice (tied)
@@ -54,20 +55,32 @@ def test_premise_check_still_rejects_false_premise(ex):
 
 
 def test_zero_scores_get_no_rank_and_ties_are_flagged(ex):
-    f = ex.run(plan(intent="explain", hubs=["dallas"]))
+    f = ex.run(plan(intent="explain", hubs=["chicago"]))
     hurricane = f["hazards"]["hurricane"]
-    assert hurricane["score"] == 0 and hurricane["rank"] is None      # not "rank 3"
+    assert hurricane["score"] == 0 and hurricane["rank"] is None      # not "rank 5"
     severe = ex.run(plan(intent="explain", hubs=["chicago"]))["hazards"]["severe_storm"]["signals"]
     fema = next(s for s in severe if s["signal"].startswith("FEMA"))
     assert fema["rank_among_hubs"] == 1 and fema["tied"] is True        # tied with Kansas City
 
 
-def test_houston_saturates_and_other_hazards_contribute_nothing(ex):
-    f = ex.run(plan(intent="explain", hubs=["houston"]))
-    assert f["overall_score"] == 100.0
-    c = f["hazard_contributions_to_overall"]
-    assert c["hurricane"] > 0                                        # removing hurricane lowers the score
-    assert c["flood"] == 0.0 and c["winter"] == 0.0                  # saturated: removing them changes nothing
+def test_top_of_overall_ranking_is_flagged_effectively_tied(ex):
+    f = ex.run(plan(intent="rank"))
+    tie = f["top_is_effectively_tied"]
+    assert set(tie["hubs"]) >= {"Dallas", "Houston"}
+    assert max(tie["scores"]) - min(tie["scores"]) < 1.0
+
+
+def test_top_n_does_not_cut_through_a_tie(ex):
+    f = ex.run(plan(intent="rank", top_n=1))
+    assert {r["hub_id"] for r in f["ranking"]} == {"dallas", "houston"}
+
+
+def test_hurdat2_puts_miami_above_houston_on_hurricanes(ex):
+    f = ex.run(plan(intent="compare", hubs=["miami", "houston"], hazards=["hurricane"]))
+    mia, hou = (h["hazards"]["hurricane"] for h in f["hubs"])
+    assert mia["score"] > hou["score"]
+    assert "HARVEY" in {s["name"] for s in hou["storm_passes"]}
+    assert "IRMA" in {s["name"] for s in mia["storm_passes"]}            # missed at 100 km, caught at 200 km
 
 
 def test_compare_includes_hurricane_small_sample_note(ex):

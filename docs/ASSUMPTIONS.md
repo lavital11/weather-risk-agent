@@ -58,6 +58,12 @@ Running list; feeds the design doc.
   - It moves Dallas from #6 to #2, and the top two are saturated near 100 (DESIGN.md §2).
   - It uses raw max temperature: a feels-like (humidity) signal was considered and skipped. Reanalysis tends to smooth extremes, so counts are likely conservative.
 
+- **A18.** Hurricane exposure (replaces the FEMA-only A15): NOAA HURDAT2 storms passing within **200 km** of the hub while at tropical-storm or hurricane strength. Per 10 years, over **1991–2025**, bound 8 (Miami, the highest, has 7.1). Hazard = tracks 0.7 + FEMA 0.3.
+  - **Different window:** 35 years instead of 2016–2025, because hurricanes are rare. This assumes the 1991–2025 storm climate represents today.
+  - **Why 200 km:** 100 km missed Irma (2017) for Miami, because its center passed more than 100 km away while it still brought hurricane-force gusts.
+  - **Limits:** this uses the center track only. It ignores wind-field size and the storm's strength at the hub's location; positions every 6 hours are interpolated linearly.
+- **A19.** "Effectively tied": overall scores less than 1 point apart are reported as tied, not as a single #1. This is a judgment threshold for the saturated top of noisy-OR.
+
 ## Out of scope (hazards)
 - ~~Extreme heat~~: **added later as a 5th hazard** (A17).
 - Wildfire, earthquake, drought: not weather-disruption hazards in our question set; the agent answers "out of scope".

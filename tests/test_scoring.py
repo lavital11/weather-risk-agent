@@ -10,7 +10,7 @@ import pytest
 
 from weather_risk.config import Hub
 from weather_risk.scoring import (
-    combine_hazards, is_ice_day, load_scoring_config, scale, score_fema_events, score_hail_days, score_hub, score_weather_days,
+    combine_hazards, is_ice_day, load_scoring_config, scale, score_fema_events, score_hail_days, score_hub, score_storm_tracks, score_weather_days,
 )
 
 HUB = Hub(id="test", name="Test", airport="TST", lat=0, lon=0, timezone="UTC", state="TX",
@@ -168,6 +168,25 @@ def test_hail_counts_days_not_reports_and_respects_radius():
     r = score_hail_days(comp, {"hub": HUB, "hail_reports": reports, "window_years": 10.0})
     assert r.signals[0].value == 0.1             # 1 day in 10 years
     assert r.score == 1.0                        # 0.1 / 10 * 100
+
+
+TRACK_COMP = {"weight": 1.0, "radius_km": 100, "statuses": ["TS", "HU"],
+              "window_start_year": 1991, "window_end_year": 2000, "bound": 8}
+
+
+def test_storm_track_uses_segment_not_just_points_and_filters_status_and_window():
+    storms = {
+        # Both reported positions are ~222 km from HUB (0, 0), but the path between them passes ~56 km away.
+        "near_ts": {"name": "NEAR", "year": 1995, "pts": [("TS", -2.0, 0.5), ("TS", 2.0, 0.5)]},
+        "near_td": {"name": "WEAK", "year": 1995, "pts": [("TD", -2.0, 0.5), ("TD", 2.0, 0.5)]},     # too weak
+        "old":     {"name": "OLD",  "year": 1980, "pts": [("HU", -2.0, 0.5), ("HU", 2.0, 0.5)]},     # outside window
+        "far":     {"name": "FAR",  "year": 1995, "pts": [("HU", 10.0, 10.0), ("HU", 11.0, 11.0)]},  # too far
+    }
+    r = score_storm_tracks(TRACK_COMP, {"hub": HUB, "storms": storms})
+    assert [s.name for s in r.storms] == ["NEAR"]
+    assert 50 <= r.storms[0].closest_km <= 60
+    assert r.signals[0].value == 1.0          # 1 storm in 10 years (1991-2000)
+    assert r.score == 12.5                    # 1 / 8 * 100
 
 
 def test_bounds_are_fixed_so_scores_dont_depend_on_other_hubs():

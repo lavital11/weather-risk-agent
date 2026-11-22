@@ -24,7 +24,8 @@ id = "miami_vs_houston"
 question = "Compare Miami and Houston in terms of hurricane and flood exposure."
 plan = { intent = "compare", hubs = ["miami", "houston"], hazards = ["hurricane", "flood"] }
 must_mention = [["Houston"], ["Miami"]]
-caveat_mentions = ["sample", "1-2 events"]
+# Updated for HURDAT2: hurricane note now covers the 1991-2025 track window + small FEMA sample.
+caveat_mentions = ["1991", "sample", "35 years"]
 
 [[cases]]
 id = "denver_snow_last_year"
@@ -39,7 +40,8 @@ question = "Why is the Dallas hub's weather disruption risk high?"
 plan = { intent = "explain", hubs = ["dallas"], asserted_level = "high" }
 # Updated when heat became a 5th hazard: Dallas moved #6 -> #2, so the premise now holds.
 facts = { premise_holds = true }
-must_mention = [["#2", "2nd", "second"], ["heat"], ["hail"]]
+# Updated for HURDAT2: Dallas 99.1 vs Houston 98.8 -> both must be named and described as tied.
+must_mention = [["Dallas"], ["Houston"], ["tied", "tie", "effectively equal", "virtually equal", "neck and neck"], ["heat"], ["hail"]]
 
 # ---------------------------------------------------------------- follow-ups (conversation memory)
 [[cases]]
@@ -60,15 +62,18 @@ facts = { top_hub = "chicago" }
 id = "followup_why_top"
 history = ["What are the top 3 hubs overall?"]
 question = "Why is the first one on top?"
-plan = { intent = "explain", hubs = ["houston"] }
-must_mention = [["saturat", "100"]]
+# Updated for HURDAT2: the top two (Dallas, Houston) are effectively tied, so "the first one" may be either.
+plan = { intent = "explain", hubs_one_of = [["dallas"], ["houston"]] }
+must_mention = [["tied", "tie"]]
 
 # ---------------------------------------------------------------- other in-scope questions
 [[cases]]
 id = "top3_overall"
 question = "What are the top 3 hubs overall?"
 plan = { intent = "rank", top_n = 3, hazards = [] }
-facts = { top_hub = "houston" }
+# Dallas and Houston are effectively tied: require both + "tied", not a single top hub.
+facts = { top_tied_includes = ["dallas", "houston"] }
+must_mention = [["Dallas"], ["Houston"], ["tied", "tie", "effectively equal", "virtually equal", "neck and neck"]]
 
 [[cases]]
 id = "south_flood_rank"
@@ -99,12 +104,11 @@ facts = { partial_year = true }
 must_mention = [["2026-11-20", "November 20"]]
 
 [[cases]]
-id = "houston_saturation"
+id = "houston_top_tie"
+# Replaces houston_saturation (HURDAT2 removed the saturation): Houston is effectively tied with Dallas.
 question = "Why is Houston ranked first?"
 plan = { intent = "explain", hubs = ["houston"] }
-facts = { overall_score = 100.0 }
-must_mention = [["saturat"], ["flood"]]
-caveat_mentions = ["sample"]
+must_mention = [["tied", "tie"], ["flood"]]
 
 [[cases]]
 id = "miami_winter_premise"
@@ -116,8 +120,9 @@ facts = { premise_holds = false }
 id = "no_investment_decision"
 question = "Which single hub should we invest in this year? Just tell me the answer."
 plan = { intent = "rank" }
-facts = { top_hub = "houston" }
-must_mention = [["decision support", "not an investment decision", "other factors", "consider", "small sample"]]
+# Dallas and Houston are effectively tied: require both + "tied", not a single top hub.
+facts = { top_tied_includes = ["dallas", "houston"] }
+must_mention = [["Dallas"], ["Houston"], ["tied", "tie", "effectively equal", "virtually equal", "neck and neck"], ["decision support", "not an investment decision", "other factors", "factors outside", "consider", "small sample"]]
 must_not_mention = ["you should invest in", "we recommend investing", "definitely invest"]
 
 # ---------------------------------------------------------------- holdout: written AFTER the run-2 prompt fix,

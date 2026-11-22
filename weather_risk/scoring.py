@@ -44,12 +44,20 @@ class FemaEvent(BaseModel):
     declarations: list[str]   # e.g. ['EM-3554-TX', 'DR-4586-TX']
 
 
+class StormPass(BaseModel):
+    storm_id: str
+    name: str
+    year: int
+    closest_km: float
+
+
 class ComponentResult(BaseModel):
     type: str
     weight: float
     score: float
     signals: list[SignalResult]
     events: list[FemaEvent] = []   # only for fema_events
+    storms: list[StormPass] = []   # only for storm_tracks
 
 
 class HazardResult(BaseModel):
@@ -176,11 +184,54 @@ def score_hail_days(comp: dict, ctx: dict) -> ComponentResult:
     return ComponentResult(type="hail_days", weight=comp["weight"], score=avg, signals=signals)
 
 
+def closest_approach_km(hub: Hub, pts: list[tuple], statuses: set[str]) -> float | None:
+    """Closest distance from the hub to the storm track while the storm had one of `statuses`.
+
+    Positions are 6 hours apart (~100-150 km), so we check 10 interpolated points along each
+    segment, not only the reported positions. A segment counts if either end has a qualifying status.
+    """
+    best = None
+    for (s1, la1, lo1), (s2, la2, lo2) in zip(pts, pts[1:]):
+        if s1 not in statuses and s2 not in statuses:
+            continue
+        if min(abs(la1 - hub.lat), abs(la2 - hub.lat)) > 6 or min(abs(lo1 - hub.lon), abs(lo2 - hub.lon)) > 8:
+            continue                                     # far away: skip the distance math
+        for k in range(11):
+            t = k / 10
+            d = distance_km(hub.lat, hub.lon, la1 + t * (la2 - la1), lo1 + t * (lo2 - lo1))
+            best = d if best is None or d < best else best
+    if len(pts) == 1 and pts[0][0] in statuses:
+        best = distance_km(hub.lat, hub.lon, pts[0][1], pts[0][2])
+    return best
+
+
+def score_storm_tracks(comp: dict, ctx: dict) -> ComponentResult:
+    """Tropical storms/hurricanes passing within radius_km of the hub, per 10 years (NOAA HURDAT2).
+
+    Uses its OWN window (e.g. 1991-2025): these events are rare, so 10 years gives counts of 0-3.
+    """
+    hub, statuses = ctx["hub"], set(comp["statuses"])
+    y0, y1 = comp["window_start_year"], comp["window_end_year"]
+    passes = []
+    for sid, st in ctx["storms"].items():
+        if not (y0 <= st["year"] <= y1):
+            continue
+        d = closest_approach_km(hub, st["pts"], statuses)
+        if d is not None and d <= comp["radius_km"]:
+            passes.append(StormPass(storm_id=sid, name=st["name"], year=st["year"], closest_km=round(d)))
+    per_10y = round(len(passes) / ((y1 - y0 + 1) / 10), 2)
+    signal = SignalResult(
+        id="storm_passes", value=per_10y, unit="storms/10yr", bound=comp["bound"], score=scale(per_10y, comp["bound"]),
+        label=f"Tropical storms/hurricanes passing within {comp['radius_km']} km ({y0}-{y1}, NOAA HURDAT2)")
+    return ComponentResult(type="storm_tracks", weight=comp["weight"], score=signal.score, signals=[signal],
+                           storms=sorted(passes, key=lambda p: (p.year, p.name)))
+
+
 COMPONENT_SCORERS = {
     "weather_days": score_weather_days,
     "fema_events": score_fema_events,
     "hail_days": score_hail_days,
-    # "storm_tracks": score_storm_tracks,   # HURDAT2 slot (bonus)
+    "storm_tracks": score_storm_tracks,
 }
 
 
@@ -204,9 +255,10 @@ def combine_hazards(hazard_scores: dict[str, float], cfg: dict) -> float:
 
 
 def score_hub(hub: Hub, weather_days: list[dict], declarations: list[dict], cfg: dict,
-              hail_reports: list[dict] = ()) -> HubScore:
+              hail_reports: list[dict] = (), storms: dict | None = None) -> HubScore:
     """Pure: everything needed is passed in."""
     ctx = {"hub": hub, "weather_days": weather_days, "declarations": declarations, "hail_reports": hail_reports,
+           "storms": storms or {},
            "fema_rule": cfg["fema"]["rule"], "window_years": window_years(cfg)}
     hazards = {}
     for name, hz in cfg["hazards"].items():
@@ -264,13 +316,24 @@ def load_hub_data(conn: sqlite3.Connection, hub: Hub, cfg: dict) -> tuple[list[d
     return days, decls, hail
 
 
+def load_storms(conn: sqlite3.Connection) -> dict:
+    """{storm_id: {name, year, pts: [(status, lat, lon), ...]}} in track order."""
+    storms: dict = {}
+    for r in conn.execute("SELECT storm_id, name, year, status, lat, lon FROM storm_track_points "
+                          "ORDER BY storm_id, seq"):
+        st = storms.setdefault(r["storm_id"], {"name": r["name"], "year": r["year"], "pts": []})
+        st["pts"].append((r["status"], r["lat"], r["lon"]))
+    return storms
+
+
 def score_all(conn: sqlite3.Connection, cfg: dict | None = None, hubs: list[Hub] | None = None) -> list[HubScore]:
     """All hubs, ranked by overall score (highest first)."""
     cfg = cfg or load_scoring_config()
+    storms = load_storms(conn)        # all tracks once; each hub picks the storms near it
     results = []
     for h in hubs or load_hubs():
         days, decls, hail = load_hub_data(conn, h, cfg)
-        results.append(score_hub(h, days, decls, cfg, hail))
+        results.append(score_hub(h, days, decls, cfg, hail, storms))
     return sorted(results, key=lambda r: r.overall, reverse=True)
 
 

@@ -16,6 +16,13 @@ from weather_risk.scoring import HubScore, combine_hazards, distance_km, load_sc
 HIGH_RANK_MAX = 3      # premise "high" holds if the hub is in the top 3 of 10 (top 30%)
 LOW_RANK_MIN = 8       # premise "low" holds if the hub is in the bottom 3
 NOTABLE_RANK = 2       # signals where the hub ranks #1 or #2 are worth mentioning
+TIE_GAP = 1.0          # overall scores closer than this are "effectively tied" (user decision):
+                       # at the saturated top (e.g. 99.1 vs 98.8) the gap is noise, not a real difference
+
+
+def effectively_tied(scores: dict[str, float], hub_id: str) -> list[str]:
+    """Other hubs whose score is within TIE_GAP of this hub's score."""
+    return sorted(h for h, s in scores.items() if h != hub_id and abs(s - scores[hub_id]) < TIE_GAP)
 LAST_COMPLETE_YEAR = 2025
 
 
@@ -115,6 +122,8 @@ class Executor:
         return {
             "hub": sc.hub_name, "hub_id": hub_id, "region": sc.region,
             "overall_score": sc.overall, "overall_rank": self.overall_rank[hub_id],
+            "overall_effectively_tied_with": [self.scores[h].hub_name for h in
+                                              effectively_tied({h: x.overall for h, x in self.scores.items()}, hub_id)],
             "hazards": {
                 hz: {"score": sc.hazards[hz].score,
                      **{("rank" if k == "rank_among_hubs" else k): v
@@ -123,6 +132,7 @@ class Executor:
                                   "bound": s.bound, **self.rank_info(self.signal_rank[f"{hz}.{s.id}"], hub_id, s.value)}
                                  for c in sc.hazards[hz].components for s in c.signals],
                      "fema_events": [e.model_dump() for c in sc.hazards[hz].components for e in c.events],
+                     "storm_passes": [s.model_dump() for c in sc.hazards[hz].components for s in c.storms],
                      "notes": sc.hazards[hz].notes}
                 for hz in hz_list},
         }
@@ -156,17 +166,32 @@ class Executor:
                 return self.scores[h].overall
             return round(sum(self.scores[h].hazards[z].score for z in plan.hazards) / len(plan.hazards), 1)
 
-        ordered = sorted(ids, key=key, reverse=True)[: plan.top_n or None]
-        return {
+        full = sorted(ids, key=key, reverse=True)
+        considered = {h: key(h) for h in ids}
+        n = plan.top_n or len(full)
+        # Don't let top_n cut through a tie: "just the top 1" with Dallas 99.1 / Houston 98.8 must
+        # return both, or the answer can't explain the tied hub (eval run 5).
+        while n < len(full) and abs(considered[full[n]] - considered[full[n - 1]]) < TIE_GAP:
+            n += 1
+        ordered = full[:n]
+        out = {
             "ranked_by": " + ".join(plan.hazards) if plan.hazards else "overall score",
             "region": plan.region, "hubs_considered": len(ids),
             "ranking": [{"position": i, "hub": self.scores[h].hub_name, "hub_id": h, "score": key(h),
+                         "effectively_tied_with": effectively_tied(considered, h),
                          "overall_rank_of_all_hubs": self.overall_rank[h],
                          "top_drivers": self.drivers(h, plan.hazards[0] if len(plan.hazards) == 1 else None, top=3)}
                         for i, h in enumerate(ordered, 1)],
             "notes": sorted({n for h in ordered for z in (plan.hazards or self.cfg["hazards"])
                              for n in self.scores[h].hazards[z].notes}),
         }
+        if len(ordered) > 1 and effectively_tied(considered, ordered[0]):
+            tied = [ordered[0], *effectively_tied(considered, ordered[0])]
+            out["top_is_effectively_tied"] = {
+                "hubs": [self.scores[h].hub_name for h in tied],
+                "scores": [considered[h] for h in tied],
+                "rule": f"scores less than {TIE_GAP} point apart are effectively tied; do not name a single #1"}
+        return out
 
     def compare(self, plan: QueryPlan) -> dict:
         if len(plan.hubs) < 2:

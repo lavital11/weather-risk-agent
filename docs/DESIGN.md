@@ -83,7 +83,7 @@ Deterministic, configured in `config/scoring.toml`:
 | Winter | weather 0.7, FEMA 0.3 | snow days ≥ 0.25 cm, heavy snow ≥ 5 cm, min ≤ −18 °C, ice days* |
 | Flood | weather 0.7, FEMA 0.3 | rain ≥ 50 mm, rain ≥ 100 mm |
 | Severe storm | hail 0.35, gusts 0.35, FEMA 0.3 | hail ≥ 1" and ≥ 2" within 50 km (days), gusts ≥ 80 km/h |
-| Hurricane | FEMA 1.0 | FEMA hurricane / tropical-storm events (small sample) |
+| Hurricane | storm tracks 0.7, FEMA 0.3 | tropical storms/hurricanes passing within 200 km (NOAA HURDAT2, **1991–2025**), FEMA hurricane events |
 | Heat | weather 1.0 | days with max ≥ 35 °C (bound 50/yr), ≥ 37.8 °C (bound 16/yr). FEMA doesn't declare heat disasters |
 
   \*Ice day = precip ≥ 2 mm, max ≤ 1 °C, less than half of it fell as snow (0.7 cm snow per mm, measured in our data).
@@ -94,8 +94,19 @@ Deterministic, configured in `config/scoring.toml`:
 - **Explanations:** the executor reports each signal's points within its hazard, each hazard's
   leave-one-out contribution to the overall score, and ranks among hubs (ties flagged, zero = no rank).
 
-Current result (2016–2025): Houston 100.0 (#1), Dallas 99.1 (#2), Chicago 76.4, Kansas City 75.7,
-Minneapolis 73.4, Miami 69.8, Denver 60.8, Columbus 56.2, Indianapolis 53.4, Atlanta 39.1.
+**Different time window for hurricane tracks:** every signal uses 2016–2025, except storm tracks,
+which use **1991–2025 (35 years)**. Hurricanes are rare: in 10 years, counts are 0–3 per hub, too
+noisy to rank on. The track window is set in config (`window_start_year`/`window_end_year`) and
+stated in the agent's caveats. Mixing windows assumes the 1991–2025 storm climate is representative
+of today, which is the same "past ≈ future" assumption as A9, over a longer period.
+
+**Effectively tied:** overall scores less than **1 point** apart are flagged `effectively_tied` by the
+executor. The agent then says the hubs are tied and explains how their profiles differ, instead of
+naming a single #1. At the saturated top, the gap is noise.
+
+Current result: **Dallas 99.1 and Houston 98.8 (effectively tied for #1)**, Miami 86.4 (#3), Chicago
+76.4, Kansas City 75.7, Minneapolis 73.4, Denver 60.8, Columbus 56.2, Indianapolis 53.4, Atlanta 51.2.
+They differ completely in profile: Dallas = heat (97.7) + hail; Houston = flood (89.5) + hurricane (74.9).
 
 ### Heat as a fifth hazard, and the limits of equal weights
 
@@ -124,10 +135,10 @@ money over many days: crew work-rest limits, equipment and reefer strain, slower
 | Indianapolis | 53.3 (#9) | 0.1 | 53.4 (#9) |
 | Atlanta | 36.5 (#10) | 4.1 | 39.1 (#10) |
 
-- **Saturation near 100 at the top.** Noisy-OR compresses the top: Houston is at 100 (one hazard at
-  100, a small FEMA sample) and Dallas at 99.1. The 0.9-point gap between them says almost nothing.
-  For the top hubs, the per-hazard scores and their drivers carry the information, not the overall
-  number. The agent always gives ranks and drivers, not only the overall score.
+- **Saturation near 100 at the top.** Noisy-OR compresses the top. (The table above is before
+  HURDAT2; with storm tracks, Houston is 98.8 and Dallas 99.1.) The gap between them says almost
+  nothing, so the executor flags gaps under 1 point as effectively tied (above). For the top hubs, the
+  per-hazard scores and their drivers carry the information, not the overall number.
 
 ## 3. Data sources
 
@@ -136,6 +147,7 @@ money over many days: crew work-rest limits, equipment and reefer strain, slower
 | Open-Meteo archive | Daily snow, precip, gusts, min/max temp at each hub's airport point | No key, 10+ years daily | Modeled data: Denver 2025 snow ~1/3 below NWS, so ranks are more reliable than absolute values. Free tier is non-commercial |
 | OpenFEMA v2 | Disaster declarations by county | No key; records actual impact | Sparse (0–4 events/hub); depends on politics and damage thresholds |
 | NOAA SPC | Hail reports (lat/lon, size) | Hail is a major Dallas risk the other sources miss | Spotter/population bias (we count days, not reports) |
+| NOAA NHC HURDAT2 | Atlantic storm tracks, 6-hourly positions and status | Direct hurricane exposure; FEMA alone was 0–2 events per hub | Center track only (no wind-field size); a 200 km radius stands in for the storm's reach |
 
 ## 4. Data storage choice
 
@@ -148,6 +160,7 @@ money over many days: crew work-rest limits, equipment and reefer strain, slower
   - `weather_daily` (hub_id, date, 5 variables; PK hub_id+date)
   - `fema_declarations` (raw, with declaration type and program flags, so counting rules A/B/D are a config switch)
   - `hail_reports` (all US reports; scoring selects by distance)
+  - `storm_track_points` (HURDAT2 positions, 1991–2025: 576 storms, 17k points)
   - `ingest_runs` (provenance: URL, time, rows, status; used for attribution)
 - **Re-runs:** ingest uses upserts, so re-running is idempotent. NULL is stored as NULL ("no data" ≠ 0).
 - **Chat history** lives in a separate `data/sessions.db` (git-ignored), so the data snapshot never
@@ -199,8 +212,8 @@ Full list in [ASSUMPTIONS.md](ASSUMPTIONS.md). The ones that matter most:
 - **Proxies, not closures:** "disruption days" and FEMA declarations stand in for hub downtime. We
   have no actual closure data. The first questions for the customer: which hazards cost the most
   (weights), and what counts as disruption (thresholds).
-- **Hurricane = small sample:** FEMA-only, 1–2 events per hub. The answers say so. NOAA HURDAT2
-  storm tracks are the planned fix.
+- **Hurricane:** storm tracks over 35 years (a longer window than the other hazards), plus a small
+  FEMA sample. Track distance stands in for impact; it ignores storm size and intensity at the hub.
 - **Modeled weather data:** reliable for ranking, biased for absolute values (snow). Hail reports
   favor dense metros.
 - **Past ≈ future:** a 10-year window, no climate trend adjustment.
@@ -209,7 +222,7 @@ Full list in [ASSUMPTIONS.md](ASSUMPTIONS.md). The ones that matter most:
 
 ## 8. Not done / next steps
 
-Bonus order: heat (done) → HURDAT2 hurricane tracks → scheduled alert on short-term (forecast) risk →
+Bonus order: heat (done) → HURDAT2 hurricane tracks (done) → scheduled alert on short-term (forecast) risk →
 deployment → voice input. Also: severity weights from downtime costs (see heat above), a feels-like
 (humidity) heat signal, Also: per-hub business weights
 (exposure × importance), station data to correct the snow bias, and the FEMA National Risk Index

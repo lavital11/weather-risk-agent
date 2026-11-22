@@ -104,13 +104,20 @@ incident_types = ["Severe Storm", "Tornado", "Straight-Line Winds"]
 # ---------------------------------------------------------------- hurricane
 [hazards.hurricane]
 label = "Hurricane / tropical storm"
-# H2: FEMA only (A15). Slot for later: add a "storm_tracks" component (HURDAT2)
-# and rebalance the weights here; the engine picks components by type.
-note = "Hurricane score is based only on FEMA major-disaster declarations with household aid: a small sample (1-2 events per hub)."
+note = "Storm-track counts use 1991-2025 (35 years) because hurricanes are rare; the other hazards use 2016-2025. The FEMA part is a small sample (0-2 events per hub)."
+
+[[hazards.hurricane.components]]
+type = "storm_tracks"        # NOAA HURDAT2: storms passing near the hub while at TS/HU strength
+weight = 0.7
+radius_km = 200              # tropical-storm-force winds and rain reach well beyond the center (100 km missed Irma at Miami)
+statuses = ["TS", "HU"]      # tropical storm (34-63 kt) or hurricane (>= 64 kt) at that point of the track
+window_start_year = 1991     # OWN window: rare events need more years than the 2016-2025 scoring window
+window_end_year = 2025
+bound = 8                    # storms per 10 years = 100 (Miami, the highest, has 7.1)
 
 [[hazards.hurricane.components]]
 type = "fema_events"
-weight = 1.0
+weight = 0.3
 bound = 2
 incident_types = ["Hurricane", "Tropical Storm", "Coastal Storm"]
 

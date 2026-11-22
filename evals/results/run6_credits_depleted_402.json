@@ -1,0 +1,153 @@
+{
+  "run_at": "2026-11-22T17:10:22+00:00",
+  "model": "gemini-4-hydrogen",
+  "repeat": 3,
+  "per_case_passes": {
+    "dallas_premise": 0,
+    "followup_why_top": 0,
+    "top3_overall": 0,
+    "no_investment_decision": 0
+  },
+  "case_runs_passed": 0,
+  "case_runs_total": 12,
+  "runs": [
+    [
+      {
+        "id": "dallas_premise",
+        "question": "Why is the Dallas hub's weather disruption risk high?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "followup_why_top",
+        "question": "Why is the first one on top?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "top3_overall",
+        "question": "What are the top 3 hubs overall?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      }
+    ],
+    [
+      {
+        "id": "dallas_premise",
+        "question": "Why is the Dallas hub's weather disruption risk high?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "followup_why_top",
+        "question": "Why is the first one on top?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "top3_overall",
+        "question": "What are the top 3 hubs overall?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      }
+    ],
+    [
+      {
+        "id": "dallas_premise",
+        "question": "Why is the Dallas hub's weather disruption risk high?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "followup_why_top",
+        "question": "Why is the first one on top?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "top3_overall",
+        "question": "What are the top 3 hubs overall?",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      },
+      {
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "passed": false,
+        "checks": {
+          "error": [
+            "ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}"
+          ]
+        },
+        "holdout": false
+      }
+    ]
+  ]
+}

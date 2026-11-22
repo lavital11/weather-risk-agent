@@ -55,6 +55,8 @@ def check_facts(expected: dict, facts: dict | None) -> list[str]:
         return ["no facts"] if expected else []
     getters = {
         "top_hub": lambda f: f["ranking"][0]["hub_id"],
+        # The effectively-tied group at the top must contain these hubs (order doesn't matter).
+        "top_tied_includes": lambda f: sorted(h.lower() for h in f["top_is_effectively_tied"]["hubs"]),
         "premise_holds": lambda f: f["premise_check"]["premise_holds"],
         "percent_of_days": lambda f: f["percent_of_days"],
         "partial_year": lambda f: f["partial_year"],
@@ -66,7 +68,8 @@ def check_facts(expected: dict, facts: dict | None) -> list[str]:
             have = getters[key](facts)
         except (KeyError, IndexError, TypeError):
             have = "<missing>"
-        if have != want:
+        ok = set(want) <= set(have) if key == "top_tied_includes" and isinstance(have, list) else have == want
+        if not ok:
             errors.append(f"facts.{key}: expected {want!r}, got {have!r}")
     return errors
 

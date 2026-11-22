@@ -24,6 +24,7 @@ The data snapshot `data/weather_risk.db` is committed, so no ingest is needed to
 .\.venv\Scripts\python.exe -m weather_risk.ingest.open_meteo
 .\.venv\Scripts\python.exe -m weather_risk.ingest.openfema
 .\.venv\Scripts\python.exe -m weather_risk.ingest.spc_hail
+.\.venv\Scripts\python.exe -m weather_risk.ingest.hurdat2
 .\.venv\Scripts\python.exe -m weather_risk.ingest.report      # data-quality report
 ```
 
@@ -56,6 +57,9 @@ Results: `evals/results/latest.json`.
 - **Hail: NOAA/NWS Storm Prediction Center (SPC)** severe weather database, yearly hail report files
   (`https://www.spc.noaa.gov/wcm/data/{year}_hail.csv`). Courtesy of NOAA's Storm Prediction Center.
   Retrieved November 22, 2026, 14:57 UTC.
+- **Hurricane tracks: NOAA National Hurricane Center HURDAT2** Atlantic best-track database
+  (`https://www.nhc.noaa.gov/data/hurdat/hurdat2-1851-2025-092326.txt`), storms 1991–2025.
+  Courtesy of NOAA's National Hurricane Center. Retrieved November 22, 2026.
 - **County lookups (setup only): FCC Census Block API** (`https://geo.fcc.gov/api/census/`), used once to
   check each hub point's county.
 

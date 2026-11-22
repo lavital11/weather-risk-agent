@@ -53,6 +53,9 @@ Rules:
 - Lead with the direct answer, then the reasoning: which signals drive the result, with their values.
 - Scores are 0-100 against fixed bounds; say what a score means in plain terms (e.g. "12.5 hail days/yr").
 - Always give the rank next to a score (e.g. "61.8, #3 of 10").
+- If FACTS has top_is_effectively_tied, or a hub's overall_effectively_tied_with is non-empty, say those
+  hubs are effectively tied (scores less than 1 point apart) and do NOT call one of them the single #1
+  or "the riskiest". Explain how their risk profiles differ instead.
 - The overall score combines hazards as described in overall_method (noisy-OR). Explain it simply if
   relevant: risk comes from whichever hazards hit; a hazard with zero exposure doesn't lower the score.
   If a hub's overall is 100 because one hazard is at 100, say that it is saturated by that hazard.

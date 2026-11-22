@@ -53,6 +53,21 @@ CREATE TABLE IF NOT EXISTS hail_reports (
 );
 CREATE INDEX IF NOT EXISTS hail_by_date ON hail_reports (date);
 
+-- NOAA NHC HURDAT2 Atlantic best tracks: one row per 6-hourly position.
+CREATE TABLE IF NOT EXISTS storm_track_points (
+    storm_id TEXT NOT NULL,      -- e.g. 'AL092017'
+    name     TEXT,               -- e.g. 'HARVEY'
+    year     INTEGER NOT NULL,
+    seq      INTEGER NOT NULL,   -- order of the point within the storm
+    datetime TEXT,               -- 'YYYYMMDD HHMM' (UTC)
+    status   TEXT,               -- TS = tropical storm (34-63 kt), HU = hurricane (>= 64 kt), TD, EX, ...
+    lat      REAL,
+    lon      REAL,
+    wind_kt  INTEGER,
+    PRIMARY KEY (storm_id, seq)
+);
+CREATE INDEX IF NOT EXISTS track_by_year ON storm_track_points (year);
+
 CREATE TABLE IF NOT EXISTS ingest_runs (
     id          INTEGER PRIMARY KEY,
     source      TEXT NOT NULL,         -- e.g. 'open-meteo-archive'
