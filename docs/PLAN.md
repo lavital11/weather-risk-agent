@@ -60,6 +60,7 @@ Notes for the design doc:
 |---|---|---|
 | 1 | 18/20 | `dallas_premise`: **grader bug**; the grounding check read "top-3" as −3, so the number regex was fixed. `no_investment_decision`: **agent bug**; the planner refused "which hub should we invest in?" as out of scope, so the planner prompt now treats prioritization questions as `rank`, and the narrator frames them as decision support (plus factors outside the data) |
 | 2 | 20/20 | — |
+| 3 (×3 repeats, 23 cases incl. 3 holdouts) | 68/69 case-runs | `holdout_prioritize_pair` 2/3: once planned as `rank` of the 2 hubs instead of `compare`. The answer was correct and grounded; only the plan check failed. This is a side effect of the run-2 prompt fix, caught by the holdout. Test left unchanged (decision pending: accept `rank` or `compare` for this case?) |
 
 Caveats on the eval:
 - One run per case, and the LLM isn't fully deterministic, so 20/20 is one sample. Re-run before the demo.
@@ -88,10 +89,13 @@ Caveats on the eval:
 | 4 | FastAPI + chat UI | 2h | **Done**: /chat, /health, /hubs, /scores; per-session history in data/sessions.db (git-ignored); one-page chat with a "How I got this" panel (plan + facts); follow-up tested in the browser | 0 |
 | 5 | Eval set + runner | 1.5h | **Done**: 20 cases (`evals/cases.toml`) checking plan, facts, answer and number grounding; run 1: 18/20, run 2: 20/20 (see Eval log) | 0 |
 | 6 | Alerts (bonus) | 1.5h | Not started | 1.5h |
-| 7 | README, design doc, transcript, deploy | 2h | Docs partly written as we go | 1.5h docs + 0.5h transcript (+1h deploy) |
+| 7 | README, design doc, transcript, deploy | 2h | **Docs done** (DESIGN.md, README with attribution and retrieval times). Transcript: the user exports it at the end. Deploy: bonus | 0.5h transcript (user) |
 | — | Voice (bonus) | — | Not started | 0.5h |
 
 Phases 0+1 were estimated at 3.5h and will take about 4h. The extra time went into verification (rate limits, FEMA data quirks), which we judged worth it. The original 1.5h buffer is used up.
+
+**Bonus order (user decision, after the design doc):** heat → HURDAT2 → alerts → deploy → voice.
+**Workflow:** commit and push to the private GitHub repo after each phase. The user exports the AI-session transcript at the very end.
 
 **Cut line.** Core work (phases 1–5 + README/design doc + transcript) is about 12h remaining. It must be done.
 Above the cut line, in the order we drop it: voice (0.5h) → heat hazard (0.5h; `temp_max_c` already stored, weights unchanged unless decided) → HURDAT2 hurricane tracks (1h; hail, the first bonus, is done) → deploy (1h) → alerts (1.5h) → severe-storm hazard → advanced follow-up handling → fewer hubs.

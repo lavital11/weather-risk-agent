@@ -42,16 +42,20 @@ Results: `evals/results/latest.json`.
 
 - **Weather: [Open-Meteo.com](https://open-meteo.com/)** Historical Weather API (archive), licensed
   [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Weather data by Open-Meteo.com.
+  Retrieved November 22, 2026, 14:18 UTC.
   The free API is for non-commercial use; a production deployment at a company would need
   Open-Meteo's commercial license.
-- **Disaster declarations: FEMA OpenFEMA API**, dataset *Disaster Declarations Summaries – v2*
-  (`https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries`). Access dates and times are
-  recorded per request in the `ingest_runs` table.
+- **Disaster declarations: FEMA OpenFEMA API.** Citation:
+  Federal Emergency Management Agency (FEMA), OpenFEMA Dataset: Disaster Declarations Summaries - v2.
+  Retrieved from https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries on
+  November 22, 2026, 14:27 UTC. (The exact time of each request is in the `ingest_runs` table;
+  update this line after re-running the ingest.)
   > This product uses the Federal Emergency Management Agency's OpenFEMA API, but is not endorsed
   > by FEMA. The Federal Government or FEMA cannot vouch for the data or analyses derived from these
   > data after the data have been retrieved from the Agency's website(s).
 - **Hail: NOAA/NWS Storm Prediction Center (SPC)** severe weather database, yearly hail report files
   (`https://www.spc.noaa.gov/wcm/data/{year}_hail.csv`). Courtesy of NOAA's Storm Prediction Center.
+  Retrieved November 22, 2026, 14:57 UTC.
 - **County lookups (setup only): FCC Census Block API** (`https://geo.fcc.gov/api/census/`), used once to
   check each hub point's county.
 

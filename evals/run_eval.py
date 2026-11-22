@@ -144,11 +144,8 @@ def run_case(agent: Agent, case: dict) -> dict:
     return result
 
 
-def main() -> None:
-    cases = tomllib.loads((HERE / "cases.toml").read_text(encoding="utf-8"))["cases"]
-    if sys.argv[1:]:
-        cases = [c for c in cases if c["id"] in sys.argv[1:]]
-    agent = Agent()
+def run_once(agent: Agent, cases: list[dict], label: str) -> list[dict]:
+    print(f"\n=== {label} ===")
     results = []
     for c in cases:
         try:
@@ -156,22 +153,46 @@ def main() -> None:
         except Exception as e:   # one broken case shouldn't stop the run
             r = {"id": c["id"], "question": c["question"], "passed": False,
                  "checks": {"error": [f"{type(e).__name__}: {e}"]}}
+        r["holdout"] = c.get("holdout", False)
         results.append(r)
         mark = "PASS" if r["passed"] else "FAIL"
         cols = "  ".join(f"{k}:{'ok' if not v else 'X'}" for k, v in r["checks"].items())
-        print(f"[{mark}] {c['id']:<28} {cols}")
+        print(f"[{mark}] {c['id']:<30} {cols}")
         for k, v in r["checks"].items():
             for msg in v:
                 print(f"         - {k}: {msg}")
+    print(f"{sum(r['passed'] for r in results)}/{len(results)} passed")
+    return results
 
-    n_pass = sum(r["passed"] for r in results)
-    by_check = {k: sum(1 for r in results if not r["checks"].get(k)) for k in
-                ("status", "plan", "facts", "answer", "grounding")}
-    print(f"\n{n_pass}/{len(results)} cases passed. Per check (cases passing): {by_check}")
 
+def main() -> None:
+    # Usage: run_eval [--repeat N] [case_id ...]
+    args = sys.argv[1:]
+    repeat = 1
+    if "--repeat" in args:
+        i = args.index("--repeat")
+        repeat = int(args[i + 1])
+        args = args[:i] + args[i + 2:]
+    cases = tomllib.loads((HERE / "cases.toml").read_text(encoding="utf-8"))["cases"]
+    if args:
+        cases = [c for c in cases if c["id"] in args]
+    agent = Agent()
+    runs = [run_once(agent, cases, f"run {n}/{repeat}") for n in range(1, repeat + 1)]
+
+    # Per-case pass rate across runs: the LLM is not fully deterministic, so one run is one sample.
+    per_case = {c["id"]: sum(run[i]["passed"] for run in runs) for i, c in enumerate(cases)}
+    print(f"\nPer-case pass rate over {repeat} run(s):")
+    for c in cases:
+        tag = " (holdout)" if c.get("holdout") else ""
+        print(f"  {per_case[c['id']]}/{repeat}  {c['id']}{tag}")
+    total = sum(per_case.values())
+    print(f"Overall: {total}/{len(cases) * repeat} case-runs passed")
+
+    results = runs[-1]
     out = {"run_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-           "model": agent.llm.model, "passed": n_pass, "total": len(results),
-           "per_check": by_check, "results": results}
+           "model": agent.llm.model, "repeat": repeat,
+           "per_case_passes": per_case, "case_runs_passed": total, "case_runs_total": len(cases) * repeat,
+           "runs": runs}
     (HERE / "results").mkdir(exist_ok=True)
     (HERE / "results" / "latest.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     print("Wrote evals/results/latest.json")

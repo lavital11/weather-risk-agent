@@ -119,6 +119,31 @@ facts = { top_hub = "houston" }
 must_mention = [["decision support", "not an investment decision", "other factors", "consider", "small sample"]]
 must_not_mention = ["you should invest in", "we recommend investing", "definitely invest"]
 
+# ---------------------------------------------------------------- holdout: written AFTER the run-2 prompt fix,
+# before running them, to check the prompt wasn't tuned to the test. Expected values come from the
+# deterministic scores (PLAN.md tables), not from agent output.
+[[cases]]
+id = "holdout_flood_budget"
+holdout = true
+question = "If our resilience budget only covers flood protection, where should it go first?"
+plan = { intent = "rank", hazards = ["flood"] }
+facts = { top_hub = "houston" }
+must_mention = [["Houston"]]
+
+[[cases]]
+id = "holdout_prioritize_pair"
+holdout = true
+question = "Between Atlanta and Denver, which one deserves resilience upgrades more, weather-wise?"
+plan = { intent = "compare", hubs = ["atlanta", "denver"] }
+must_mention = [["Denver"]]
+
+[[cases]]
+id = "holdout_kc_vs_chicago_storms"
+holdout = true
+question = "Is Kansas City's severe storm risk lower than Chicago's?"
+plan = { intent = "compare", hubs = ["kansas_city", "chicago"], hazards = ["severe_storm"] }
+must_mention = [["56.4"], ["50.2"]]
+
 # ---------------------------------------------------------------- out of scope / unclear
 [[cases]]
 id = "unknown_hub"
