@@ -1,0 +1,114 @@
+# Scoring configuration. Every number that shapes a score lives here.
+#
+# Model:
+#   signal score    = min(value / bound, 1) * 100           (absolute, fixed bounds: A13)
+#   component score = weather_days: average of its signal scores
+#                     fema_events:  events per 10 yr, scaled the same way
+#   hazard score    = sum(component.weight * component score)   (weights per hazard sum to 1)
+#   overall score   = see [overall] below (noisy-OR by default)
+#
+# Bounds are fixed here and never recomputed from data, so adding a hub
+# doesn't change other hubs' scores (and doesn't cause false alerts).
+
+[window]                     # complete calendar years only
+start = "2016-01-01"
+end   = "2025-12-31"
+
+[fema]
+# Which declarations count as an event (findings F1, F2; decision rule D):
+#   "A" = any declaration, "B" = Major Disaster (DR) only,
+#   "D" = DR with Individual Assistance (household aid) in the county.
+# Events are always counted as distinct incident_id (the EM + DR pair = 1 event).
+rule = "D"
+
+[overall]
+# How hazard scores combine into the overall score:
+#   "noisy_or"         = 100 * (1 - prod(1 - hazard/100))   <- current (user decision)
+#                        Disruption happens if ANY hazard hits; a low hazard can't offset a high one.
+#                        A single hazard at 100 saturates the overall score at 100.
+#   "weighted_average" = sum(hazard_weight * hazard)        <- original; kept for comparison
+method = "noisy_or"
+
+[hazard_weights]             # used only by "weighted_average". Q1: equal until the customer gives downtime costs
+winter       = 0.25
+flood        = 0.25
+severe_storm = 0.25
+hurricane    = 0.25
+
+# ---------------------------------------------------------------- winter
+[hazards.winter]
+label = "Winter (snow, ice, extreme cold)"
+
+[[hazards.winter.components]]
+type = "weather_days"
+weight = 0.7
+signals = [
+  { id = "snow_days",       rule = "snowfall_at_least",     threshold = 0.25, bound = 40, label = "Days with measurable snow (>= 0.25 cm)" },
+  { id = "heavy_snow_days", rule = "snowfall_at_least",     threshold = 5.0,  bound = 6,  label = "Heavy-snow days (>= 5 cm)" },
+  { id = "extreme_cold",    rule = "temp_min_at_most",      threshold = -18,  bound = 20, label = "Extreme-cold days (min <= -18 C / 0 F)" },
+  # Ice: precip >= 2 mm, max temp <= 1 C, snow < 0.5 * (0.7 cm/mm * precip). TOML inline tables must be one line.
+  { id = "ice_days", rule = "ice_day", bound = 1, label = "Likely freezing-rain/ice days", min_precip_mm = 2.0, max_temp_max_c = 1.0, max_snow_fraction = 0.5, snow_cm_per_mm = 0.7 },
+]
+
+[[hazards.winter.components]]
+type = "fema_events"
+weight = 0.3
+bound = 2                    # events per 10 years = 100
+incident_types = ["Severe Ice Storm", "Winter Storm", "Snowstorm"]
+
+# ---------------------------------------------------------------- flood
+[hazards.flood]
+label = "Flood / heavy rain"
+
+[[hazards.flood.components]]
+type = "weather_days"
+weight = 0.7
+signals = [
+  { id = "heavy_rain_days",   rule = "precipitation_at_least", threshold = 50,  bound = 6, label = "Heavy-rain days (>= 50 mm)" },
+  { id = "extreme_rain_days", rule = "precipitation_at_least", threshold = 100, bound = 1, label = "Extreme-rain days (>= 100 mm)" },
+]
+
+[[hazards.flood.components]]
+type = "fema_events"
+weight = 0.3
+bound = 4
+incident_types = ["Flood"]
+
+# ---------------------------------------------------------------- severe storm
+[hazards.severe_storm]
+label = "Severe storms (wind, hail, tornado)"
+
+[[hazards.severe_storm.components]]
+type = "hail_days"           # NOAA SPC hail reports; counts distinct days, not reports (spotter bias)
+weight = 0.35
+signals = [
+  { id = "severe_hail_days", min_size_in = 1.0, radius_km = 50, bound = 12, label = "Days with hail >= 1 in within 50 km (NWS severe size)" },
+  { id = "large_hail_days",  min_size_in = 2.0, radius_km = 50, bound = 4,  label = "Days with hail >= 2 in within 50 km" },
+]
+
+[[hazards.severe_storm.components]]
+type = "weather_days"
+weight = 0.35
+signals = [
+  # 80 km/h, not the NWS 93 km/h (58 mph): reanalysis smooths gusts, so 93 almost never occurs.
+  { id = "strong_gust_days", rule = "gust_at_least", threshold = 80, bound = 3, label = "Strong-gust days (>= 80 km/h)" },
+]
+
+[[hazards.severe_storm.components]]
+type = "fema_events"
+weight = 0.3
+bound = 2
+incident_types = ["Severe Storm", "Tornado", "Straight-Line Winds"]
+
+# ---------------------------------------------------------------- hurricane
+[hazards.hurricane]
+label = "Hurricane / tropical storm"
+# H2: FEMA only (A15). Slot for later: add a "storm_tracks" component (HURDAT2)
+# and rebalance the weights here; the engine picks components by type.
+small_sample_note = "Hurricane score is based only on FEMA major-disaster declarations with household aid: a small sample (1-2 events per hub)."
+
+[[hazards.hurricane.components]]
+type = "fema_events"
+weight = 1.0
+bound = 2
+incident_types = ["Hurricane", "Tropical Storm", "Coastal Storm"]

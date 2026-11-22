@@ -1,0 +1,152 @@
+# Hub registry: the single source of truth for which hubs exist.
+#
+# Rule (assumption A2): each hub = its main airport's reference point, the same
+# rule for every hub. Weather comes from the grid cell at (lat, lon); FEMA data
+# comes from the county that contains that point. Sometimes that is not the
+# city's main county (DFW -> Tarrant, ATL -> Clayton, MCI -> Platte).
+# Counties were checked with the FCC Census Block API on 2026-11-22.
+#
+# Fields:
+#   id           short key used in code, URLs and the LLM plan schema
+#   name         display name; users type this in chat
+#   airport      IATA code of the hub point
+#   lat, lon     decimal degrees (WGS84)
+#   timezone     IANA name; Open-Meteo uses it to define a local "day"
+#   state        2-letter postal code
+#   state_fips   2-digit state FIPS (string: keeps leading zeros, e.g. "08")
+#   county_fips  3-digit county FIPS within the state (string, e.g. "031")
+#   county       county name, for explanations
+#   region       US Census region (assumption A10)
+#
+# We store state and county FIPS separately. OpenFEMA filters on them
+# separately; the exact field names are checked when we build that fetcher.
+
+[[hubs]]
+id = "chicago"
+name = "Chicago"
+airport = "ORD"
+lat = 41.9786
+lon = -87.9048
+timezone = "America/Chicago"
+state = "IL"
+state_fips = "17"
+county_fips = "031"
+county = "Cook"
+region = "Midwest"
+
+[[hubs]]
+id = "minneapolis"
+name = "Minneapolis"
+airport = "MSP"
+lat = 44.8848
+lon = -93.2223
+timezone = "America/Chicago"
+state = "MN"
+state_fips = "27"
+county_fips = "053"
+county = "Hennepin"
+region = "Midwest"
+
+[[hubs]]
+id = "indianapolis"
+name = "Indianapolis"
+airport = "IND"
+lat = 39.7173
+lon = -86.2944
+timezone = "America/Indiana/Indianapolis"
+state = "IN"
+state_fips = "18"
+county_fips = "097"
+county = "Marion"
+region = "Midwest"
+
+[[hubs]]
+id = "kansas_city"
+name = "Kansas City"
+airport = "MCI"
+lat = 39.2976
+lon = -94.7139
+timezone = "America/Chicago"
+state = "MO"
+state_fips = "29"
+county_fips = "165"
+county = "Platte"
+region = "Midwest"
+
+[[hubs]]
+id = "columbus"
+name = "Columbus"
+airport = "CMH"
+lat = 39.9980
+lon = -82.8919
+timezone = "America/New_York"
+state = "OH"
+state_fips = "39"
+county_fips = "049"
+county = "Franklin"
+region = "Midwest"
+
+[[hubs]]
+id = "dallas"
+name = "Dallas"
+airport = "DFW"
+lat = 32.8998
+lon = -97.0403
+timezone = "America/Chicago"
+state = "TX"
+state_fips = "48"
+county_fips = "439"
+county = "Tarrant"
+region = "South"
+
+[[hubs]]
+id = "houston"
+name = "Houston"
+airport = "IAH"
+lat = 29.9902
+lon = -95.3368
+timezone = "America/Chicago"
+state = "TX"
+state_fips = "48"
+county_fips = "201"
+county = "Harris"
+region = "South"
+
+[[hubs]]
+id = "miami"
+name = "Miami"
+airport = "MIA"
+lat = 25.7959
+lon = -80.2870
+timezone = "America/New_York"
+state = "FL"
+state_fips = "12"
+county_fips = "086"
+county = "Miami-Dade"
+region = "South"
+
+[[hubs]]
+id = "atlanta"
+name = "Atlanta"
+airport = "ATL"
+lat = 33.6407
+lon = -84.4277
+timezone = "America/New_York"
+state = "GA"
+state_fips = "13"
+county_fips = "063"
+county = "Clayton"
+region = "South"
+
+[[hubs]]
+id = "denver"
+name = "Denver"
+airport = "DEN"
+lat = 39.8561
+lon = -104.6737
+timezone = "America/Denver"
+state = "CO"
+state_fips = "08"
+county_fips = "031"
+county = "Denver"
+region = "West"

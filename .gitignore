@@ -1,0 +1,19 @@
+# Secrets: never commit
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+
+# Chat history (per-session logs; never part of the data snapshot)
+data/sessions.db
+
+# Note: data/weather_risk.db is deliberately NOT ignored, so the demo snapshot
+# can be committed (the agent runs without re-fetching the APIs).

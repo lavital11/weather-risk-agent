@@ -1,0 +1,145 @@
+# Evaluation set. Each case runs through the full agent (Gemini + code).
+#
+# Checks (all optional per case):
+#   history          questions asked first in the same session (for follow-ups)
+#   [plan]           expected QueryPlan fields; lists compared as sets; only listed fields are checked
+#   [facts]          expected deterministic results: top_hub, premise_holds, percent_of_days,
+#                    partial_year, overall_score
+#   status           expected AgentReply.status (default "ok")
+#   must_mention     every group must match: each item is a list of alternatives (case-insensitive)
+#   must_not_mention phrases that must not appear
+#   caveat_mentions  a caveat must contain one of these
+# Always checked for status "ok": every number in the answer appears in the facts (grounding).
+
+# ---------------------------------------------------------------- the 4 assignment questions
+[[cases]]
+id = "midwest_winter"
+question = "Which hubs in the Midwest are most exposed to winter disruption?"
+plan = { intent = "rank", region = "Midwest", hazards = ["winter"] }
+facts = { top_hub = "minneapolis" }
+must_mention = [["Minneapolis"]]
+
+[[cases]]
+id = "miami_vs_houston"
+question = "Compare Miami and Houston in terms of hurricane and flood exposure."
+plan = { intent = "compare", hubs = ["miami", "houston"], hazards = ["hurricane", "flood"] }
+must_mention = [["Houston"], ["Miami"]]
+caveat_mentions = ["sample", "1-2 events"]
+
+[[cases]]
+id = "denver_snow_last_year"
+question = "What percentage of days in Denver last year had snowfall?"
+plan = { intent = "weather_stat", hubs = ["denver"], metric = "snow_days", year = 2025 }
+facts = { percent_of_days = 10.4 }
+must_mention = [["10.4"]]
+
+[[cases]]
+id = "dallas_premise"
+question = "Why is the Dallas hub's weather disruption risk high?"
+plan = { intent = "explain", hubs = ["dallas"], asserted_level = "high" }
+facts = { premise_holds = false }
+must_mention = [["#6", "6th", "sixth"], ["hail"], ["ice"]]
+
+# ---------------------------------------------------------------- follow-ups (conversation memory)
+[[cases]]
+id = "followup_what_about_chicago"
+history = ["Why is the Dallas hub's weather disruption risk high?"]
+question = "What about Chicago?"
+plan = { intent = "explain", hubs = ["chicago"] }
+must_mention = [["Chicago"]]
+
+[[cases]]
+id = "followup_switch_hazard"
+history = ["Which hubs in the Midwest are most exposed to winter disruption?"]
+question = "And for flooding?"
+plan = { intent = "rank", region = "Midwest", hazards = ["flood"] }
+facts = { top_hub = "chicago" }
+
+[[cases]]
+id = "followup_why_top"
+history = ["What are the top 3 hubs overall?"]
+question = "Why is the first one on top?"
+plan = { intent = "explain", hubs = ["houston"] }
+must_mention = [["saturat", "100"]]
+
+# ---------------------------------------------------------------- other in-scope questions
+[[cases]]
+id = "top3_overall"
+question = "What are the top 3 hubs overall?"
+plan = { intent = "rank", top_n = 3, hazards = [] }
+facts = { top_hub = "houston" }
+
+[[cases]]
+id = "south_flood_rank"
+question = "Rank the southern hubs by flood exposure."
+plan = { intent = "rank", region = "South", hazards = ["flood"] }
+facts = { top_hub = "houston" }
+
+[[cases]]
+id = "compare_three_winter"
+question = "Compare Chicago, Minneapolis and Denver on winter risk."
+plan = { intent = "compare", hubs = ["chicago", "minneapolis", "denver"], hazards = ["winter"] }
+
+[[cases]]
+id = "aliases"
+question = "Compare KC and the Twin Cities for severe storms."
+plan = { intent = "compare", hubs = ["kansas_city", "minneapolis"], hazards = ["severe_storm"] }
+
+[[cases]]
+id = "dfw_hail_2024"
+question = "How many hail days did DFW have in 2024?"
+plan = { intent = "weather_stat", hubs = ["dallas"], metric = "hail_days", year = 2024 }
+
+[[cases]]
+id = "so_far_this_year"
+question = "How many days with snow has Minneapolis had so far this year?"
+plan = { intent = "weather_stat", hubs = ["minneapolis"], metric = "snow_days", year = 2026 }
+facts = { partial_year = true }
+must_mention = [["2026-11-20", "November 20"]]
+
+[[cases]]
+id = "houston_saturation"
+question = "Why is Houston ranked first?"
+plan = { intent = "explain", hubs = ["houston"] }
+facts = { overall_score = 100.0 }
+must_mention = [["saturat"], ["flood"]]
+caveat_mentions = ["sample"]
+
+[[cases]]
+id = "miami_winter_premise"
+question = "Why is Miami's winter risk so high?"
+plan = { intent = "explain", hubs = ["miami"], hazards = ["winter"], asserted_level = "high" }
+facts = { premise_holds = false }
+
+[[cases]]
+id = "no_investment_decision"
+question = "Which single hub should we invest in this year? Just tell me the answer."
+plan = { intent = "rank" }
+facts = { top_hub = "houston" }
+must_mention = [["decision support", "not an investment decision", "other factors", "consider", "small sample"]]
+must_not_mention = ["you should invest in", "we recommend investing", "definitely invest"]
+
+# ---------------------------------------------------------------- out of scope / unclear
+[[cases]]
+id = "unknown_hub"
+question = "How exposed is our Seattle hub to winter storms?"
+status = "out_of_scope"
+plan = { intent = "out_of_scope" }
+
+[[cases]]
+id = "uncovered_hazard"
+question = "Which hub has the highest earthquake risk?"
+status = "out_of_scope"
+plan = { intent = "out_of_scope" }
+
+[[cases]]
+id = "heat_out_of_scope"
+question = "Which hubs are most exposed to extreme heat?"
+status = "out_of_scope"
+plan = { intent = "out_of_scope" }
+
+[[cases]]
+id = "too_vague"
+question = "Is it bad?"
+status = "clarify"
+plan = { intent = "clarify" }
