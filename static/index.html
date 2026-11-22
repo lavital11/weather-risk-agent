@@ -43,7 +43,6 @@
   .mic { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 0 12px; }
   .mic.listening { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   .mic:disabled { opacity: .4; cursor: not-allowed; }
-  .voice-row { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; margin: -4px 0 4px; }
   footer { color: var(--muted); font-size: 11px; padding: 8px 0; }
 </style>
 </head>
@@ -65,7 +64,6 @@
     <input id="input" placeholder="Ask about hub weather exposure…" autocomplete="off" required>
     <button class="send" id="send">Send</button>
   </form>
-  <label class="voice-row"><input type="checkbox" id="speak"> Read answers aloud</label>
   <footer>Data: Open-Meteo.com (CC BY 4.0) · FEMA OpenFEMA API (not endorsed by FEMA) · NOAA SPC hail reports.
     Decision support, not an investment decision.</footer>
 </main>
@@ -122,7 +120,8 @@ function addAgent(r) {
   log.appendChild(box); scroll();
 }
 
-async function ask(text) {
+// byVoice: questions asked with the mic get their answer read aloud; typed questions stay text only.
+async function ask(text, byVoice = false) {
   addUser(text);
   const waiting = el("div", "msg meta", "Thinking…"); log.appendChild(waiting); scroll();
   send.disabled = true;
@@ -134,7 +133,7 @@ async function ask(text) {
     if (!res.ok) { log.appendChild(el("div", "msg", "Error: " + (data.detail || res.status))); return; }
     setSession(data.session_id);
     addAgent(data);
-    speak(data.answer);
+    if (byVoice) speak(directAnswer(data.answer));
   } catch (e) {
     waiting.remove(); log.appendChild(el("div", "msg", "Network error: " + e.message));
   } finally { send.disabled = false; input.focus(); }
@@ -148,34 +147,87 @@ document.getElementById("new").addEventListener("click", () => { setSession(null
 // Browser-only: the Web Speech API turns speech into text, which then goes through the same /chat
 // API as typed questions. No backend change. Chrome/Edge support recognition (Chrome sends the
 // audio to its speech service); other browsers get a disabled button with an explanation.
-const mic = document.getElementById("mic"), speakBox = document.getElementById("speak");
+// Voice conversation: click the mic, speak, stop speaking -> the question is sent automatically and
+// the short direct answer is read aloud. Typed questions stay text only.
+const mic = document.getElementById("mic");
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+// The whole spoken sentence so far. Chrome splits one utterance into several results, so we join
+// ALL of them (an earlier version showed only the last result, i.e. the last word or phrase).
+function transcriptOf(results) {
+  return Array.from(results).map(r => r[0].transcript).join("").replace(/\s+/g, " ").trim();
+}
+
 if (!Recognition) {
   mic.disabled = true;
   mic.title = "Voice input isn't supported in this browser (try Chrome or Edge)";
 } else {
   const rec = new Recognition();
   rec.lang = "en-US";
-  rec.interimResults = true;          // show words in the box while speaking
-  let listening = false;
-  rec.onresult = e => {
-    const r = e.results[e.results.length - 1];
-    input.value = r[0].transcript;
-    if (r.isFinal && input.value.trim()) { const t = input.value.trim(); input.value = ""; ask(t); }
+  rec.interimResults = true;          // update the box while speaking
+  rec.continuous = false;             // the browser ends the session when you stop speaking
+  let listening = false, heard = "";
+  rec.onresult = e => { heard = transcriptOf(e.results); input.value = heard; };
+  rec.onend = () => {                 // fired after a pause in speech (or a click on the mic)
+    listening = false; mic.classList.remove("listening");
+    const q = heard.trim(); heard = "";
+    if (q) { input.value = ""; ask(q, true); }
   };
-  rec.onend = () => { listening = false; mic.classList.remove("listening"); };
   rec.onerror = e => {
     if (e.error === "not-allowed") log.appendChild(el("div", "msg meta", "Microphone access was blocked."));
   };
   mic.addEventListener("click", () => {
-    if (listening) { rec.stop(); return; }
+    if (listening) { rec.stop(); return; }          // stopping early still sends what was heard
+    if ("speechSynthesis" in window) speechSynthesis.cancel();   // don't listen to ourselves
+    heard = ""; input.value = "";
     try { rec.start(); listening = true; mic.classList.add("listening"); } catch (e) { /* already started */ }
   });
 }
+
+// Read only the short direct answer: the lines before the per-hub list ("- ..."), at most 2
+// sentences (plus the "Assuming you still mean ..." line), with symbols turned into words.
+function directAnswer(text) {
+  const out = [];
+  for (const line of (text || "").split("\n")) {
+    if (line.trim().startsWith("- ")) break;
+    if (line.trim()) out.push(line.trim());
+  }
+  let assumed = "";
+  if (out.length && out[0].startsWith("Assuming you still mean")) assumed = out.shift() + " ";
+  // A sentence ends at . ! ? followed by a space and a capital letter, so "10.4" or "51.5" never split.
+  const sentences = out.join(" ").split(/(?<=[.!?])\s+(?=[A-Z])/);
+  return speakable(assumed + sentences.slice(0, 2).join(" ").trim());
+}
+function speakable(s) {
+  return s.replace(/\s*\((-?\d+\.\d+), (-?\d+\.\d+)\)/g, "")    // drop coordinates
+          .replace(/>=/g, "at least ").replace(/<=/g, "at most ").replace(/~/g, "about ")
+          .replace(/#(\d+)/g, "number $1").replace(/\s+/g, " ").trim();
+}
+
+// English (US) voice, so numbers are read in English even if the system language is different.
+// Prefer a female voice by name; otherwise any en-US voice; otherwise any English voice.
+const FEMALE_VOICES = ["Microsoft Aria", "Microsoft Jenny", "Google US English", "Samantha", "Microsoft Zira",
+                       "Zira", "Ava", "Allison", "Susan", "Victoria", "Karen", "Moira", "Tessa", "Serena"];
+function pickVoice() {
+  const voices = ("speechSynthesis" in window) ? speechSynthesis.getVoices() : [];
+  const en = voices.filter(v => /^en[-_]/i.test(v.lang));
+  const us = en.filter(v => /^en[-_]US$/i.test(v.lang));
+  for (const name of FEMALE_VOICES) {
+    const v = us.find(v => v.name.includes(name)) || en.find(v => v.name.includes(name));
+    if (v) return v;
+  }
+  return us[0] || en[0] || null;
+}
+if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => {};   // voices load asynchronously
+
 function speak(text) {
-  if (!speakBox.checked || !("speechSynthesis" in window) || !text) return;
+  if (!("speechSynthesis" in window) || !text) return;
   speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(text.replace(/\n- /g, ". ")));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";                  // without this the browser used a Hebrew voice
+  const v = pickVoice();
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
 }
 
 const chips = document.getElementById("chips");
