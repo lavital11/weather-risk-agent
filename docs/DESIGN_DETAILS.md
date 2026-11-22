@@ -233,6 +233,7 @@ Render free web service from `render.yaml`: build with `pip install -r requireme
 - **Free-plan limits, accepted for a demo:**
   - It sleeps after 15 minutes idle (~1 minute to wake).
   - Its filesystem is ephemeral, so `sessions.db` and `alerts.db` reset on restart; the committed `weather_risk.db` is re-deployed each time.
+  - **Anything downloaded while running is lost on restart** (FEMA refreshes, catch-up weather/hail, a newer HURDAT2 file) and is downloaded again by the next alert run. Each restart also loses the alert baseline, so the first run after a restart only saves a new baseline.
   - The in-process daily alert job only runs while the instance is awake.
 
   In production: a paid always-on instance or a Render Cron Job calling `POST /alerts/check`, plus Postgres for sessions and alert state.

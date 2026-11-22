@@ -54,7 +54,9 @@ built from config) → executor computes facts → narrator (Gemini, `Answer`) �
 Numbers in answers come only from the facts; the eval checks this.
 
 **Deployment:** Render free web service from `render.yaml`. Secrets (`GEMINI_API_KEY`,
-`DEMO_PASSWORD`) live in the Render dashboard.
+`DEMO_PASSWORD`) live in the Render dashboard. Render's disk is ephemeral: **anything downloaded
+while running** (FEMA refreshes, catch-up weather/hail/HURDAT2, chat and alert state) **is lost on
+restart**. The app starts again from the committed `weather_risk.db` and downloads again on the next alert run.
 
 ## 2. Repository structure
 

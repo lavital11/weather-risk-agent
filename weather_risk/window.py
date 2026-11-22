@@ -40,7 +40,7 @@ def catch_up(conn: sqlite3.Connection, year: int, n_hubs: int) -> list[str]:
     what was attempted and what's still missing afterwards.
       weather: fetch from the day after the last stored day up to today-2 (all hubs)
       hail:    fetch that year's SPC file (it appears months after the year ends)
-      tracks:  a newer HURDAT2 file is NOT fetched automatically yet (see PLAN.md)
+      tracks:  the newest HURDAT2 release, if it covers more years (ingest/hurdat2.py update())
     """
     from datetime import timedelta
     from weather_risk.ingest import open_meteo, spc_hail
@@ -56,7 +56,8 @@ def catch_up(conn: sqlite3.Connection, year: int, n_hubs: int) -> list[str]:
         spc_hail.run([year])
         log.append(f"hail: tried SPC {year} file")
     if any(g.startswith("tracks") for g in gaps):
-        log.append("tracks: newer HURDAT2 file not fetched automatically (manual step for now)")
+        from weather_risk.ingest import hurdat2
+        log.append(hurdat2.update(conn))     # newest release; validated; whole-table swap in one transaction
     still = source_gaps(conn, year, n_hubs)
     log.append(f"{year} complete in all sources" if not still else f"{year} still missing: {'; '.join(still)}")
     return log

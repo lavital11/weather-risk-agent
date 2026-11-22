@@ -22,8 +22,9 @@ The data snapshot `data/weather_risk.db` is committed, so no ingest is needed to
 ### Deployed version (Render)
 `render.yaml` deploys the app to Render's free plan. The URL needs the demo password (user `demo`)
 for everything except `/health`. The free instance sleeps after 15 minutes idle: open `/health` about
-a minute before using it. Chat history and alert state reset when it restarts, and the daily alert
-check only runs while it's awake. Set locally with `DEMO_PASSWORD` in `.env` to test the password.
+a minute before using it. Render's disk is ephemeral: chat history, alert state and anything downloaded
+while running (FEMA refreshes, catch-up data) are lost on restart and downloaded again by the next
+alert run. The daily alert check only runs while the instance is awake. Set locally with `DEMO_PASSWORD` in `.env` to test the password.
 
 ### Rebuild the data (optional, ~5 min)
 ```powershell

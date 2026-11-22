@@ -53,11 +53,14 @@ def test_catch_up_fetches_only_what_is_missing(monkeypatch):
     monkeypatch.setattr(open_meteo, "default_end_date", lambda: date(2027, 1, 1))   # pretend it's January 2027
     monkeypatch.setattr(open_meteo, "run", lambda s, e: calls.append(("weather", s, e)))
     monkeypatch.setattr(spc_hail, "run", lambda years: calls.append(("hail", list(years))))
+    from weather_risk.ingest import hurdat2
+    monkeypatch.setattr(hurdat2, "update", lambda conn: calls.append(("tracks",)) or "tracks: fake HURDAT2 check")
     log = window.catch_up(connect(), 2026, 10)
     last = connect().execute("SELECT MIN(m) FROM (SELECT MAX(date) m FROM weather_daily GROUP BY hub_id)").fetchone()[0]
     assert calls[0] == ("weather", date.fromisoformat(last) + __import__("datetime").timedelta(days=1), date(2027, 1, 1))
     assert calls[1] == ("hail", [2026])                    # only the missing year's file
-    assert any("HURDAT2" in line for line in log)          # tracks: logged as a manual step
+    assert calls[2] == ("tracks",)                         # newest HURDAT2 release is checked
+    assert any("HURDAT2" in line for line in log)
     assert "2026 still missing" in log[-1]                 # fetchers were fakes, so still missing
 
 
