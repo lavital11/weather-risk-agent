@@ -31,15 +31,28 @@ class LLMOutputError(RuntimeError):
     """The model didn't produce valid JSON for the schema after a retry."""
 
 
+class LLMNotConfigured(RuntimeError):
+    """No Gemini API key. Only chat needs one; scores, alerts and tests work without it."""
+
+
 class LLMClient:
     def __init__(self, model: str = MODEL):
         self.model = model
-        self._client = genai.Client()  # reads GEMINI_API_KEY from the environment
+        self._client = None   # created on first use, so the app can start without a key
+
+    def _get_client(self) -> genai.Client:
+        if self._client is None:
+            if not (os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")):
+                raise LLMNotConfigured("Chat needs a GEMINI_API_KEY (free from Google AI Studio). "
+                                       "Scores, alerts and tests work without it.")
+            self._client = genai.Client()  # reads GEMINI_API_KEY from the environment
+        return self._client
 
     def generate_json(self, system: str, prompt: str, schema: type[T], temperature: float = 0.0) -> T:
+        client = self._get_client()
         contents = prompt
         for attempt in (1, 2):
-            resp = self._client.models.generate_content(
+            resp = client.models.generate_content(
                 model=self.model,
                 contents=contents,
                 config=types.GenerateContentConfig(

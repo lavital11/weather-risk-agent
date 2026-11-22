@@ -124,6 +124,11 @@ Final eval 75/75 on `9125781`. 49 unit/validation tests pass.
      were the alert catch-up, the UI and voice.
    - So the 75/75 result should still hold. This run would confirm it on the final code.
 
+*(Added 23:45)* README now points reviewers to the live URL first (login in the submission) and
+explains the local run without a key. Bug found while checking that claim: the app **failed at
+startup** without a Gemini key. Fixed: the client is created on first chat use, and `/chat` returns 503
+"needs a GEMINI_API_KEY"; scores, alerts and tests work without a key (new test).
+
 **Not planned (documented as limitations or next steps):** severity weights from customer cost
 data, a feels-like (humidity) heat signal, Postgres and an always-on instance for persistent
 alerts and sessions, station data to correct the snow bias.

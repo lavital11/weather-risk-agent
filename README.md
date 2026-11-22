@@ -7,12 +7,22 @@ turns the question into a structured plan and explains the computed facts.
 Scope: 10 hubs (5 Midwest, 4 South, Denver) × 5 hazards (winter, flood, severe storms,
 hurricanes, extreme heat), 2016–2025. See `docs/DESIGN.md` (architecture), `docs/PLAN.md` (decisions) and `docs/ASSUMPTIONS.md` (assumptions, data caveats).
 
-## Run it (Windows, Python 3.12)
+> **Easiest way to try it: the live URL.** The URL and login details are in my submission. No setup
+> or API key needed. The free server sleeps when idle: open `/health` first and wait about a minute.
+
+## Run it locally (Windows, Python 3.12)
+
+**You need your own Gemini API key for the chat.** It's free from
+[Google AI Studio](https://aistudio.google.com/apikey); put it in `.env` as `GEMINI_API_KEY`.
+**Without a key, everything except `/chat` still works:** the server starts, `/scores` gives the full
+deterministic ranking, the alerts run (`/alerts/demo`, `python -m weather_risk.alerts --demo`), and the
+unit tests pass (`pytest`). The chat page and `/chat` return a clear "needs a GEMINI_API_KEY"
+message, and the live eval (`evals/`) also needs a key.
 
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-copy .env.example .env        # then put your GEMINI_API_KEY in .env
+copy .env.example .env        # then put your GEMINI_API_KEY in .env (optional, chat only)
 .\.venv\Scripts\python.exe -m uvicorn weather_risk.api:app --port 8000
 ```
 Open http://localhost:8000 for the chat, or http://localhost:8000/docs for the API.

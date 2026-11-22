@@ -26,6 +26,7 @@ from weather_risk import alerts, sessions
 from weather_risk.agent.agent import Agent
 from weather_risk.config import ROOT, load_hubs
 from weather_risk.db import connect
+from weather_risk.llm import LLMNotConfigured
 
 STATIC = ROOT / "static"
 state: dict = {"received": []}      # "received": payloads our demo webhook receiver got
@@ -136,6 +137,8 @@ def chat(req: ChatRequest):
     history = sessions.load_history(session_id)
     try:
         reply = state["agent"].ask(req.message, history)
+    except LLMNotConfigured as e:  # no API key: say so clearly; the rest of the app keeps working
+        raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:  # e.g. Gemini unreachable: report it, don't crash the server
         raise HTTPException(status_code=502, detail=f"agent error: {type(e).__name__}: {e}")
     sessions.save_turn(session_id, req.message, reply.plan, reply.answer.answer, reply.status)
