@@ -47,7 +47,7 @@ flowchart LR
 | Agent | `agent/agent.py`, `schemas.py`, `prompts.py` | One turn: **plan** (LLM → `QueryPlan` JSON) → **execute** (code → facts) → **narrate** (LLM → `Answer` JSON, facts only). |
 | API | `api.py` | FastAPI. `/chat` loads the session history, runs the agent, saves the turn. Demo password on everything except `/health`. Starts the daily alert task. |
 | Alerts | `alerts.py` | Refresh data → window → score → snapshot → compare with the last snapshot → one alert per hub (rank change, overall ±2, hazard ±10, FEMA event in/out) → webhook. |
-| Chat UI | `static/index.html` | One page. Calls only `/chat`; shows the plan and facts under each answer ("How I got this"). |
+| Chat UI | `static/index.html` | One page. Calls only `/chat`; shows the plan and facts under each answer ("How I got this"). **Voice:** a mic button (browser Web Speech API) turns speech into the same `/chat` question; optional "read answers aloud". No backend change. |
 
 **One chat turn:** UI → `POST /chat` → planner (Gemini, `QueryPlan`; hubs and hazards are enums
 built from config) → executor computes facts → narrator (Gemini, `Answer`) → API saves the turn → UI.

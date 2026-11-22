@@ -16,6 +16,9 @@ copy .env.example .env        # then put your GEMINI_API_KEY in .env
 .\.venv\Scripts\python.exe -m uvicorn weather_risk.api:app --port 8000
 ```
 Open http://localhost:8000 for the chat, or http://localhost:8000/docs for the API.
+**Voice:** click 🎤 and speak your question (Chrome or Edge; allow the microphone). Tick "Read answers
+aloud" to hear the reply. This uses the browser's built-in speech features; Chrome sends the audio to
+its own speech service. It works on `localhost` and on the Render URL (HTTPS), but not on plain-HTTP addresses.
 
 The data snapshot `data/weather_risk.db` is committed, so no ingest is needed to run the demo.
 

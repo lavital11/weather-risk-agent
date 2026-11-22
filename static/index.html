@@ -36,10 +36,14 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .chip { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; font-size: 13px; }
   form { display: flex; gap: 8px; position: sticky; bottom: 0; background: var(--bg); padding: 8px 0; }
-  input { flex: 1; min-width: 0; font: inherit; padding: 10px; border-radius: 6px;
+  #input { flex: 1; min-width: 0; font: inherit; padding: 10px; border-radius: 6px;
           border: 1px solid var(--border); background: var(--panel); color: var(--text); }
   .send { background: var(--accent); color: var(--accent-text); border: 0; padding: 0 16px; }
   .send:disabled { opacity: .5; cursor: default; }
+  .mic { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 0 12px; }
+  .mic.listening { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .mic:disabled { opacity: .4; cursor: not-allowed; }
+  .voice-row { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; margin: -4px 0 4px; }
   footer { color: var(--muted); font-size: 11px; padding: 8px 0; }
 </style>
 </head>
@@ -57,9 +61,11 @@
   <div id="log"></div>
 
   <form id="form">
+    <button type="button" class="mic" id="mic" aria-label="Ask by voice" title="Ask by voice">🎤</button>
     <input id="input" placeholder="Ask about hub weather exposure…" autocomplete="off" required>
     <button class="send" id="send">Send</button>
   </form>
+  <label class="voice-row"><input type="checkbox" id="speak"> Read answers aloud</label>
   <footer>Data: Open-Meteo.com (CC BY 4.0) · FEMA OpenFEMA API (not endorsed by FEMA) · NOAA SPC hail reports.
     Decision support, not an investment decision.</footer>
 </main>
@@ -128,6 +134,7 @@ async function ask(text) {
     if (!res.ok) { log.appendChild(el("div", "msg", "Error: " + (data.detail || res.status))); return; }
     setSession(data.session_id);
     addAgent(data);
+    speak(data.answer);
   } catch (e) {
     waiting.remove(); log.appendChild(el("div", "msg", "Network error: " + e.message));
   } finally { send.disabled = false; input.focus(); }
@@ -137,6 +144,40 @@ document.getElementById("form").addEventListener("submit", e => {
   e.preventDefault(); const t = input.value.trim(); if (!t) return; input.value = ""; ask(t);
 });
 document.getElementById("new").addEventListener("click", () => { setSession(null); log.innerHTML = ""; input.focus(); });
+// ---------------------------------------------------------------- voice (bonus)
+// Browser-only: the Web Speech API turns speech into text, which then goes through the same /chat
+// API as typed questions. No backend change. Chrome/Edge support recognition (Chrome sends the
+// audio to its speech service); other browsers get a disabled button with an explanation.
+const mic = document.getElementById("mic"), speakBox = document.getElementById("speak");
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!Recognition) {
+  mic.disabled = true;
+  mic.title = "Voice input isn't supported in this browser (try Chrome or Edge)";
+} else {
+  const rec = new Recognition();
+  rec.lang = "en-US";
+  rec.interimResults = true;          // show words in the box while speaking
+  let listening = false;
+  rec.onresult = e => {
+    const r = e.results[e.results.length - 1];
+    input.value = r[0].transcript;
+    if (r.isFinal && input.value.trim()) { const t = input.value.trim(); input.value = ""; ask(t); }
+  };
+  rec.onend = () => { listening = false; mic.classList.remove("listening"); };
+  rec.onerror = e => {
+    if (e.error === "not-allowed") log.appendChild(el("div", "msg meta", "Microphone access was blocked."));
+  };
+  mic.addEventListener("click", () => {
+    if (listening) { rec.stop(); return; }
+    try { rec.start(); listening = true; mic.classList.add("listening"); } catch (e) { /* already started */ }
+  });
+}
+function speak(text) {
+  if (!speakBox.checked || !("speechSynthesis" in window) || !text) return;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text.replace(/\n- /g, ". ")));
+}
+
 const chips = document.getElementById("chips");
 EXAMPLES.forEach(q => { const b = el("button", "chip", q); b.type = "button"; b.onclick = () => ask(q); chips.appendChild(b); });
 </script>
