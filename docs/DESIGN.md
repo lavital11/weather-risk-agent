@@ -6,8 +6,8 @@ explains hubs in a chat. **All numbers come from deterministic code; the LLM onl
 question and explains the computed facts.**
 
 **Scope (narrow on purpose):** 10 hubs (Chicago, Minneapolis, Indianapolis, Kansas City, Columbus,
-Dallas, Houston, Miami, Atlanta, Denver) × 4 hazards (winter, flood, severe storms, hurricanes),
-scored on 2016–2025. Out of scope: heat, wildfire, earthquake, hub business importance (volume).
+Dallas, Houston, Miami, Atlanta, Denver) × 5 hazards (winter, flood, severe storms, hurricanes,
+extreme heat), scored on 2016–2025. Out of scope: wildfire, earthquake, drought, hub business importance (volume).
 Details and every decision with its reason: [PLAN.md](PLAN.md). Assumptions and data caveats:
 [ASSUMPTIONS.md](ASSUMPTIONS.md).
 
@@ -84,6 +84,7 @@ Deterministic, configured in `config/scoring.toml`:
 | Flood | weather 0.7, FEMA 0.3 | rain ≥ 50 mm, rain ≥ 100 mm |
 | Severe storm | hail 0.35, gusts 0.35, FEMA 0.3 | hail ≥ 1" and ≥ 2" within 50 km (days), gusts ≥ 80 km/h |
 | Hurricane | FEMA 1.0 | FEMA hurricane / tropical-storm events (small sample) |
+| Heat | weather 1.0 | days with max ≥ 35 °C (bound 50/yr), ≥ 37.8 °C (bound 16/yr). FEMA doesn't declare heat disasters |
 
   \*Ice day = precip ≥ 2 mm, max ≤ 1 °C, less than half of it fell as snow (0.7 cm snow per mm, measured in our data).
   FEMA events = distinct incidents with a **Major Disaster declaration with household aid in the hub's
@@ -93,9 +94,40 @@ Deterministic, configured in `config/scoring.toml`:
 - **Explanations:** the executor reports each signal's points within its hazard, each hazard's
   leave-one-out contribution to the overall score, and ranks among hubs (ties flagged, zero = no rank).
 
-Current result (2016–2025): Houston 100 (#1), Chicago 76.2, Kansas City 73.6, Minneapolis 73.1,
-Miami 69.7, Dallas 61.8 (#6, but #1 for hail and tied #2 for ice), Denver 57.8, Columbus 56.2,
-Indianapolis 53.3, Atlanta 36.5.
+Current result (2016–2025): Houston 100.0 (#1), Dallas 99.1 (#2), Chicago 76.4, Kansas City 75.7,
+Minneapolis 73.4, Miami 69.8, Denver 60.8, Columbus 56.2, Indianapolis 53.4, Atlanta 39.1.
+
+### Heat as a fifth hazard, and the limits of equal weights
+
+**Why heat is included:** the assignment describes disruption as severe weather that "shuts hubs
+down, delays shipments and costs us money". Heat rarely shuts a hub, but it delays shipments and costs
+money over many days: crew work-rest limits, equipment and reefer strain, slower yard operations.
+
+**Known limitations:**
+- **Equal weights don't capture severity.** Heat reduces capacity over many days, while ice or a
+  hurricane can close a hub outright. Under noisy-OR, a heat score of 97.7 counts as much as a hurricane
+  score of 97.7. The fix is weights (or a severity factor) from the customer's own downtime and delay
+  costs, the first open question for the customer (Q1). The agent states this caveat whenever heat matters.
+- **The ranking moves a lot for one hub.** Dallas has by far the most hot days (48.6/yr ≥ 95 °F,
+  15.7/yr ≥ 100 °F), so heat alone takes it from **#6 to #2**. No other hub changes position:
+
+| Hub | Overall before heat | Heat score | Overall with heat |
+|---|---|---|---|
+| Houston | 100.0 (#1) | 38.1 | 100.0 (#1) |
+| **Dallas** | **61.8 (#6)** | **97.7** | **99.1 (#2)** |
+| Chicago | 76.2 (#2) | 0.9 | 76.4 (#3) |
+| Kansas City | 73.6 (#3) | 8.0 | 75.7 (#4) |
+| Minneapolis | 73.1 (#4) | 1.0 | 73.4 (#5) |
+| Miami | 69.7 (#5) | 0.6 | 69.8 (#6) |
+| Denver | 57.8 (#7) | 7.1 | 60.8 (#7) |
+| Columbus | 56.2 (#8) | 0.0 | 56.2 (#8) |
+| Indianapolis | 53.3 (#9) | 0.1 | 53.4 (#9) |
+| Atlanta | 36.5 (#10) | 4.1 | 39.1 (#10) |
+
+- **Saturation near 100 at the top.** Noisy-OR compresses the top: Houston is at 100 (one hazard at
+  100, a small FEMA sample) and Dallas at 99.1. The 0.9-point gap between them says almost nothing.
+  For the top hubs, the per-hazard scores and their drivers carry the information, not the overall
+  number. The agent always gives ranks and drivers, not only the overall score.
 
 ## 3. Data sources
 
@@ -131,7 +163,7 @@ Indianapolis 53.3, Atlanta 36.5.
 config/          hubs.toml (hub registry), scoring.toml (every threshold, bound, weight)
 data/            weather_risk.db (committed snapshot); sessions.db (git-ignored)
 docs/            DESIGN.md (this), PLAN.md (decision log), ASSUMPTIONS.md
-evals/           cases.toml (23 cases), run_eval.py, results/
+evals/           cases.toml (25 cases), run_eval.py, results/
 scripts/         verify_gemini.py, explore_fema.py (phase-0 checks and exploration)
 static/          index.html (chat page)
 tests/           test_scoring.py, test_executor.py, test_validation.py (no LLM)
@@ -143,10 +175,10 @@ weather_risk/
 
 ## 6. Evaluation
 
-- **Unit and validation tests (no LLM):** 32 tests. They cover the scoring math, the rule-D counting,
+- **Unit and validation tests (no LLM):** 33 tests. They cover the scoring math, the rule-D counting,
   noisy-OR saturation, executor results on real data (e.g. Denver 2025 = 38/365 = 10.4%), and known
   events. The DFW ice storms of 2022 and 2023 are detected; 2021 is a documented expected failure.
-- **Live eval (`evals/`):** 23 cases: the 4 assignment questions, follow-ups, aliases, premise
+- **Live eval (`evals/`):** 25 cases: the 4 assignment questions, follow-ups, aliases, premise
   checks, out-of-scope questions, the "which hub to invest in" framing, and 3 **holdout** cases written
   after the last prompt change. Each case checks the plan, the facts, required/forbidden phrases, and
   **grounding: every number in the answer must appear in the facts.**
@@ -156,6 +188,8 @@ weather_risk/
   of `compare`. The answer was still correct and grounded (Denver 57.8, #7, vs Atlanta 36.5, #10), so
   only the plan check failed. This is a side effect of the earlier prompt fix ("prioritization
   questions → rank"): the holdout caught the shift, which is what it was for.
+  After heat was added (25 cases, 1 run): **24/25**. The same holdout failed the same way, and all
+  heat-related cases passed.
 - **Limits:** 3 runs is a small sample, and the grounding check lets integers 0–10 and the years
   2016–2026 through unchecked. Eval history: [PLAN.md](PLAN.md#eval-log).
 
@@ -175,7 +209,8 @@ Full list in [ASSUMPTIONS.md](ASSUMPTIONS.md). The ones that matter most:
 
 ## 8. Not done / next steps
 
-In priority order: scheduled alert on short-term (forecast) risk → HURDAT2 hurricane tracks → heat
-hazard (max temperature already stored) → voice input → deployment. Also: per-hub business weights
+Bonus order: heat (done) → HURDAT2 hurricane tracks → scheduled alert on short-term (forecast) risk →
+deployment → voice input. Also: severity weights from downtime costs (see heat above), a feels-like
+(humidity) heat signal, Also: per-hub business weights
 (exposure × importance), station data to correct the snow bias, and the FEMA National Risk Index
 as an outside check (blocked from our network).

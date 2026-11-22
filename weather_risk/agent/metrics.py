@@ -26,6 +26,8 @@ METRICS: dict[str, Metric] = {
     "extreme_cold_days": Metric("Extreme-cold days (min <= -18 C / 0 F)", "temp_min_c <= -18"),
     "ice_days":          Metric("Likely freezing-rain/ice days (scoring rule)",
                                 "precipitation_mm >= 2 AND temp_max_c <= 1 AND snowfall_cm < 0.35 * precipitation_mm"),
+    "hot_days":          Metric("Hot days (max >= 35 C / 95 F)", "temp_max_c >= 35"),
+    "very_hot_days":     Metric("Very hot days (max >= 37.8 C / 100 F)", "temp_max_c >= 37.8"),
     "strong_gust_days":  Metric("Strong-gust days (>= 80 km/h)", "wind_gust_max_kmh >= 80"),
     "hail_days":         Metric("Days with hail >= 1 in reported within 50 km (NOAA SPC)"),
 }

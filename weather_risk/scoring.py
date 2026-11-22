@@ -104,6 +104,7 @@ DAY_RULES: dict[str, Callable[[dict, dict], bool]] = {
     "precipitation_at_least": _ge("precipitation_mm"),
     "gust_at_least": _ge("wind_gust_max_kmh"),
     "temp_min_at_most": _le("temp_min_c"),
+    "temp_max_at_least": _ge("temp_max_c"),
     "ice_day": is_ice_day,
 }
 
@@ -211,7 +212,7 @@ def score_hub(hub: Hub, weather_days: list[dict], declarations: list[dict], cfg:
     for name, hz in cfg["hazards"].items():
         comps = [COMPONENT_SCORERS[c["type"]](c, ctx) for c in hz["components"]]
         score = round(sum(c.weight * c.score for c in comps), 1)
-        notes = [hz["small_sample_note"]] if "small_sample_note" in hz else []
+        notes = [hz["note"]] if "note" in hz else []   # caveat the agent must mention
         hazards[name] = HazardResult(hazard=name, label=hz["label"], score=score, components=comps, notes=notes)
     overall = combine_hazards({h: r.score for h, r in hazards.items()}, cfg)
     w = cfg["window"]

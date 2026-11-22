@@ -30,10 +30,11 @@ rule = "D"
 method = "noisy_or"
 
 [hazard_weights]             # used only by "weighted_average". Q1: equal until the customer gives downtime costs
-winter       = 0.25
-flood        = 0.25
-severe_storm = 0.25
-hurricane    = 0.25
+winter       = 0.2
+flood        = 0.2
+severe_storm = 0.2
+hurricane    = 0.2
+heat         = 0.2
 
 # ---------------------------------------------------------------- winter
 [hazards.winter]
@@ -105,10 +106,27 @@ incident_types = ["Severe Storm", "Tornado", "Straight-Line Winds"]
 label = "Hurricane / tropical storm"
 # H2: FEMA only (A15). Slot for later: add a "storm_tracks" component (HURDAT2)
 # and rebalance the weights here; the engine picks components by type.
-small_sample_note = "Hurricane score is based only on FEMA major-disaster declarations with household aid: a small sample (1-2 events per hub)."
+note = "Hurricane score is based only on FEMA major-disaster declarations with household aid: a small sample (1-2 events per hub)."
 
 [[hazards.hurricane.components]]
 type = "fema_events"
 weight = 1.0
 bound = 2
 incident_types = ["Hurricane", "Tropical Storm", "Coastal Storm"]
+
+# ---------------------------------------------------------------- heat
+# Added as a 5th hazard (user decision). The assignment defines disruption as "shuts hubs down,
+# delays shipments and costs us money": heat rarely shuts a hub, but it slows crews, equipment and
+# trucks over many days. It's treated equally with the other hazards, which is a known limitation (see DESIGN.md).
+# FEMA does not declare heat disasters, so heat is weather-only.
+[hazards.heat]
+label = "Extreme heat"
+note = "Heat usually slows a hub (less capacity over many days) rather than shutting it down; equal treatment with ice or hurricanes does not capture that difference in severity."
+
+[[hazards.heat.components]]
+type = "weather_days"
+weight = 1.0
+signals = [
+  { id = "hot_days",      rule = "temp_max_at_least", threshold = 35.0, bound = 50, label = "Hot days (max >= 35 C / 95 F)" },
+  { id = "very_hot_days", rule = "temp_max_at_least", threshold = 37.8, bound = 16, label = "Very hot days (max >= 37.8 C / 100 F)" },
+]

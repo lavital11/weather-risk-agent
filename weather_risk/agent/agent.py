@@ -61,8 +61,9 @@ class Agent:
             return _fixed("Sorry, I couldn't interpret that. Could you rephrase?", None, "llm_error")
 
         if plan.intent == "out_of_scope":
+            hazards = ", ".join(hz["label"].split(" (")[0].lower() for hz in self.executor.cfg["hazards"].values())
             return _fixed(f"That's outside what I cover: {plan.out_of_scope_reason or 'not in scope'}. "
-                          "I cover 10 hubs and 4 hazards: winter, flood, severe storms, hurricanes.", plan, "out_of_scope")
+                          f"I cover {self.executor.n_hubs} hubs and these hazards: {hazards}.", plan, "out_of_scope")
         if plan.intent == "clarify":
             return _fixed(plan.clarification_question or "Could you clarify your question?", plan, "clarify")
 

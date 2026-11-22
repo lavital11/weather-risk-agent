@@ -115,11 +115,11 @@ def test_fema_filters_incident_type_and_scales_per_10_years():
 def test_real_config_loads_and_validates():
     cfg = load_scoring_config()
     assert cfg["fema"]["rule"] == "D"
-    assert set(cfg["hazards"]) == {"winter", "flood", "severe_storm", "hurricane"}
+    assert set(cfg["hazards"]) == {"winter", "flood", "severe_storm", "hurricane", "heat"}
 
 
 def test_bad_weights_are_rejected(tmp_path):
-    bad = (load_scoring_config.__defaults__[0]).read_text(encoding="utf-8").replace("winter       = 0.25", "winter       = 0.5")
+    bad = (load_scoring_config.__defaults__[0]).read_text(encoding="utf-8").replace("winter       = 0.2", "winter       = 0.5")
     p = tmp_path / "scoring.toml"
     p.write_text(bad, encoding="utf-8")
     with pytest.raises(ValueError, match="sum to 1"):

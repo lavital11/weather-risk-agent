@@ -36,13 +36,21 @@ def test_midwest_winter_ranking_only_midwest_and_ordered(ex):
     assert f["ranking"][0]["hub_id"] == "minneapolis"
 
 
-def test_dallas_premise_check_is_nuanced(ex):
+def test_dallas_premise_now_holds_with_heat(ex):
+    # Before heat was added, Dallas was #6 and the premise did not hold (see PLAN.md).
     f = ex.run(plan(intent="explain", hubs=["dallas"], asserted_level="high"))
-    assert f["premise_check"]["premise_holds"] is False
-    assert f["premise_check"]["rank"] == 6
-    notable = {(n["signal"].split(" (")[0].split(" within")[0], n["rank_among_hubs"]) for n in f["notable_signals"]}
+    assert f["premise_check"]["premise_holds"] is True
+    assert f["premise_check"]["rank"] == 2
+    notable = {(n["signal"], n["rank_among_hubs"]) for n in f["notable_signals"]}
     assert any("hail >= 1 in" in s and r == 1 for s, r in notable)      # #1 for hail
     assert any("ice" in s.lower() and r == 2 for s, r in notable)       # #2 for ice (tied)
+    assert any("max >= 37.8" in s and r == 1 for s, r in notable)       # #1 for very hot days
+    assert f["hazards"]["heat"]["notes"]                                # "slows rather than shuts" caveat
+
+
+def test_premise_check_still_rejects_false_premise(ex):
+    f = ex.run(plan(intent="explain", hubs=["atlanta"], asserted_level="high"))
+    assert f["premise_check"]["premise_holds"] is False and f["premise_check"]["rank"] == 10
 
 
 def test_zero_scores_get_no_rank_and_ties_are_flagged(ex):

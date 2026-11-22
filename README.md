@@ -4,8 +4,8 @@ An AI agent that helps logistics analysts decide which distribution hubs are mos
 weather disruption. **Scores are computed by deterministic code**; the LLM (Google Gemini) only
 turns the question into a structured plan and explains the computed facts.
 
-Scope: 10 hubs (5 Midwest, 4 South, Denver) × 4 hazards (winter, flood, severe storms,
-hurricanes), 2016–2025. See `docs/PLAN.md` (decisions) and `docs/ASSUMPTIONS.md` (assumptions, data caveats).
+Scope: 10 hubs (5 Midwest, 4 South, Denver) × 5 hazards (winter, flood, severe storms,
+hurricanes, extreme heat), 2016–2025. See `docs/DESIGN.md` for the architecture. See `docs/PLAN.md` (decisions) and `docs/ASSUMPTIONS.md` (assumptions, data caveats).
 
 ## Run it (Windows, Python 3.12)
 

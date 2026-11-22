@@ -37,8 +37,9 @@ must_mention = [["10.4"]]
 id = "dallas_premise"
 question = "Why is the Dallas hub's weather disruption risk high?"
 plan = { intent = "explain", hubs = ["dallas"], asserted_level = "high" }
-facts = { premise_holds = false }
-must_mention = [["#6", "6th", "sixth"], ["hail"], ["ice"]]
+# Updated when heat became a 5th hazard: Dallas moved #6 -> #2, so the premise now holds.
+facts = { premise_holds = true }
+must_mention = [["#2", "2nd", "second"], ["heat"], ["hail"]]
 
 # ---------------------------------------------------------------- follow-ups (conversation memory)
 [[cases]]
@@ -158,10 +159,26 @@ status = "out_of_scope"
 plan = { intent = "out_of_scope" }
 
 [[cases]]
-id = "heat_out_of_scope"
+id = "heat_ranking"
+# Was out of scope until heat became a 5th hazard.
 question = "Which hubs are most exposed to extreme heat?"
+plan = { intent = "rank", hazards = ["heat"] }
+facts = { top_hub = "dallas" }
+must_mention = [["Dallas"]]
+caveat_mentions = ["slow", "capacity", "rather than shut"]
+
+[[cases]]
+id = "wildfire_out_of_scope"
+question = "Which hub is most at risk from wildfire smoke?"
 status = "out_of_scope"
 plan = { intent = "out_of_scope" }
+
+[[cases]]
+id = "atlanta_false_premise"
+question = "Why is Atlanta one of our riskiest hubs?"
+plan = { intent = "explain", hubs = ["atlanta"], asserted_level = "high" }
+facts = { premise_holds = false }
+must_mention = [["#10", "10th", "lowest", "least"]]
 
 [[cases]]
 id = "too_vague"

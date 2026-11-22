@@ -53,8 +53,13 @@ Running list; feeds the design doc.
   - The SPC site returns 403 to requests without a User-Agent header.
   - Severe-storm weights: hail 0.35, gusts 0.35, FEMA 0.3.
 
+- **A17.** Heat = days with max ≥ 35 °C (bound 50/yr) and ≥ 37.8 °C (bound 16/yr), averaged; weather-only, because FEMA doesn't declare heat disasters.
+  - Heat **slows** a hub (less capacity over many days) rather than shutting it, but it's treated equally with the other hazards. That's a known limitation: equal weights don't capture severity.
+  - It moves Dallas from #6 to #2, and the top two are saturated near 100 (DESIGN.md §2).
+  - It uses raw max temperature: a feels-like (humidity) signal was considered and skipped. Reanalysis tends to smooth extremes, so counts are likely conservative.
+
 ## Out of scope (hazards)
-- **Extreme heat** is not scored, even though it matters for Dallas and Houston (worker safety, equipment, reefer load). It was left out to keep scope to 4 hazards that match the example questions. It would be the first hazard to add (see PLAN.md, Future improvements).
+- ~~Extreme heat~~: **added later as a 5th hazard** (A17).
 - Wildfire, earthquake, drought: not weather-disruption hazards in our question set; the agent answers "out of scope".
 
 ## Data-source caveats (for the design doc)

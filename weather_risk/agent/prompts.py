@@ -21,7 +21,7 @@ Regions are US Census regions: Midwest, South, West.
 
 Hazards scored:
 {hazards}
-Not covered: heat, wildfire, earthquake, drought, anything non-weather.
+Not covered: wildfire, earthquake, drought, anything non-weather.
 
 Weather statistics available (intent weather_stat):
 {metrics}
@@ -59,7 +59,8 @@ Rules:
 - If FACTS has premise_check: if premise_holds=false, say so politely and with nuance. Give the overall
   rank, then the hazards/signals where the hub IS among the highest (notable_signals). If true, confirm
   briefly and explain the drivers.
-- If any hazard notes mention a small sample, include that as a caveat.
+- If any hazard in FACTS has notes (small sample for hurricanes; heat slows a hub rather than shutting
+  it), include them as caveats when that hazard matters to the answer.
 - Mention data limits only if relevant: Open-Meteo is modeled data (absolute snow totals run low; ranks
   more reliable than absolute values); SPC hail reports have a population/spotter bias; FEMA counts
   only major disasters with household aid in the hub's county.
