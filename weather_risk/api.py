@@ -12,17 +12,20 @@ Endpoints:
 """
 
 import asyncio
+import base64
 import logging
 import os
+import secrets
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from weather_risk import alerts, sessions
 from weather_risk.agent.agent import Agent
 from weather_risk.config import ROOT, load_hubs
+from weather_risk.db import connect
 
 STATIC = ROOT / "static"
 state: dict = {"received": []}      # "received": payloads our demo webhook receiver got
@@ -55,6 +58,34 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Weather Risk Intelligence Agent", lifespan=lifespan)
 
+# ------------------------------------------------------------------ demo password (deployed only)
+# If DEMO_PASSWORD is set (on Render), every endpoint except /health needs HTTP basic auth.
+# Reason: the URL is public and each chat costs Gemini credits. /health stays open so the
+# sleeping free instance can be woken without a password. Unset locally -> no auth.
+OPEN_PATHS = {"/health"}
+
+
+def basic_auth_ok(header: str | None, user: str, password: str) -> bool:
+    if not header or not header.startswith("Basic "):
+        return False
+    try:
+        got_user, _, got_pw = base64.b64decode(header[6:]).decode("utf-8").partition(":")
+    except (ValueError, UnicodeDecodeError):
+        return False
+    # compare_digest: constant-time comparison, doesn't leak how many characters matched
+    return secrets.compare_digest(got_user, user) and secrets.compare_digest(got_pw, password)
+
+
+@app.middleware("http")
+async def require_demo_password(request: Request, call_next):
+    password = os.environ.get("DEMO_PASSWORD")
+    if password and request.url.path not in OPEN_PATHS:
+        if not basic_auth_ok(request.headers.get("authorization"), os.environ.get("DEMO_USER", "demo"), password):
+            # The WWW-Authenticate header makes the browser show its login prompt.
+            return Response("Authentication required", status_code=401,
+                            headers={"WWW-Authenticate": 'Basic realm="weather-risk-agent"'})
+    return await call_next(request)
+
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=1000)
@@ -78,9 +109,12 @@ def index():
 
 @app.get("/health")
 def health():
-    conn = state["agent"].executor.conn
+    """Open without the password: used to wake the free Render instance before a demo."""
+    conn = connect()
     last = conn.execute("SELECT MAX(date) FROM weather_daily").fetchone()[0]
-    return {"status": "ok", "weather_data_through": last, "hubs": len(load_hubs())}
+    conn.close()
+    return {"status": "ok", "weather_data_through": last, "hubs": len(load_hubs()),
+            "agent_ready": "agent" in state}
 
 
 @app.get("/hubs")

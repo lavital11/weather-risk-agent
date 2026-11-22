@@ -1,0 +1,22 @@
+# Render Blueprint (https://render.com/docs/blueprint-spec). Keys checked against Render's docs and
+# its JSON schema (render.com/schema/render.yaml.json) on 2026-11-22.
+services:
+  - type: web
+    name: weather-risk-agent
+    runtime: python
+    plan: free                       # sleeps after 15 min idle; ~1 min to wake (open /health first)
+    buildCommand: pip install -r requirements.txt
+    # Render requires binding host 0.0.0.0 on $PORT (default 10000).
+    startCommand: uvicorn weather_risk.api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health         # open without the demo password
+    envVars:
+      - key: PYTHON_VERSION          # same version as local development
+        value: 3.12.7
+      - key: GEMINI_API_KEY          # secret: entered in the Render dashboard, never committed
+        sync: false
+      - key: DEMO_PASSWORD           # secret: enables basic auth on everything except /health
+        sync: false
+      - key: DEMO_USER
+        value: demo
+      - key: ALERT_INTERVAL_HOURS    # daily alert check (only runs while the free instance is awake)
+        value: "24"

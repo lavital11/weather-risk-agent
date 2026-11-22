@@ -30,7 +30,9 @@ from weather_risk.scoring import load_scoring_config, score_all
 from weather_risk.window import resolve_window, shift_window
 
 ALERTS_DB = ROOT / "data" / "alerts.db"
-DEFAULT_WEBHOOK = "http://127.0.0.1:8000/alerts/webhook-receiver"   # our own demo receiver
+def default_webhook() -> str:
+    """Our own demo receiver, on whatever port the server runs (Render sets PORT, default 10000)."""
+    return f"http://127.0.0.1:{os.environ.get('PORT', '8000')}/alerts/webhook-receiver"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS snapshots (
@@ -97,9 +99,13 @@ def compare(old: dict, new: dict, th: dict, old_hash: str, new_hash: str) -> dic
 
 
 def deliver(payload: dict) -> str:
-    url = os.environ.get("ALERT_WEBHOOK_URL", DEFAULT_WEBHOOK)
+    url = os.environ.get("ALERT_WEBHOOK_URL") or default_webhook()
+    # Our own receiver sits behind the demo password (if set), so authenticate to it.
+    auth = None
+    if url == default_webhook() and os.environ.get("DEMO_PASSWORD"):
+        auth = (os.environ.get("DEMO_USER", "demo"), os.environ["DEMO_PASSWORD"])
     try:
-        r = httpx.post(url, json=payload, timeout=15)
+        r = httpx.post(url, json=payload, timeout=15, auth=auth)
         return f"{r.status_code} {url}"
     except httpx.HTTPError as e:   # e.g. the API (receiver) isn't running: keep the alert, record why
         return f"failed: {type(e).__name__} {url}"

@@ -19,6 +19,12 @@ Open http://localhost:8000 for the chat, or http://localhost:8000/docs for the A
 
 The data snapshot `data/weather_risk.db` is committed, so no ingest is needed to run the demo.
 
+### Deployed version (Render)
+`render.yaml` deploys the app to Render's free plan. The URL needs the demo password (user `demo`)
+for everything except `/health`. The free instance sleeps after 15 minutes idle: open `/health` about
+a minute before using it. Chat history and alert state reset when it restarts, and the daily alert
+check only runs while it's awake. Set locally with `DEMO_PASSWORD` in `.env` to test the password.
+
 ### Rebuild the data (optional, ~5 min)
 ```powershell
 .\.venv\Scripts\python.exe -m weather_risk.ingest.open_meteo

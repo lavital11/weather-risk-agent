@@ -203,6 +203,21 @@ A second live check with no new data raised 0 alerts, as expected.
   - Postgres: the production choice for multi-user writes, but setup overhead isn't justified here.
     The SQL is plain, so moving is straightforward.
 
+### Deployment
+
+Render free web service from `render.yaml`: build with `pip install -r requirements.txt`, start with
+`uvicorn … --host 0.0.0.0 --port $PORT`, health check `/health`.
+- **Demo password:** HTTP basic auth on everything except `/health`, enabled by `DEMO_PASSWORD`.
+  The URL is public and every chat costs Gemini credits, which already ran out once during development.
+  `/health` stays open so the sleeping instance can be woken without a password.
+- **Secrets:** `GEMINI_API_KEY` and `DEMO_PASSWORD` are entered in the Render dashboard (`sync: false`), never committed.
+- **Free-plan limits, accepted for a demo:**
+  - It sleeps after 15 minutes idle (~1 minute to wake).
+  - Its filesystem is ephemeral, so `sessions.db` and `alerts.db` reset on restart; the committed `weather_risk.db` is re-deployed each time.
+  - The in-process daily alert job only runs while the instance is awake.
+
+  In production: a paid always-on instance or a Render Cron Job calling `POST /alerts/check`, plus Postgres for sessions and alert state.
+
 ## 5. Repository structure
 
 ```
