@@ -64,6 +64,12 @@ Running list; feeds the design doc.
   - **Limits:** this uses the center track only. It ignores wind-field size and the storm's strength at the hub's location; positions every 6 hours are interpolated linearly.
 - **A19.** "Effectively tied": overall scores less than 1 point apart are reported as tied, not as a single #1. This is a judgment threshold for the saturated top of noisy-OR.
 
+- **A20.** Alerts watch the long-term score.
+  - **The daily job refreshes only FEMA.** Weather, hail and tracks change the score only through the yearly window, so they're re-ingested when a new full year is published; that's a manual step for now.
+  - **When the window moves:** it advances only when all sources have the full year. A FEMA declaration for a December event that arrives in January is still caught later, as a "new FEMA event" alert.
+  - **Thresholds** (rank change, ≥ 2.0 overall, ≥ 10 per hazard, FEMA event in/out) were set above the drift measured between the 2015–24 and 2016–25 windows. They're judgment calls.
+- **Data now starts in 2015** (storm tracks in 1990), so the alert demo can compare two real windows. Scoring still uses 2016–2025 (tracks 1991–2025).
+
 ## Out of scope (hazards)
 - ~~Extreme heat~~: **added later as a 5th hazard** (A17).
 - Wildfire, earthquake, drought: not weather-disruption hazards in our question set; the agent answers "out of scope".

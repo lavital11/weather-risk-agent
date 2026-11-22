@@ -12,6 +12,7 @@ from weather_risk.agent.schemas import QueryPlan
 from weather_risk.config import load_hubs
 from weather_risk.db import connect
 from weather_risk.scoring import HubScore, combine_hazards, distance_km, load_scoring_config, score_all
+from weather_risk.window import resolve_window
 
 HIGH_RANK_MAX = 3      # premise "high" holds if the hub is in the top 3 of 10 (top 30%)
 LOW_RANK_MIN = 8       # premise "low" holds if the hub is in the bottom 3
@@ -40,8 +41,9 @@ class Executor:
     def __init__(self, conn: sqlite3.Connection | None = None):
         self.conn = conn or connect(check_same_thread=False)
         self._lock = threading.Lock()
-        self.cfg = load_scoring_config()
         self.hubs = {h.id: h for h in load_hubs()}
+        # Auto window: the newest calendar year that every source has in full (weather_risk/window.py).
+        self.cfg, self.window_note = resolve_window(self.conn, load_scoring_config(), len(self.hubs))
         self.scores: dict[str, HubScore] = {s.hub_id: s for s in score_all(self.conn, self.cfg)}
         self.n_hubs = len(self.scores)
         self._build_ranks()
@@ -143,7 +145,7 @@ class Executor:
         how = ("noisy-OR: overall = 100 * (1 - product of (1 - hazard/100)); disruption if ANY hazard hits, "
                "so a low hazard can't offset a high one; one hazard at 100 makes the overall 100"
                if method == "noisy_or" else f"weighted average, weights {self.cfg['hazard_weights']}")
-        return {"scoring_window": f"{w['start']} to {w['end']}", "n_hubs": self.n_hubs,
+        return {"scoring_window": f"{w['start']} to {w['end']}", "window_note": self.window_note, "n_hubs": self.n_hubs,
                 "score_scale": "0-100, absolute (fixed bounds in config), higher = more exposed",
                 "overall_method": how}
 

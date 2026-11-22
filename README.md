@@ -28,6 +28,15 @@ The data snapshot `data/weather_risk.db` is committed, so no ingest is needed to
 .\.venv\Scripts\python.exe -m weather_risk.ingest.report      # data-quality report
 ```
 
+### Alerts (long-term score)
+```powershell
+.\.venv\Scripts\python.exe -m weather_risk.alerts --demo    # 2015-2024 vs 2016-2025 window, real data
+.\.venv\Scripts\python.exe -m weather_risk.alerts           # what the daily job does (refresh FEMA, compare)
+```
+While the API runs: `POST /alerts/demo`, `POST /alerts/check`, `GET /alerts`, `GET /alerts/received`
+(the built-in demo webhook receiver). Set `ALERT_WEBHOOK_URL` in `.env` to send alerts elsewhere
+(e.g. a Slack incoming webhook). The API runs the check every `ALERT_INTERVAL_HOURS` (default 24).
+
 ### Other commands
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q                        # unit + validation tests (no LLM)

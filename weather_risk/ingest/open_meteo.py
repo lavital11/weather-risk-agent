@@ -18,7 +18,7 @@ from weather_risk.db import connect
 
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 SOURCE = "open-meteo-archive"
-START_DATE = date(2016, 1, 1)
+START_DATE = date(2015, 1, 1)   # 2015 lets the alert demo compare the 2015-2024 and 2016-2025 windows
 
 # Observed twice: the per-minute quota runs out after exactly 5 of these
 # 10-year, 5-variable requests. Spacing calls 15 s apart (<= 4 per minute)

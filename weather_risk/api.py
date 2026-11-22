@@ -11,24 +11,46 @@ Endpoints:
   POST /chat         {message, session_id?} -> answer + plan + facts
 """
 
+import asyncio
+import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from weather_risk import sessions
+from weather_risk import alerts, sessions
 from weather_risk.agent.agent import Agent
 from weather_risk.config import ROOT, load_hubs
 
 STATIC = ROOT / "static"
-state: dict = {}
+state: dict = {"received": []}      # "received": payloads our demo webhook receiver got
+log = logging.getLogger("uvicorn.error")
+
+
+ALERT_INTERVAL_HOURS = float(os.environ.get("ALERT_INTERVAL_HOURS", "24"))   # 0 = no scheduled job
+
+
+async def daily_alert_job():
+    """Scheduled alert check: refresh FEMA, recompute, compare, notify. Runs in a worker thread."""
+    while True:
+        await asyncio.sleep(ALERT_INTERVAL_HOURS * 3600)
+        try:
+            res = await asyncio.to_thread(alerts.run)
+            log.info("scheduled alert check: %s, %d alert(s)", res["window_note"], len(res["alerts"]))
+            state["agent"] = Agent()   # new data/window -> rebuild cached scores for chat
+        except Exception:
+            log.exception("scheduled alert check failed")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     state["agent"] = Agent()   # loads data and computes all scores once, at startup
+    task = asyncio.create_task(daily_alert_job()) if ALERT_INTERVAL_HOURS > 0 else None
     yield
+    if task:
+        task.cancel()
 
 
 app = FastAPI(title="Weather Risk Intelligence Agent", lifespan=lifespan)
@@ -86,3 +108,36 @@ def chat(req: ChatRequest):
     return ChatResponse(session_id=session_id, answer=reply.answer.answer, caveats=reply.answer.caveats,
                         confidence=reply.answer.confidence, status=reply.status,
                         plan=reply.plan.model_dump(exclude_none=True) if reply.plan else None, facts=reply.facts)
+
+
+# ------------------------------------------------------------------ alerts (long-term score)
+
+@app.post("/alerts/check")
+def alerts_check(refresh_fema: bool = True):
+    """What the daily job does, on demand: refresh FEMA, recompute, compare with the last snapshot."""
+    res = alerts.run(refresh_fema=refresh_fema)
+    state["agent"] = Agent()
+    return res
+
+
+@app.post("/alerts/demo")
+def alerts_demo():
+    """Real change on real data: the 2015-2024 window vs 2016-2025."""
+    return alerts.run_demo()
+
+
+@app.get("/alerts")
+def alerts_list(limit: int = 50):
+    return alerts.recent_alerts(limit)
+
+
+@app.post("/alerts/webhook-receiver")
+def webhook_receiver(payload: dict):
+    """Stand-in for Slack/Teams/email: stores what the alert webhook sent (default ALERT_WEBHOOK_URL)."""
+    state["received"] = ([payload] + state["received"])[:20]
+    return {"ok": True}
+
+
+@app.get("/alerts/received")
+def webhook_received():
+    return state["received"]

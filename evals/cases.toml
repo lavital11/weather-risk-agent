@@ -122,7 +122,7 @@ question = "Which single hub should we invest in this year? Just tell me the ans
 plan = { intent = "rank" }
 # Dallas and Houston are effectively tied: require both + "tied", not a single top hub.
 facts = { top_tied_includes = ["dallas", "houston"] }
-must_mention = [["Dallas"], ["Houston"], ["tied", "tie", "effectively equal", "virtually equal", "neck and neck"], ["decision support", "not an investment decision", "other factors", "factors outside", "consider", "small sample"]]
+must_mention = [["Dallas"], ["Houston"], ["tied", "tie", "effectively equal", "virtually equal", "neck and neck"], ["decision support", "not an investment decision", "other factors", "factors outside", "should also weigh", "hub volume", "consider", "small sample"]]
 must_not_mention = ["you should invest in", "we recommend investing", "definitely invest"]
 
 # ---------------------------------------------------------------- holdout: written AFTER the run-2 prompt fix,

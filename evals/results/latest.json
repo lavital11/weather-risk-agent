@@ -1,18 +1,18 @@
 {
-  "run_at": "2026-11-22T16:44:58+00:00",
+  "run_at": "2026-11-22T17:38:40+00:00",
   "model": "gemini-4-hydrogen",
-  "repeat": 1,
+  "repeat": 3,
   "per_case_passes": {
-    "holdout_prioritize_pair": 1
+    "no_investment_decision": 3
   },
-  "case_runs_passed": 1,
-  "case_runs_total": 1,
+  "case_runs_passed": 3,
+  "case_runs_total": 3,
   "runs": [
     [
       {
-        "id": "holdout_prioritize_pair",
-        "question": "Between Atlanta and Denver, which one deserves resilience upgrades more, weather-wise?",
-        "seconds": 14.6,
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "seconds": 13.6,
         "status": "ok",
         "checks": {
           "status": [],
@@ -22,21 +22,80 @@
           "grounding": []
         },
         "plan": {
-          "restated_question": "Between Atlanta and Denver, which hub deserves resilience upgrades more based on overall weather risk?",
+          "restated_question": "Which single hub should we prioritize for investment based on overall weather risk?",
           "intent": "rank",
-          "hubs": [
-            "atlanta",
-            "denver"
-          ],
-          "hazards": []
+          "hubs": [],
+          "hazards": [],
+          "top_n": 1
         },
-        "answer": "Based on overall weather risk, Denver ranks higher than Atlanta for resilience upgrades, scoring 60.8 (#7 of 10) compared to Atlanta's 39.1 (#10 of 10). Under the noisy-OR method, overall risk reflects whichever hazards hit, meaning low exposure in some hazards cannot offset high exposure in others. Denver's higher score is driven mainly by winter weather and severe hail: it has 40.49 measurable snow days/yr (>= 0.25 cm, signal score 100.0, #1 of 10) and 10.5 severe hail days/yr (>= 1 in within 50 km, signal score 87.5, #2 of 10), plus 1.1 strong-gust days/yr (>= 80 km/h, signal score 36.7, #6 of 10). Atlanta ranks lowest among all 10 hubs, led by more moderate exposures: 1.3 strong-gust days/yr (signal score 43.3, #5 of 10), 1.9 heavy-rain days/yr (>= 50 mm, signal score 31.7, #5 of 10), and 4.7 hail days/yr (signal score 39.2, #6 of 10). Since this analysis is decision support rather than a final investment decision, your choice should also weigh factors outside this data, such as hub volume, upgrade cost, and existing protections.",
+        "answer": "No single hub stands out as the top priority: Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied because their overall scores on the 0-100 scale are less than 1.0 point apart. Under the noisy-OR scoring method, overall risk reflects whichever hazards hit hardest, so low exposure in other hazards does not offset a severe one. Their risk profiles differ sharply: Dallas is driven by extreme heat and hail, ranking #1 in hot days (48.59 days/yr >= 35 C / 95 F, score 97.2), very hot days (15.7 days/yr >= 37.8 C / 100 F, score 98.1), and severe hail (12.5 hail days/yr >= 1 in within 50 km, score 100.0). Houston is driven by flooding, ranking #1 in heavy-rain days (5.4 days/yr >= 50 mm, score 90.0), extreme-rain days (0.8 days/yr >= 100 mm, score 80.0), and FEMA flood events (4.0 events/10yr, score 100.0). Note that heat usually slows a hub rather than shutting it down. Your final investment choice should also weigh factors outside this data, such as hub volume, upgrade cost, and existing protections.",
         "caveats": [
-          "Open-Meteo weather data is modeled; absolute snow totals tend to run low, so hub ranks are more reliable than absolute values.",
-          "SPC hail reports are subject to population and spotter reporting bias."
+          "Heat typically slows hub capacity over many days rather than causing a full shutdown, which equal weighting with other hazards does not capture.",
+          "SPC hail reports carry population and spotter reporting bias.",
+          "FEMA counts only major disasters with household aid in the hub's county and reflect a small sample."
         ],
         "passed": true,
-        "holdout": true
+        "holdout": false
+      }
+    ],
+    [
+      {
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "seconds": 15.2,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which single hub should we prioritize for investment based on overall weather risk?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [],
+          "top_n": 1
+        },
+        "answer": "No single hub stands alone at the top: Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied on the 0-100 overall weather-risk score (less than 1.0 point apart). Because the overall score combines hazards via noisy-OR, risk comes from whichever hazards hit without low exposure in other hazards lowering the score. However, their risk profiles differ sharply. Dallas is driven by extreme heat\u201415.7 very hot days/yr (>= 37.8 C / 100 F; score 98.1, #1) and 48.59 hot days/yr (>= 35 C / 95 F; score 97.2, #1)\u2014along with severe storms at 12.5 days/yr of hail >= 1 in within 50 km (score 100.0, #1). Houston is driven by flood risk: 5.4 heavy-rain days/yr (>= 50 mm; score 90.0, #1), 4.0 FEMA flood events/10yr (score 100.0, #1), and 0.8 extreme-rain days/yr (>= 100 mm; score 80.0, #1). Note that heat usually slows operations rather than shutting a hub down. Your final investment choice should also weigh factors outside this data, including hub volume, upgrade cost, and existing protections.",
+        "caveats": [
+          "Heat usually slows a hub over many days rather than shutting it down, whereas the score weights hazards equally.",
+          "SPC hail reports carry a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county, yielding a small sample."
+        ],
+        "passed": true,
+        "holdout": false
+      }
+    ],
+    [
+      {
+        "id": "no_investment_decision",
+        "question": "Which single hub should we invest in this year? Just tell me the answer.",
+        "seconds": 15.3,
+        "status": "ok",
+        "checks": {
+          "status": [],
+          "plan": [],
+          "facts": [],
+          "answer": [],
+          "grounding": []
+        },
+        "plan": {
+          "restated_question": "Which single hub should we prioritize for investment based on overall weather risk?",
+          "intent": "rank",
+          "hubs": [],
+          "hazards": [],
+          "top_n": 1
+        },
+        "answer": "Dallas (99.1, #1 of 10) and Houston (98.8, #2 of 10) are effectively tied for highest overall weather risk because their scores are less than 1.0 point apart on the 0-100 scale. Under the noisy-OR method, risk comes from whichever hazards hit, so low exposure elsewhere does not offset a severe hazard. Rather than a single #1, these hubs have distinct risk profiles. Dallas is driven by extreme heat\u201415.7 very hot days/yr (>= 37.8 C / 100 F; score 98.1, #1 of 10) and 48.59 hot days/yr (>= 35 C / 95 F; score 97.2, #1 of 10)\u2014and severe storms, with 12.5 days/yr of hail >= 1 in within 50 km (score 100.0, #1 of 10). Note that heat usually slows capacity rather than shutting down operations. Houston is driven by flooding: 5.4 heavy-rain days/yr (>= 50 mm; score 90.0, #1 of 10), 0.8 extreme-rain days/yr (>= 100 mm; score 80.0, #1 of 10), and 4.0 FEMA flood events/10yr (score 100.0, #1 of 10). Your final investment choice should also weigh hub volume, upgrade costs, and existing protections.",
+        "caveats": [
+          "Heat usually slows a hub over many days rather than shutting it down; equal treatment with other hazards does not capture that severity difference.",
+          "SPC hail reports carry a population and spotter bias.",
+          "FEMA counts only major disasters with household aid in the hub's county and relies on a small sample."
+        ],
+        "passed": true,
+        "holdout": false
       }
     ]
   ]

@@ -23,16 +23,24 @@ from weather_risk.db import connect
 
 URL = "https://www.spc.noaa.gov/wcm/data/{year}_hail.csv"
 SOURCE = "spc-hail-reports"
-YEARS = range(2016, 2026)
+YEARS = range(2015, 2026)   # 2015 for the alert demo (2015-2024 vs 2016-2025 windows)
 HEADERS = {"User-Agent": "weather-risk-agent-demo"}  # the SPC site refused a request without one (403)
+
+
+# Older files (e.g. 2015) have NO header row and 28 columns; newer ones (2024) have a header and
+# 2 extra columns at the end (edat, etime). The first 28 columns are the same, in this order.
+COLUMNS = ["om", "yr", "mo", "dy", "date", "time", "tz", "st", "stf", "stn", "mag", "inj", "fat", "loss",
+           "closs", "slat", "slon", "elat", "elon", "len", "wid", "ns", "sn", "sg", "f1", "f2", "f3", "f4"]
 
 
 def fetch_year(client: httpx.Client, year: int) -> tuple[str, list[tuple]]:
     url = URL.format(year=year)
     resp = client.get(url)
     resp.raise_for_status()
+    has_header = resp.text.startswith("om,")
+    reader = csv.DictReader(io.StringIO(resp.text), fieldnames=None if has_header else COLUMNS)
     rows = []
-    for r in csv.DictReader(io.StringIO(resp.text)):
+    for r in reader:
         rows.append((r["om"], r["date"], float(r["mag"]), float(r["slat"]), float(r["slon"]),
                      r["stf"].zfill(2), r["f1"].zfill(3), r["loss"]))
     return url, rows

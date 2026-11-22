@@ -18,7 +18,7 @@ from weather_risk.db import connect
 
 URL = "https://www.nhc.noaa.gov/data/hurdat/hurdat2-1851-2025-092326.txt"
 SOURCE = "nhc-hurdat2-atlantic"
-MIN_YEAR = 1991  # we only score 1991-2025; older storms aren't stored
+MIN_YEAR = 1990  # scoring uses 1991-2025; 1990 lets the alert demo shift the track window back one year too
 
 
 def coord(s: str) -> float:

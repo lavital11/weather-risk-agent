@@ -11,8 +11,18 @@
 # doesn't change other hubs' scores (and doesn't cause false alerts).
 
 [window]                     # complete calendar years only
-start = "2016-01-01"
+start = "2016-01-01"         # the pinned window; with auto = true this is the starting point
 end   = "2025-12-31"
+# auto: move the window forward to the last complete calendar year, but ONLY once every source has
+# that full year (Open-Meteo lags ~2 days, SPC hail and NHC HURDAT2 are published months later).
+# Until then the window stays put and the reason is logged. Storm-track windows shift by the same years.
+auto = true
+
+[alerts]                     # long-term score alerts (user-approved thresholds)
+rank_change = true           # any change in overall rank (labelled if the hubs are now effectively tied)
+overall_change = 2.0         # overall score change >= 2.0 points
+hazard_change = 10.0         # any hazard score change >= 10 points
+fema_events = true           # a FEMA event that counts (rule D) enters or leaves the window
 
 [fema]
 # Which declarations count as an event (findings F1, F2; decision rule D):

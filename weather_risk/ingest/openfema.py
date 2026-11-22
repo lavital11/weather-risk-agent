@@ -22,7 +22,7 @@ from weather_risk.db import connect
 
 URL = "https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries"
 SOURCE = "openfema-v2-DisasterDeclarationsSummaries"
-START = "2016-01-01T00:00:00.000Z"   # incident start date; the scoring window filters again
+START = "2015-01-01T00:00:00.000Z"   # incident start date; the scoring window filters again (2015 for the alert demo)
 PAGE_SIZE = 1000                     # API default; max is 10,000
 PAUSE_S = 1.6                        # limit: 200 requests / 5 min (1 per 1.5 s), 2 concurrent
 

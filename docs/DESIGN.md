@@ -140,6 +140,39 @@ money over many days: crew work-rest limits, equipment and reefer strain, slower
   nothing, so the executor flags gaps under 1 point as effectively tied (above). For the top hubs, the
   per-hazard scores and their drivers carry the information, not the overall number.
 
+### Alerts on the long-term score (bonus)
+
+The alert watches **the same long-term score** the analysts use, not a separate forecast score.
+Three things can change it, and the system watches each:
+
+| What changes the score | How it's detected |
+|---|---|
+| A new FEMA declaration in a hub's county | The daily job re-pulls OpenFEMA (the only source that changes day to day) |
+| The yearly window moving forward | **Auto window**: it ends at the last complete calendar year, but moves only once *every* source has that full year (Open-Meteo lags ~2 days; SPC hail and HURDAT2 come out months later). Until then it stays put, and the reason is logged with the snapshot (`weather_risk/window.py`) |
+| A config change (thresholds, bounds, weights) | A fingerprint of `scoring.toml` is stored with each snapshot; alerts say "config changed" |
+
+**Each run** (`weather_risk/alerts.py`): refresh FEMA → pick the window → score all hubs → save a
+snapshot (`data/alerts.db`) → compare with the previous snapshot → **one alert per hub** listing every
+reason → POST JSON to `ALERT_WEBHOOK_URL`. By default that's our own `/alerts/webhook-receiver`,
+standing in for Slack, Teams or email.
+
+**Thresholds** (`[alerts]` in config, user-approved after measuring a real one-year window shift):
+any overall **rank change** (labelled if the hubs are now effectively tied); **overall change ≥ 2.0**;
+any **hazard change ≥ 10**; a **FEMA event that counts entering or leaving** the window. The normal
+year-to-year drift is 0.1–1.5 overall and ≤ 4.7 per hazard, so the thresholds sit above it.
+
+**Trigger:** a daily task inside FastAPI (`ALERT_INTERVAL_HOURS`, default 24), plus
+`POST /alerts/check` on demand. `GET /alerts` lists past alerts.
+
+**Demo with real data, not fake data** (`POST /alerts/demo`): score the 2015–2024 window as the
+baseline, then 2016–2025. Result: **5 alerts, 5 quiet hubs**:
+- Dallas and Houston swap #1/#2 (now effectively tied).
+- Houston's severe-storm score drops −30.4, because two 2015 FEMA storm/flood disasters leave the window.
+- Chicago −2.7 overall.
+- Indianapolis −4.9 and drops to #9; Columbus moves up to #8.
+
+A second live check with no new data raised 0 alerts, as expected.
+
 ## 3. Data sources
 
 | Source | What | Why | Key caveat |
@@ -179,16 +212,16 @@ docs/            DESIGN.md (this), PLAN.md (decision log), ASSUMPTIONS.md
 evals/           cases.toml (25 cases), run_eval.py, results/
 scripts/         verify_gemini.py, explore_fema.py (phase-0 checks and exploration)
 static/          index.html (chat page)
-tests/           test_scoring.py, test_executor.py, test_validation.py (no LLM)
+tests/           test_scoring.py, test_executor.py, test_validation.py, test_alerts.py (no LLM)
 weather_risk/
-  config.py db.py scoring.py llm.py sessions.py api.py
-  ingest/        open_meteo.py openfema.py spc_hail.py report.py
+  config.py db.py scoring.py llm.py sessions.py api.py window.py alerts.py
+  ingest/        open_meteo.py openfema.py spc_hail.py hurdat2.py report.py
   agent/         schemas.py prompts.py executor.py agent.py metrics.py cli.py
 ```
 
 ## 6. Evaluation
 
-- **Unit and validation tests (no LLM):** 33 tests. They cover the scoring math, the rule-D counting,
+- **Unit and validation tests (no LLM):** 40 tests. They cover the scoring math, the rule-D counting,
   noisy-OR saturation, executor results on real data (e.g. Denver 2025 = 38/365 = 10.4%), and known
   events. The DFW ice storms of 2022 and 2023 are detected; 2021 is a documented expected failure.
 - **Live eval (`evals/`):** 25 cases: the 4 assignment questions, follow-ups, aliases, premise
@@ -222,8 +255,9 @@ Full list in [ASSUMPTIONS.md](ASSUMPTIONS.md). The ones that matter most:
 
 ## 8. Not done / next steps
 
-Bonus order: heat (done) → HURDAT2 hurricane tracks (done) → scheduled alert on short-term (forecast) risk →
-deployment → voice input. Also: severity weights from downtime costs (see heat above), a feels-like
+Bonus order: heat (done) → HURDAT2 hurricane tracks (done) → alerts on the long-term score (done) →
+deployment → voice input. A short-term (7-day forecast) operational alert was considered and
+dropped in favor of alerting on the long-term score the assignment asks about. Also: severity weights from downtime costs (see heat above), a feels-like
 (humidity) heat signal, Also: per-hub business weights
 (exposure × importance), station data to correct the snow bias, and the FEMA National Risk Index
 as an outside check (blocked from our network).
