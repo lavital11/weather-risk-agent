@@ -1,80 +1,36 @@
 # Design details: Weather Risk Intelligence Agent
 
-> The short design document is [DESIGN.md](DESIGN.md) (architecture, repo structure, data storage). This file keeps the longer reasoning: KPI, hazards, alerts, evaluation and trade-offs.
+> Read [DESIGN.md](DESIGN.md) first: goal, scope, architecture (diagram, components, one chat turn),
+> repository structure and data storage. This file only adds the reasoning behind them: design
+> choices, the scoring model, alerts, data sources, evaluation and trade-offs.
+> Decisions with dates: [PLAN.md](PLAN.md). Assumptions and data caveats: [ASSUMPTIONS.md](ASSUMPTIONS.md).
 
-**Goal:** help logistics analysts decide which distribution hubs are most exposed to weather
-disruption and should be prioritized for resilience investment. The agent ranks, compares and
-explains hubs in a chat. **All numbers come from deterministic code; the LLM only interprets the
-question and explains the computed facts.**
-
-**Scope (narrow on purpose):** 10 hubs (Chicago, Minneapolis, Indianapolis, Kansas City, Columbus,
-Dallas, Houston, Miami, Atlanta, Denver) × 5 hazards (winter, flood, severe storms, hurricanes,
-extreme heat), scored on 2016–2025. Out of scope: wildfire, earthquake, drought, hub business importance (volume).
-Details and every decision with its reason: [PLAN.md](PLAN.md). Assumptions and data caveats:
-[ASSUMPTIONS.md](ASSUMPTIONS.md).
-
----
-
-## 1. System architecture
-
-```mermaid
-flowchart LR
-    subgraph Sources["Public data"]
-        OM[Open-Meteo archive]
-        FE[OpenFEMA API]
-        SPC[NOAA SPC hail files]
-        NHC[NOAA NHC HURDAT2 tracks]
-    end
-    Sources --> ING[Ingest scripts] --> DB[(weather_risk.db)]
-    subgraph Server["FastAPI server"]
-        API["/chat /scores /hubs /health<br/>/alerts/*"]
-        AG[Agent] --> LLM[[Gemini via llm.py]]
-        AG --> EX[Executor] --> SC[Scoring engine]
-        WIN[Auto window] --> SC
-        AL[Alert job<br/>daily + on demand] --> SC
-        API --> AG
-        API --> AL
-    end
-    SC --> DB
-    WIN --> DB
-    AL -- "refresh FEMA, catch up missing year" --> ING
-    AL --> ADB[(alerts.db)]
-    AL -- "POST JSON" --> WH[Webhook<br/>built-in receiver or Slack]
-    API --> SDB[(sessions.db)]
-    UI[Chat page] -- "POST /chat" --> API
-```
-
-**Components and how they talk:**
-
-| Component | File(s) | Role |
-|---|---|---|
-| Ingest | `weather_risk/ingest/*.py` | Fetches public data once and stores it raw in SQLite. Retries, rate-limit pauses, and a provenance log (`ingest_runs`). The demo never depends on a live third-party API. |
-| Scoring engine | `weather_risk/scoring.py`, `config/scoring.toml` | Pure functions: stored data + config → a score per hub and hazard, each with its evidence (raw values, bounds, FEMA event titles). No LLM. |
-| Executor | `weather_risk/agent/executor.py` | Runs a `QueryPlan` (rank / compare / explain / weather_stat) and returns **facts**: scores, ranks, drivers, premise check, statistics. |
-| LLM client | `weather_risk/llm.py` | The only file that talks to Gemini. Requests JSON for a Pydantic schema, validates it, retries once with the error, then raises → the caller falls back safely. |
-| Agent | `weather_risk/agent/agent.py`, `prompts.py`, `schemas.py` | One turn = **plan → execute → narrate**. Out-of-scope / clarify replies are written by code (no second LLM call). |
-| API | `weather_risk/api.py` | FastAPI. `/chat` loads the session history, runs the agent, saves the turn. `/scores` returns the full deterministic ranking. |
-| Chat UI | `static/index.html` | One page, no framework. Calls only `/chat`. A collapsible **"How I got this"** panel under each answer shows the plan and the facts. |
-
-**One chat turn, step by step:**
-1. The UI posts `{message, session_id}` to `/chat`. The API loads that session's earlier turns.
-2. **Plan (LLM):** Gemini turns the question plus history into a `QueryPlan` JSON. Hub ids, hazards,
-   regions and metrics are enums built from config, so it can't name a hub that doesn't exist.
-   Follow-ups ("what about Chicago?") are resolved here.
-3. **Execute (code):** the executor validates the plan (e.g. compare needs ≥ 2 hubs) and computes the facts.
-4. **Narrate (LLM):** Gemini writes an `Answer` JSON (`answer`, `caveats`, `confidence`) from the facts
-   only. The prompt requires: use only numbers in the facts, give the rank next to every score,
-   check the question's premise, and state the data limits.
-5. The API stores the turn and returns the answer + plan + facts to the UI.
+## 1. Design choices
 
 **Why plan → execute → narrate (and not a free function-calling loop):** the control flow is fixed
 and every step can be shown and tested. The eval can check the expected plan exactly, and the LLM
 never produces a number. The trade-off is that unusual multi-step questions must fit the plan schema
 (list of hubs + top N covers the example questions).
 
+**What the narrator prompt requires:**
+- use only numbers in the facts;
+- give the rank next to every score;
+- check the question's premise ("why is X high?" when it isn't);
+- say "effectively tied" instead of naming a single #1 when scores are within 1 point;
+- state the data limits that matter for this answer.
+
+The planner can't name a hub, hazard or metric that doesn't exist, because the schema's allowed values
+are built from the config files.
+
+**Failure handling:**
+- Invalid JSON is retried once with the error message, then the agent falls back to "please rephrase".
+- A plan that can't be executed (e.g. compare with one hub) gets a clarifying reply.
+- Out-of-scope and clarify replies are written by code, with no second LLM call.
+
 **LLM:** Google Gemini (`gemini-4-hydrogen`, paid Tier 1, $10 cap). It supports JSON-schema output,
 and all four capabilities we use were verified in `scripts/verify_gemini.py`. Switching provider
-means rewriting `llm.py` only.
+means rewriting `llm.py` only. The client is created on first use, so the app runs without a key
+(everything except chat).
 
 ## 2. The KPI: hub weather-disruption score
 
@@ -160,21 +116,17 @@ Three things can change it, and the system watches each:
 | A config change (thresholds, bounds, weights) | A fingerprint of `scoring.toml` is stored with each snapshot; alerts say "config changed" |
 
 **Catch-up:** if the last complete year isn't in every source yet, the job fetches only what's missing:
-weather days after the last stored day, and that year's SPC hail file. It reuses the ingest code (same
-throttling, retries, upserts) and logs what's still missing. Fetching a newer HURDAT2 file isn't automated yet.
+- weather days after the last stored day;
+- that year's SPC hail file;
+- the newest HURDAT2 release. It's validated first, then swapped in as a whole table in one
+  transaction, so if anything fails the old data is kept.
 
-**Each run** (`weather_risk/alerts.py`): refresh FEMA → catch up the missing year → pick the window → score all hubs → save a
-snapshot (`data/alerts.db`) → compare with the previous snapshot → **one alert per hub** listing every
-reason → POST JSON to `ALERT_WEBHOOK_URL`. By default that's our own `/alerts/webhook-receiver`,
-standing in for Slack, Teams or email.
+It reuses the ingest code (same throttling, retries, upserts) and logs what's still missing.
 
 **Thresholds** (`[alerts]` in config, user-approved after measuring a real one-year window shift):
 any overall **rank change** (labelled if the hubs are now effectively tied); **overall change ≥ 2.0**;
 any **hazard change ≥ 10**; a **FEMA event that counts entering or leaving** the window. The normal
 year-to-year drift is 0.1–1.5 overall and ≤ 4.7 per hazard, so the thresholds sit above it.
-
-**Trigger:** a daily task inside FastAPI (`ALERT_INTERVAL_HOURS`, default 24), plus
-`POST /alerts/check` on demand. `GET /alerts` lists past alerts.
 
 **Demo with real data, not fake data** (`POST /alerts/demo`): score the 2015–2024 window as the
 baseline, then 2016–2025. Result: **5 alerts, 5 quiet hubs**:
@@ -210,60 +162,26 @@ A second live check with no new data raised 0 alerts, as expected.
 | NOAA SPC | Hail reports (lat/lon, size) | Hail is a major Dallas risk the other sources miss | Spotter/population bias (we count days, not reports) |
 | NOAA NHC HURDAT2 | Atlantic storm tracks, 6-hourly positions and status | Direct hurricane exposure; FEMA alone was 0–2 events per hub | Center track only (no wind-field size); a 200 km radius stands in for the storm's reach |
 
-## 4. Data storage choice
+## 4. Storage and deployment details
 
-**SQLite**, one file: `data/weather_risk.db` (~13 MB), committed as a snapshot.
+These add to the storage section in DESIGN.md:
+- **FEMA rows are stored raw**, with declaration type and program flags, so the counting rule (A/B/D)
+  is a config switch and needs no re-fetch.
+- **Hail reports are stored for the whole US**; scoring selects the ones near each hub by distance.
+- **Storm tracks** are stored from 1990 (592 storms) so the alert demo can shift the track window back one year.
+- **NULL is stored as NULL:** "no data" is never confused with 0.
 
-- **Why:** the data is small (~40k weather rows, 62 FEMA rows, ~88k hail reports) and read-mostly.
-  It's queried with SQL, needs no server (zero setup on Windows or a host), and the committed snapshot
-  makes the demo work offline from the data APIs.
-- **Tables:**
-  - `weather_daily` (hub_id, date, 5 variables; PK hub_id+date)
-  - `fema_declarations` (raw, with declaration type and program flags, so counting rules A/B/D are a config switch)
-  - `hail_reports` (all US reports; scoring selects by distance)
-  - `storm_track_points` (HURDAT2 positions, 1991–2025: 576 storms, 17k points)
-  - `ingest_runs` (provenance: URL, time, rows, status; used for attribution)
-- **Re-runs:** ingest uses upserts, so re-running is idempotent. NULL is stored as NULL ("no data" ≠ 0).
-- **Chat history** lives in a separate `data/sessions.db` (git-ignored), so the data snapshot never
-  contains chat logs.
-- **Alternatives considered:**
-  - JSON/Parquet files: no queries, awkward for sessions and alert state.
-  - Postgres: the production choice for multi-user writes, but setup overhead isn't justified here.
-    The SQL is plain, so moving is straightforward.
-
-### Deployment
-
-Render free web service from `render.yaml`: build with `pip install -r requirements.txt`, start with
-`uvicorn … --host 0.0.0.0 --port $PORT`, health check `/health`.
-- **Demo password:** HTTP basic auth on everything except `/health`, enabled by `DEMO_PASSWORD`.
-  The URL is public and every chat costs Gemini credits, which already ran out once during development.
-  `/health` stays open so the sleeping instance can be woken without a password.
-- **Secrets:** `GEMINI_API_KEY` and `DEMO_PASSWORD` are entered in the Render dashboard (`sync: false`), never committed.
+**Deployment (Render free plan):**
+- **Why the demo password:** the URL is public, and every chat costs Gemini credits, which already
+  ran out once during development. `/health` stays open so the sleeping instance can be woken without a password.
 - **Free-plan limits, accepted for a demo:**
   - It sleeps after 15 minutes idle (~1 minute to wake).
-  - Its filesystem is ephemeral, so `sessions.db` and `alerts.db` reset on restart; the committed `weather_risk.db` is re-deployed each time.
-  - **Anything downloaded while running is lost on restart** (FEMA refreshes, catch-up weather/hail, a newer HURDAT2 file) and is downloaded again by the next alert run. Each restart also loses the alert baseline, so the first run after a restart only saves a new baseline.
   - The in-process daily alert job only runs while the instance is awake.
+  - Each restart loses the alert baseline, so the first run after a restart only saves a new baseline.
+- **In production:** a paid always-on instance or a Render Cron Job calling `POST /alerts/check`, plus
+  persistent storage for sessions and alert state (see next steps).
 
-  In production: a paid always-on instance or a Render Cron Job calling `POST /alerts/check`, plus Postgres for sessions and alert state.
-
-## 5. Repository structure
-
-```
-config/          hubs.toml (hub registry), scoring.toml (every threshold, bound, weight)
-data/            weather_risk.db (committed snapshot); sessions.db (git-ignored)
-docs/            DESIGN.md (this), PLAN.md (decision log), ASSUMPTIONS.md
-evals/           cases.toml (25 cases), run_eval.py, results/
-scripts/         verify_gemini.py, explore_fema.py (phase-0 checks and exploration)
-static/          index.html (chat page)
-tests/           test_scoring.py, test_executor.py, test_validation.py, test_alerts.py (no LLM)
-weather_risk/
-  config.py db.py scoring.py llm.py sessions.py api.py window.py alerts.py
-  ingest/        open_meteo.py openfema.py spc_hail.py hurdat2.py report.py
-  agent/         schemas.py prompts.py executor.py agent.py metrics.py cli.py
-```
-
-## 6. Evaluation
+## 5. Evaluation
 
 - **Unit and validation tests (no LLM):** 50 tests, plus 1 documented expected failure. They cover the
   scoring math, the FEMA counting (rule D: Major Disaster declarations with household aid),
@@ -285,7 +203,7 @@ weather_risk/
 - **Limits:** 3 runs is a small sample, and the grounding check lets integers 0–10 and the years
   2016–2026 through unchecked. Eval history: [PLAN.md](PLAN.md#eval-log).
 
-## 7. Assumptions, uncertainty and scoping (summary)
+## 6. Assumptions, uncertainty and scoping (summary)
 
 Full list in [ASSUMPTIONS.md](ASSUMPTIONS.md). The ones that matter most:
 - **Proxies, not closures:** "disruption days" and FEMA declarations stand in for hub downtime. We
@@ -299,11 +217,23 @@ Full list in [ASSUMPTIONS.md](ASSUMPTIONS.md). The ones that matter most:
 - **Decision support, not an investment decision:** in line with FEMA's own guidance for its risk
   index. Hub volume, upgrade cost and existing protections are outside this data.
 
-## 8. Not done / next steps
+## 7. Done and next steps
 
-Done: heat, HURDAT2 hurricane tracks, alerts on the long-term score, deployment (Render).
-Next: voice input. A short-term (7-day forecast) operational alert was considered and
-dropped in favor of alerting on the long-term score the assignment asks about. Also: severity weights from downtime costs (see heat above), a feels-like
-(humidity) heat signal, Also: per-hub business weights
-(exposure × importance), station data to correct the snow bias, and the FEMA National Risk Index
-as an outside check (blocked from our network).
+**Done (beyond the core requirements):** heat hazard, HURDAT2 hurricane tracks, alerts on the
+long-term score, deployment (Render), voice conversation.
+
+**Next steps:**
+- **LLM-as-judge in the eval** instead of phrase matching. Phrase lists had to be widened twice for
+  answers that were correct but worded differently.
+- **Persistent storage on the host** (Postgres or a persistent disk), so chat history, alert state
+  and data downloaded at run time survive restarts; plus an always-on instance or a cron job for the daily alert.
+- **Test a cheaper model against the same eval:** the eval checks plans, facts and grounding, so a
+  smaller Gemini model can be compared on cost and pass rate.
+- **Severity weights** from the customer's downtime and delay costs (see heat above).
+- **Per-hub business weights** (exposure × importance, e.g. volume).
+- **A feels-like (humidity) heat signal.**
+- **Station data** to correct the snow bias of modeled weather.
+- **The FEMA National Risk Index** as an outside check (blocked from our network during development).
+
+**Considered and dropped:** a short-term (7-day forecast) operational alert, in favor of alerting on
+the long-term score the assignment asks about.
