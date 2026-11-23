@@ -37,8 +37,17 @@ API key is needed.
 
      The check runs once a day (while the free server is awake) and can be triggered manually with
      `POST /alerts/check`.
-   - **Alerts:** run `POST /alerts/demo` from https://weather-risk-agent-301a.onrender.com/docs. It compares
-     the 2015–2024 window with 2016–2025 on real data and sends 5 alerts.
+   - **Alerts demo:**
+     1. Open https://weather-risk-agent-301a.onrender.com/docs.
+     2. Choose `POST /alerts/demo`.
+     3. Click **Try it out**, then **Execute**.
+
+     - **What it does:** compares the 2015–2024 scoring window with 2016–2025, so the alerts come from
+       a real change in the data, not test data.
+     - **Expected result:** 5 alerts (Dallas, Houston, Chicago, Indianapolis, Columbus). Each lists its
+       reasons and the overall score before and after. The other 5 hubs stay quiet.
+     - **Proof they were sent:** run `GET /alerts/received` the same way. It shows what the webhook
+       actually received.
 
 ## Run locally (Windows, Python 3.12)
 
