@@ -30,7 +30,15 @@ API key is needed.
 3. Under any answer, open **How I got this** to see the JSON plan and the computed facts behind it.
 4. Optional:
    - **Voice:** click 🎤 and speak (Chrome or Edge).
-   - **Alerts:** run `POST /alerts/demo` from https://weather-risk-agent-301a.onrender.com/docs.
+   - **When an alert is sent:** when a hub's long-term risk changes:
+     - its rank changes;
+     - its overall score moves by 2+ points, or a hazard score by 10+ points;
+     - a FEMA disaster declaration that counts enters or leaves the scoring window.
+
+     The check runs once a day (while the free server is awake) and can be triggered manually with
+     `POST /alerts/check`.
+   - **Alerts:** run `POST /alerts/demo` from https://weather-risk-agent-301a.onrender.com/docs. It compares
+     the 2015–2024 window with 2016–2025 on real data and sends 5 alerts.
 
 ## Run locally (Windows, Python 3.12)
 
