@@ -17,6 +17,8 @@ Docs:
 - [ASSUMPTIONS.md](docs/ASSUMPTIONS.md): assumptions, uncertainty, scoping
 - [PLAN.md](docs/PLAN.md): decision log and eval log
 - [OPERATIONS.md](docs/OPERATIONS.md): deployment, data refresh, alerts, voice
+- [session/claude-code-session.md](docs/session/claude-code-session.md): the full working session with
+  the AI agent (Claude Code), with secrets redacted
 
 ## Try it live
 
