@@ -1,6 +1,7 @@
 # Assumptions, Uncertainty and Open Questions
 
-Running list; feeds the design doc.
+Current assumptions only. Replaced ones were removed (their history is in [PLAN.md](PLAN.md)); numbers
+are kept stable because other docs refer to them, so a few numbers are missing.
 
 ## Assumptions
 - **A1.** "Last year" = calendar year 2025 (project date: 2026-11-22).
@@ -10,15 +11,14 @@ Running list; feeds the design doc.
   - Atlanta = ATL → Clayton County (not Fulton).
   - Kansas City = MCI → Platte County (not Jackson).
   - Columbus = CMH (Franklin County, the same county as the LCK cargo airport).
-- **A3.** Long-term exposure (historical, for investment ranking) is kept separate from short-term risk (forecast/alerts, for the alert bonus).
 - **A4.** A "disruption day" is a day above a hazard threshold (thresholds set in config). It stands in for closure risk and is not a record of actual closures.
 - **A5.** FEMA disaster declarations stand in for impactful events. They also depend on politics and damage thresholds, and are county-level.
+  - **FEMA counting (rule D):** an event counts only if the hub's county got a Major Disaster declaration with household aid; one count per incident. This excludes precautionary and evacuee-support declarations.
 - **A6.** Hazard weights are equal by default (config). Real weights should come from the company's downtime-cost data.
 - **A7.** Hub cities are illustrative; the company's real hub locations are unknown.
 - **A8.** Open-Meteo is modeled (reanalysis) data with grid-scale error. **V6:** Denver 2025 snowfall was 51.5 cm (20.3") vs NWS 29.8", about 1/3 low. We assume the bias is similar across hubs, so **rankings are more reliable than absolute values**. This is why scoring uses snow-day counts (≥ 0.25 cm), not totals.
 - **A9.** History window: 10 years. We assume the past decade is a reasonable guide to future exposure; climate trends could make this optimistic.
 - **A10.** Regions such as "Midwest" use a fixed mapping (US Census regions), stored in hub config.
-- **A11.** Hurricane exposure is a proxy (FEMA hurricane declarations + wind/rain extremes). Open-Meteo has no hurricane flag, and storm surge is not captured.
 - **A12.** Open-Meteo archive recency. Tested 2026-11-22: the archive returned values **through today**, including the unfinished current day.
   - We store data only up to **today (UTC) − 2 days**, which is a finished day in every US time zone.
   - The most recent days may be preliminary and could be revised. We haven't verified this, so the ingest re-runs as an upsert.
@@ -29,17 +29,15 @@ Running list; feeds the design doc.
   - **Ice day:** precipitation ≥ 2 mm, max temperature ≤ 1 °C, and less than half of the precipitation fell as snow.
   - The units differ: precipitation is mm of liquid water, snowfall is cm of snow. We compare them using Open-Meteo's own ratio, **measured in our data: 0.70 cm of snow per mm of precipitation** on all-snow days (243 days with max ≤ −3 °C; range 0.15–0.88).
   - "Less than half as snow" = `snowfall_cm < 0.5 × 0.7 × precipitation_mm`.
-- **A15. (Replaced by A18: storm tracks + FEMA.)** "FEMA events" means FEMA counting (rule D: Major
-  Disaster declarations with household aid in the hub's county, one per incident). ~~Hurricane score = FEMA rule-D events only (100% weight), because the weather data has no usable hurricane signal (the tropical proxy also caught Midwest thunderstorms). It's a **small sample** (Miami 1 event, Houston 2), and the agent must say so. HURDAT2 storm tracks are planned as a bonus.~~
 
-- **A14.** Hail and tornadoes don't appear in daily gridded weather data. For the severe-storm hazard, the weather signal is strong-gust days only; hail and tornado impact comes only from FEMA declarations.
+- **A14.** Hail and tornadoes don't appear in daily gridded weather data. Hail comes from NOAA SPC reports instead (A16); tornado impact comes only from FEMA declarations.
 
 ## OpenFEMA findings (exploration 2026-11-22, `scripts/explore_fema.py`)
 - **F1.** `fipsCountyCode = '000'` means **tribal areas** (e.g. Leech Lake Reservation, Seminole Tribe), not "statewide". These rows are excluded: they're not the hub's county.
 - **F2.** One event can have both an Emergency (EM) and a Major Disaster (DR) declaration, e.g. Irma EM-3385 + DR-4337. These share an `incidentId`, so events are counted **by distinct `incidentId`**, not by rows.
 - **F3.** `incidentType` doesn't always match the title. For example, "TROPICAL STORM ELSA" is typed Severe Storm, "TROPICAL STORM IMELDA" is typed Flood, and Harvey (mostly flooding) is typed Hurricane. The type → hazard mapping is approximate.
 - **F4.** County-level declarations are **sparse**. 2016–2025 weather events for Denver, Indianapolis and Columbus: 0. No Midwest county had a winter declaration. So for winter, the score comes almost entirely from weather data, and FEMA mainly informs hurricane, flood and ice.
-- **F6.** Dallas, Feb 2021 (the FEMA "Severe Ice Storm", DR-4586): in Open-Meteo it shows as **snow and cold, not ice**. On 2021-02-14 it shows 4.6 cm of snow; the minimum temperature reaches −17.8 °C on 02-16. The ice-day rule catches none of those days. The FEMA component still records the event. Dallas ranks mid-table, not "high", so the agent must check the premise of "why is Dallas high?" (eval case).
+- **F6.** Dallas, Feb 2021 (the FEMA "Severe Ice Storm", DR-4586): in Open-Meteo it shows as **snow and cold, not ice**. On 2021-02-14 it shows 4.6 cm of snow; the minimum temperature reaches −17.8 °C on 02-16. The ice-day rule catches none of those days. The FEMA component still records the event.
 - **F7.** Ice rule validated against three known DFW ice shutdowns (`tests/test_validation.py`):
   - **Feb 2022:** detected (02-03).
   - **Jan–Feb 2023:** detected (01-30, 01-31, 02-01).
@@ -59,20 +57,19 @@ Running list; feeds the design doc.
   - It moves Dallas from #6 to #2, and the top two are saturated near 100 (DESIGN_DETAILS.md §2).
   - It uses raw max temperature: a feels-like (humidity) signal was considered and skipped. Reanalysis tends to smooth extremes, so counts are likely conservative.
 
-- **A18.** Hurricane exposure (replaces the FEMA-only A15): NOAA HURDAT2 storms passing within **200 km** of the hub while at tropical-storm or hurricane strength. Per 10 years, over **1991–2025**, bound 8 (Miami, the highest, has 7.1). Hazard = tracks 0.7 + FEMA 0.3.
+- **A18.** Hurricane exposure: NOAA HURDAT2 storms passing within **200 km** of the hub while at tropical-storm or hurricane strength. Per 10 years, over **1991–2025**, bound 8 (Miami, the highest, has 7.1). Hazard = tracks 0.7 + FEMA 0.3.
   - **Different window:** 35 years instead of 2016–2025, because hurricanes are rare. This assumes the 1991–2025 storm climate represents today.
   - **Why 200 km:** 100 km missed Irma (2017) for Miami, because its center passed more than 100 km away while it still brought hurricane-force gusts.
   - **Limits:** this uses the center track only. It ignores wind-field size and the storm's strength at the hub's location; positions every 6 hours are interpolated linearly.
 - **A19.** "Effectively tied": overall scores less than 1 point apart are reported as tied, not as a single #1. This is a judgment threshold for the saturated top of noisy-OR.
 
 - **A20.** Alerts watch the long-term score.
-  - **The daily job refreshes only FEMA.** Weather, hail and tracks change the score only through the yearly window, so they're re-ingested when a new full year is published; that's a manual step for now.
+  - **The daily job refreshes FEMA** (the only source that changes day to day). Weather, hail and storm tracks change the score only through the yearly window: when a new year is due, the job fetches only what's missing (catch-up), and the window moves once every source has the full year.
   - **When the window moves:** it advances only when all sources have the full year. A FEMA declaration for a December event that arrives in January is still caught later, as a "new FEMA event" alert.
   - **Thresholds** (rank change, ≥ 2.0 overall, ≥ 10 per hazard, FEMA event in/out) were set above the drift measured between the 2015–24 and 2016–25 windows. They're judgment calls.
 - **Data now starts in 2015** (storm tracks in 1990), so the alert demo can compare two real windows. Scoring still uses 2016–2025 (tracks 1991–2025).
 
 ## Out of scope (hazards)
-- ~~Extreme heat~~: **added later as a 5th hazard** (A17).
 - Wildfire, earthquake, drought: not weather-disruption hazards in our question set; the agent answers "out of scope".
 
 ## Data-source caveats (for the design doc)

@@ -138,7 +138,7 @@ def test_hub_score_is_weighted_sum_and_hurricane_has_small_sample_note():
     for h in r.hazards.values():
         prod *= 1 - h.score / 100
     assert r.overall == pytest.approx(round(100 * (1 - prod), 1))     # noisy-OR is the configured method
-    assert r.hazards["hurricane"].notes                     # A15: agent must mention small sample
+    assert r.hazards["hurricane"].notes                     # hazard note (A18) the agent must mention
 
 
 @pytest.mark.parametrize("scores,expected", [
