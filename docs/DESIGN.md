@@ -1,9 +1,13 @@
 # Design: Weather Risk Intelligence Agent
 
-An agent that helps logistics analysts decide which hubs are most exposed to weather disruption.
-**Scores come from deterministic code; the LLM (Gemini) only turns the question into a structured
-plan and explains the computed facts.** Scope: 10 hubs × 5 hazards (winter, flood, severe storms,
-hurricanes, heat), 2016–2025.
+**Goal:** help logistics analysts decide which distribution hubs are most exposed to weather
+disruption and should be prioritized for resilience investment. The agent ranks, compares and
+explains hubs in a chat. **All numbers come from deterministic code; the LLM only interprets the
+question and explains the computed facts.**
+
+**Scope (narrow on purpose):** 10 hubs (Chicago, Minneapolis, Indianapolis, Kansas City, Columbus,
+Dallas, Houston, Miami, Atlanta, Denver) × 5 hazards (winter, flood, severe storms, hurricanes,
+extreme heat), scored on 2016–2025.
 
 More detail (KPI, hazards, alerts, evaluation, trade-offs): [DESIGN_DETAILS.md](DESIGN_DETAILS.md).
 Assumptions and data caveats: [ASSUMPTIONS.md](ASSUMPTIONS.md). Decision log: [PLAN.md](PLAN.md).
