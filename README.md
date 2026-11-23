@@ -25,7 +25,8 @@ API key is needed.
 
 1. Open https://weather-risk-agent-301a.onrender.com/health first (no login). The free server sleeps
    when idle, so it may take about a minute to wake up.
-2. Open https://weather-risk-agent-301a.onrender.com and sign in. Click an example question, then ask a follow-up such as "And for flooding?".
+2. Open https://weather-risk-agent-301a.onrender.com and sign in. Click an example question or type your own. The agent also
+   answers follow-up questions.
 3. Under any answer, open **How I got this** to see the JSON plan and the computed facts behind it.
 4. Optional:
    - **Voice:** click 🎤 and speak (Chrome or Edge).
