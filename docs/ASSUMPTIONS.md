@@ -55,7 +55,7 @@ Running list; feeds the design doc.
 
 - **A17.** Heat = days with max ≥ 35 °C (bound 50/yr) and ≥ 37.8 °C (bound 16/yr), averaged; weather-only, because FEMA doesn't declare heat disasters.
   - Heat **slows** a hub (less capacity over many days) rather than shutting it, but it's treated equally with the other hazards. That's a known limitation: equal weights don't capture severity.
-  - It moves Dallas from #6 to #2, and the top two are saturated near 100 (DESIGN.md §2).
+  - It moves Dallas from #6 to #2, and the top two are saturated near 100 (DESIGN_DETAILS.md §2).
   - It uses raw max temperature: a feels-like (humidity) signal was considered and skipped. Reanalysis tends to smooth extremes, so counts are likely conservative.
 
 - **A18.** Hurricane exposure (replaces the FEMA-only A15): NOAA HURDAT2 storms passing within **200 km** of the hub while at tropical-storm or hurricane strength. Per 10 years, over **1991–2025**, bound 8 (Miami, the highest, has 7.1). Hazard = tracks 0.7 + FEMA 0.3.

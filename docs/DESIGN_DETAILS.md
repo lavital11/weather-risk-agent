@@ -96,7 +96,9 @@ Deterministic, configured in `config/scoring.toml`:
   FEMA events = distinct incidents with a **Major Disaster declaration with household aid in the hub's
   county** (rule D). This removes precautionary or evacuee-support declarations, e.g. Dallas's Harvey declaration.
 - **Overall** = noisy-OR: `100 × (1 − Π(1 − hazard/100))`. Disruption happens if *any* hazard hits,
-  so having no hurricanes doesn't offset hail. One hazard at 100 saturates the overall score (Houston).
+  so having no hurricanes doesn't offset hail. A hazard at 100 would saturate the overall score at 100;
+  no hub is there today, but the top hubs come close (Dallas 99.1, Houston 98.8) and are reported as
+  effectively tied.
 - **Explanations:** the executor reports each signal's points within its hazard, each hazard's
   leave-one-out contribution to the overall score, and ranks among hubs (ties flagged, zero = no rank).
 
@@ -184,8 +186,15 @@ baseline, then 2016–2025. Result: **5 alerts, 5 quiet hubs**:
 A second live check with no new data raised 0 alerts, as expected.
 
 ### Answer presentation (from testing the deployed app)
-- **Layout:** a short direct answer, then one line per hub ("- Hub: score, rank, drivers"). The page keeps
-  line breaks (`white-space: pre-line`) but still inserts the text as plain text, never as HTML.
+- **Layout:** the narrator writes a short direct answer, then one "- Hub (score, rank): drivers" line
+  per hub. The page (`static/index.html`, `renderAnswer`) lays this out for reading:
+  - the "Assuming you still mean …" line as a small italic note;
+  - the first sentence as a **bold summary**, and any remaining intro text as a normal paragraph;
+  - **one styled row per hub**, with the hub name in bold;
+  - the caveats in a **separate, smaller section**.
+
+  This is display only: the answer text from the API is unchanged. Everything is built from plain
+  text nodes; **HTML from the model is never inserted** (only `**bold**` is turned into bold).
 - **Rounding:** every signal value is rounded to 1 decimal in one place (`make_signal`), and scores are
   computed from the unrounded value, so rounding can't change a score.
 - **Follow-ups say what they assumed:** the planner reports `carried_over` (e.g. "winter in the
