@@ -20,14 +20,16 @@ Docs:
 
 ## Try it live
 
-The **URL and login details are in my submission**. No setup or API key is needed.
+**https://weather-risk-agent-301a.onrender.com**. The **login details are in my submission**. No setup or
+API key is needed.
 
-1. Open `<url>/health` first. The free server sleeps when idle, so it may take about a minute to wake up.
-2. Open `<url>` and sign in. Click an example question, then ask a follow-up such as "And for flooding?".
+1. Open https://weather-risk-agent-301a.onrender.com/health first (no login). The free server sleeps
+   when idle, so it may take about a minute to wake up.
+2. Open https://weather-risk-agent-301a.onrender.com and sign in. Click an example question, then ask a follow-up such as "And for flooding?".
 3. Under any answer, open **How I got this** to see the JSON plan and the computed facts behind it.
 4. Optional:
    - **Voice:** click 🎤 and speak (Chrome or Edge).
-   - **Alerts:** run `POST /alerts/demo` from `<url>/docs`.
+   - **Alerts:** run `POST /alerts/demo` from https://weather-risk-agent-301a.onrender.com/docs.
 
 ## Run locally (Windows, Python 3.12)
 
