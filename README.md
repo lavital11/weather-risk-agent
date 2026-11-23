@@ -66,10 +66,19 @@ Open http://localhost:8000 for the chat, or http://localhost:8000/docs for the A
 
 ## Tests and evaluation
 
+**Unit and validation tests:** no API key needed, runs in a few seconds.
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q                      # unit + validation tests, no LLM, ~2 s
-.\.venv\Scripts\python.exe -u -m evals.run_eval              # 25-case live eval (needs a key, ~8 min)
-.\.venv\Scripts\python.exe -u -m evals.run_eval --repeat 3   # 3 runs with per-case pass rates (~25 min)
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+**Live eval (25 cases):** needs a Gemini key. One run is about 50 Gemini calls and 7–8 minutes.
+```powershell
+.\.venv\Scripts\python.exe -u -m evals.run_eval
+```
+
+**Live eval, 3 runs with per-case pass rates:** about 150 Gemini calls and 25 minutes.
+```powershell
+.\.venv\Scripts\python.exe -u -m evals.run_eval --repeat 3
 ```
 - **What the eval checks, per case:** the plan the LLM produced, the computed facts, the key points
   and caveats in the answer, and that **every number in the answer appears in the facts**.
