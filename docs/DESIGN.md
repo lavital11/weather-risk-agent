@@ -71,7 +71,7 @@ docs/          DESIGN.md, DESIGN_DETAILS.md, PLAN.md (decision + eval log), ASSU
 evals/         cases.toml (25 cases), run_eval.py, results/
 scripts/       verify_gemini.py, explore_fema.py (phase-0 checks)
 static/        index.html (chat page)
-tests/         unit + validation tests, no LLM (43)
+tests/         unit + validation tests, no LLM (50)
 weather_risk/  config.py db.py scoring.py window.py alerts.py llm.py sessions.py api.py
   ingest/      open_meteo.py openfema.py spc_hail.py hurdat2.py report.py
   agent/       schemas.py prompts.py executor.py agent.py metrics.py cli.py

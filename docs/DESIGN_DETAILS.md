@@ -265,24 +265,23 @@ weather_risk/
 
 ## 6. Evaluation
 
-- **Unit and validation tests (no LLM):** 40 tests. They cover the scoring math, the rule-D counting,
+- **Unit and validation tests (no LLM):** 50 tests, plus 1 documented expected failure. They cover the
+  scoring math, the FEMA counting (rule D: Major Disaster declarations with household aid),
   noisy-OR saturation, executor results on real data (e.g. Denver 2025 = 38/365 = 10.4%), and known
   events. The DFW ice storms of 2022 and 2023 are detected; 2021 is a documented expected failure.
 - **Live eval (`evals/`):** 25 cases: the 4 assignment questions, follow-ups, aliases, premise
   checks, out-of-scope questions, the "which hub to invest in" framing, and 3 **holdout** cases written
   after the last prompt change. Each case checks the plan, the facts, required/forbidden phrases, and
   **grounding: every number in the answer must appear in the facts.**
-- **Results:** 3 full runs, **68/69 case-runs passed**. 22 of the 23 cases passed 3/3, including 2 of the 3 holdouts.
-  The one miss: `holdout_prioritize_pair` ("Between Atlanta and Denver, which one deserves resilience
-  upgrades more?") passed 2/3. In one run the planner chose `rank` (restricted to those 2 hubs) instead
-  of `compare`. The answer was still correct and grounded (Denver 57.8, #7, vs Atlanta 36.5, #10), so
-  only the plan check failed. This is a side effect of the earlier prompt fix ("prioritization
-  questions → rank"): the holdout caught the shift, which is what it was for.
-  After heat was added (25 cases, 1 run): **24/25**. The same holdout failed the same way, and all
-  heat-related cases passed.
-- **Final run (final code, 25 cases ×3): 75/75 case-runs passed, every case 3/3.** Earlier runs
-  found real bugs (prompt refusing investment questions, `top_n` cutting through a tie) and grader
-  bugs; every test change made after seeing a result is disclosed in the eval log.
+- **Final result (final code, 25 cases × 3 runs): 75/75 case-runs passed.** Every case passed 3/3,
+  including all 3 holdouts. One holdout's plan check (`holdout_prioritize_pair`) was relaxed after
+  seeing earlier results: it now accepts `rank` or `compare` for a two-hub question. That change is
+  disclosed in the eval log.
+- **What earlier runs found:**
+  - real bugs, all fixed: the planner refused investment questions, and `top_n` could cut through a tie;
+  - grader bugs: phrase lists that were too narrow.
+
+  Every test change made after seeing a result is disclosed in the eval log.
 - **Limits:** 3 runs is a small sample, and the grounding check lets integers 0–10 and the years
   2016–2026 through unchecked. Eval history: [PLAN.md](PLAN.md#eval-log).
 
